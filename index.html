@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="fr" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Crypto Oracle">
+<meta name="theme-color" content="#060810">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<title id="pageTitle">CRYPTO ORACLE v2 — Pépites x10 · Top 500→50</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=IBM+Plex+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#f5c518;--gold-dim:#a88a10;--amber:#ff8c00;
+  --green:#00ff9d;--red:#ff3b5c;--blue:#00c8ff;--purple:#bd93f9;
+  --orange:#ff6b35;
+  --bg:#060810;--bg2:#0c1020;--bg3:#111827;
+  --border:rgba(245,197,24,0.15);--border-bright:rgba(245,197,24,0.5);
+  --text:#e0e8f0;--text-dim:#6b7a8d;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Mono',monospace;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(245,197,24,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(245,197,24,0.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 10% 0%,rgba(255,107,53,0.06) 0%,transparent 40%),radial-gradient(ellipse at 90% 100%,rgba(0,200,255,0.04) 0%,transparent 50%);pointer-events:none;z-index:0}
+.container{max-width:1700px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+/* HEADER */
+header{border-bottom:1px solid var(--border);padding:14px 0;background:rgba(6,8,16,0.97);position:sticky;top:0;z-index:100;backdrop-filter:blur(16px)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;max-width:1700px;margin:0 auto;padding:0 24px;flex-wrap:wrap;gap:10px}
+.logo{font-family:'Orbitron',sans-serif;font-weight:900;font-size:18px;color:var(--orange);letter-spacing:3px;text-shadow:0 0 20px rgba(255,107,53,0.4)}
+.logo-v{color:var(--gold);font-size:12px;vertical-align:super;margin-left:4px}
+.logo span{color:var(--text-dim);font-weight:400}
+.header-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.header-pills{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{padding:4px 10px;border:1px solid;font-size:10px;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.pill-fear{border-color:rgba(255,59,92,0.4);color:var(--red);background:rgba(255,59,92,0.06)}
+.pill-btc{border-color:rgba(245,197,24,0.3);color:var(--gold);background:rgba(245,197,24,0.05)}
+.pill-alt{border-color:rgba(0,200,255,0.3);color:var(--blue);background:rgba(0,200,255,0.05)}
+.pill-alert{border-color:rgba(255,107,53,0.5);color:var(--orange);background:rgba(255,107,53,0.08);animation:alertpulse 2s infinite}
+@keyframes alertpulse{0%,100%{box-shadow:none}50%{box-shadow:0 0 12px rgba(255,107,53,0.4)}}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;display:inline-block;margin-right:5px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+/* LANG SWITCHER */
+.lang-switcher{display:flex;gap:2px;background:var(--bg3);border:1px solid var(--border);padding:2px}
+.lang-btn{padding:5px 10px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;background:transparent;border:none;color:var(--text-dim);transition:all 0.15s;text-transform:uppercase}
+.lang-btn:hover{color:var(--text)}
+.lang-btn.active{background:var(--orange);color:var(--bg);font-weight:600}
+
+/* NOTICE */
+.notice-bar{background:rgba(255,107,53,0.05);border-bottom:1px solid rgba(255,107,53,0.15);padding:7px 24px;font-size:10px;color:rgba(255,107,53,0.65);letter-spacing:1px;text-align:center}
+
+main{padding:24px 0 60px}
+
+/* SECTION */
+.section-label{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:4px;color:var(--gold-dim);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.section-label .badge{font-size:9px;color:var(--orange);border:1px solid rgba(255,107,53,0.4);padding:2px 8px;background:rgba(255,107,53,0.06)}
+
+/* MARKET BAR */
+.market-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:24px}
+@media(max-width:900px){.market-bar{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:500px){.market-bar{grid-template-columns:repeat(2,1fr)}}
+.market-cell{background:var(--bg2);border:1px solid var(--border);padding:12px 14px}
+.market-cell-label{font-size:9px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:5px}
+.market-cell-val{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:700}
+.market-cell-sub{font-size:10px;color:var(--text-dim);margin-top:3px}
+
+/* CONTROLS */
+.controls-panel{background:var(--bg2);border:1px solid var(--border);padding:20px;margin-bottom:24px}
+.controls-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+@media(max-width:900px){.controls-grid{grid-template-columns:repeat(2,1fr)}}
+.control-item label{display:block;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:6px}
+.control-item .weight-val{font-family:'Orbitron',sans-serif;font-size:17px;font-weight:700;margin-bottom:5px}
+.control-item .weight-desc{font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-top:4px}
+.w-growth{color:var(--green)}.w-community{color:var(--blue)}.w-sentiment{color:var(--orange)}.w-ath{color:var(--amber)}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--border);outline:none;cursor:pointer}
+input[type=range].r-growth::-webkit-slider-thumb{appearance:none;width:13px;height:13px;background:var(--green);border-radius:0;box-shadow:0 0 8px var(--green)}
+input[type=range].r-community::-webkit-slider-thumb{appearance:none;width:13px;height:13px;background:var(--blue);border-radius:0;box-shadow:0 0 8px var(--blue)}
+input[type=range].r-sentiment::-webkit-slider-thumb{appearance:none;width:13px;height:13px;background:var(--orange);border-radius:0;box-shadow:0 0 8px var(--orange)}
+input[type=range].r-ath::-webkit-slider-thumb{appearance:none;width:13px;height:13px;background:var(--amber);border-radius:0;box-shadow:0 0 8px var(--amber)}
+
+/* TOP 5 */
+.top5-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px}
+@media(max-width:1100px){.top5-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.top5-grid{grid-template-columns:1fr}}
+.card{background:var(--bg2);border:1px solid var(--border);padding:20px;position:relative;transition:border-color 0.3s,box-shadow 0.3s;animation:fadeSlide 0.5s ease both}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.card:nth-child(1){animation-delay:.05s}.card:nth-child(2){animation-delay:.1s}.card:nth-child(3){animation-delay:.15s}.card:nth-child(4){animation-delay:.2s}.card:nth-child(5){animation-delay:.25s}
+.card:hover{border-color:var(--border-bright);box-shadow:0 0 24px rgba(245,197,24,0.06)}
+.card.rank-1{border-color:rgba(255,107,53,0.5)}
+.card.rank-1::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--orange),transparent)}
+.card.rank-2{border-color:rgba(245,197,24,0.35)}
+.card.rank-3{border-color:rgba(0,200,255,0.25)}
+.alert-badge{display:inline-flex;align-items:center;gap:6px;font-size:9px;letter-spacing:2px;color:var(--orange);border:1px solid rgba(255,107,53,0.4);padding:3px 9px;background:rgba(255,107,53,0.08);margin-bottom:9px;animation:alertpulse 2s infinite}
+.card-rank{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:3px;color:var(--text-dim);margin-bottom:10px}
+.rank-1 .card-rank{color:var(--orange)}.rank-2 .card-rank{color:var(--gold)}.rank-3 .card-rank{color:var(--blue)}
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.coin-info{display:flex;align-items:center;gap:11px}
+.coin-icon{width:40px;height:40px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:12px;color:var(--gold);flex-shrink:0}
+.coin-name{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px}
+.coin-symbol{font-size:10px;color:var(--text-dim);letter-spacing:2px;margin-top:2px}
+.coin-price{text-align:right}
+.price-val{font-family:'Orbitron',sans-serif;font-size:13px}
+.price-change{font-size:11px;margin-top:3px;font-weight:600}
+.pos{color:var(--green)}.neg{color:var(--red)}
+.total-score{display:flex;align-items:baseline;gap:5px;margin-bottom:16px}
+.score-num{font-family:'Orbitron',sans-serif;font-size:32px;font-weight:900;color:var(--orange);text-shadow:0 0 18px rgba(255,107,53,0.3);line-height:1}
+.score-max{color:var(--text-dim);font-size:13px}
+.score-bars{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.bar-row{display:flex;align-items:center;gap:9px}
+.bar-label{font-size:9px;letter-spacing:1.5px;color:var(--text-dim);text-transform:uppercase;width:75px;flex-shrink:0}
+.bar-track{flex:1;height:4px;background:rgba(255,255,255,0.05)}
+.bar-fill{height:100%;transition:width 1s cubic-bezier(0.16,1,0.3,1);position:relative}
+.bar-fill::after{content:'';position:absolute;right:0;top:50%;transform:translate(50%,-50%);width:5px;height:5px;background:inherit;box-shadow:0 0 7px currentColor}
+.bar-growth .bar-fill{background:var(--green)}.bar-community .bar-fill{background:var(--blue)}.bar-sentiment .bar-fill{background:var(--orange)}.bar-ath .bar-fill{background:var(--amber)}
+.bar-score{font-size:11px;color:var(--text);width:26px;text-align:right;flex-shrink:0;font-family:'Share Tech Mono',monospace}
+.metrics-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;padding:12px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.metric{text-align:center}
+.metric-val{font-family:'Share Tech Mono',monospace;font-size:12px;white-space:nowrap}
+.metric-label{font-size:9px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.community-bar{display:flex;align-items:center;gap:7px;margin-bottom:10px;flex-wrap:wrap}
+.comm-label{font-size:9px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.comm-track{flex:1;min-width:35px;height:3px;background:rgba(255,255,255,0.05)}
+.comm-fill{height:100%;background:var(--blue);transition:width 1s}
+.comm-val{font-size:10px;color:var(--blue);font-family:'Share Tech Mono',monospace;white-space:nowrap}
+.tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{font-size:9px;letter-spacing:1.5px;padding:2px 7px;border:1px solid;text-transform:uppercase}
+.tag-bull{border-color:rgba(0,255,157,0.4);color:var(--green);background:rgba(0,255,157,0.05)}
+.tag-rare{border-color:rgba(245,197,24,0.4);color:var(--gold);background:rgba(245,197,24,0.05)}
+.tag-social{border-color:rgba(0,200,255,0.4);color:var(--blue);background:rgba(0,200,255,0.05)}
+.tag-tech{border-color:rgba(255,107,53,0.4);color:var(--orange);background:rgba(255,107,53,0.05)}
+
+/* TABLE */
+.table-filters{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.filter-btn{padding:5px 13px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;cursor:pointer;transition:all 0.2s;text-transform:uppercase}
+.filter-btn:hover,.filter-btn.active{border-color:var(--orange);color:var(--orange);background:rgba(255,107,53,0.06)}
+.full-table-wrap{background:var(--bg2);border:1px solid var(--border);overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead tr{border-bottom:1px solid var(--border)}
+th{padding:12px 13px;font-size:9px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;text-align:left;font-weight:400;cursor:pointer;white-space:nowrap;transition:color 0.2s;user-select:none}
+th:hover{color:var(--gold)}.sort-active{color:var(--gold)!important}
+.sort-asc::after{content:" ↑"}.sort-desc::after{content:" ↓"}
+tbody tr{border-bottom:1px solid rgba(245,197,24,0.04);transition:background 0.15s}
+tbody tr:hover{background:rgba(245,197,24,0.03)}
+tbody tr.tr-alert{border-left:2px solid rgba(255,107,53,0.5)}
+td{padding:10px 13px;vertical-align:middle;white-space:nowrap}
+.td-rank{color:var(--text-dim);font-size:11px}.td-top{color:var(--gold);font-weight:600}
+.td-coin{display:flex;align-items:center;gap:9px}
+.td-icon{width:26px;height:26px;border-radius:50%;background:var(--bg3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--gold);border:1px solid var(--border);font-family:'Orbitron',sans-serif}
+.td-name{font-weight:600;font-size:12px}.td-sym{font-size:10px;color:var(--text-dim);letter-spacing:1px}
+.mini-bar{height:3px;background:rgba(255,255,255,0.05);width:65px}
+.mini-fill{height:100%}
+.score-badge{display:inline-block;font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--orange);padding:3px 9px;border:1px solid rgba(255,107,53,0.3);background:rgba(255,107,53,0.06)}
+.rsi-gauge{width:48px;height:5px;background:rgba(255,255,255,0.05)}
+.rsi-fill{height:100%}
+.alert-mini{font-size:11px;margin-right:3px}
+.legend{display:flex;flex-wrap:wrap;gap:18px;padding:10px 0;margin-bottom:18px}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--text-dim);letter-spacing:1px}
+.legend-dot{width:7px;height:7px}
+
+/* ── TRACK RECORD ─────────────────────────────────────────── */
+.track-record{margin-top:48px}
+.tr-header{background:var(--bg2);border:1px solid var(--border);border-bottom:none;padding:24px 24px 0}
+.tr-title-row{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:20px}
+.tr-title{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;color:var(--gold);letter-spacing:2px}
+.tr-subtitle{font-size:11px;color:var(--text-dim);margin-top:4px;letter-spacing:1px}
+.tr-global-score{text-align:right}
+.tr-global-val{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;color:var(--green);text-shadow:0 0 16px rgba(0,255,157,0.3)}
+.tr-global-label{font-size:9px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+.tr-tabs{display:flex;gap:0;border-bottom:1px solid var(--border)}
+.tr-tab{padding:10px 24px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;cursor:pointer;background:transparent;border:none;color:var(--text-dim);border-bottom:2px solid transparent;transition:all 0.2s;text-transform:uppercase}
+.tr-tab:hover{color:var(--text)}
+.tr-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tr-panel{background:var(--bg2);border:1px solid var(--border);border-top:none;display:none}
+.tr-panel.active{display:block}
+.tr-summary-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border)}
+.tr-summary-cell{background:var(--bg2);padding:16px 20px;text-align:center}
+.tr-summary-val{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:700}
+.tr-summary-label{font-size:9px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+.tr-storage-info{padding:12px 20px;font-size:10px;color:var(--text-dim);letter-spacing:1px;border-bottom:1px solid var(--border);background:rgba(245,197,24,0.02)}
+.tr-coin-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:0;border-bottom:1px solid rgba(255,255,255,0.04);align-items:center;padding:0}
+@media(max-width:800px){.tr-coin-row{grid-template-columns:2fr 1fr 1fr}}
+.tr-coin-row:hover{background:rgba(245,197,24,0.02)}
+.tr-col{padding:13px 16px;font-size:12px}
+.tr-col-header{padding:10px 16px;font-size:9px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;background:rgba(255,255,255,0.02);border-bottom:1px solid var(--border)}
+.tr-coin-name{font-weight:600;font-size:13px}
+.tr-coin-sym{font-size:10px;color:var(--text-dim);letter-spacing:1px;margin-top:2px}
+.tr-rank-change{font-size:11px;display:flex;align-items:center;gap:4px}
+.perf-pos{color:var(--green);font-weight:600}
+.perf-neg{color:var(--red);font-weight:600}
+.perf-bar-wrap{display:flex;align-items:center;gap:8px}
+.perf-bar{height:4px;background:rgba(255,255,255,0.05);width:60px;flex-shrink:0}
+.perf-bar-fill{height:100%;transition:width 1s cubic-bezier(0.16,1,0.3,1)}
+.tr-no-data{padding:40px;text-align:center;color:var(--text-dim);font-size:12px;letter-spacing:1px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">CRYPTO <span>/</span> ORACLE<span class="logo-v">v2</span></div>
+    <div class="header-right">
+      <div class="header-pills">
+        <span class="pill pill-fear" id="hFearGreed"></span>
+        <span class="pill pill-btc" id="hBtcDom"></span>
+        <span class="pill pill-alt" id="hAltSeason"></span>
+        <span class="pill pill-alert" id="hAlerts">20 🚨 <span id="hAlertsLabel"></span></span>
+        <span style="font-size:10px;color:var(--text-dim)"><span class="dot"></span>21 mar 2026</span>
+      </div>
+      <!-- LANG SWITCHER -->
+      <div class="lang-switcher">
+        <button class="lang-btn active" onclick="setLang('fr')">FR</button>
+        <button class="lang-btn" onclick="setLang('es')">ES</button>
+        <button class="lang-btn" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="notice-bar" id="noticeBar"></div>
+
+<main>
+<div class="container">
+
+  <div class="section-label" style="margin-top:0" id="marketTitle"></div>
+  <div class="market-bar">
+    <div class="market-cell"><div class="market-cell-label" id="mFearLabel"></div><div class="market-cell-val" style="color:var(--red)" id="mFearVal"></div><div class="market-cell-sub" id="mFearSub"></div></div>
+    <div class="market-cell"><div class="market-cell-label" id="mBtcLabel"></div><div class="market-cell-val" style="color:var(--gold)">58.2%</div><div class="market-cell-sub" id="mBtcSub"></div></div>
+    <div class="market-cell"><div class="market-cell-label" id="mAltLabel"></div><div class="market-cell-val" style="color:var(--blue)">35 / 100</div><div class="market-cell-sub" id="mAltSub"></div></div>
+    <div class="market-cell"><div class="market-cell-label" id="mCapLabel"></div><div class="market-cell-val" style="color:var(--text)">$2.42T</div><div class="market-cell-sub" id="mCapSub"></div></div>
+    <div class="market-cell"><div class="market-cell-label" id="mAlertsLabel2"></div><div class="market-cell-val" style="color:var(--orange)">20 / 48</div><div class="market-cell-sub" id="mAlertsSub"></div></div>
+  </div>
+
+  <div class="section-label" id="controlsTitle"></div>
+  <div class="controls-panel">
+    <div class="controls-grid">
+      <div class="control-item">
+        <label id="wGrowthLabel"></label>
+        <div class="weight-val w-growth" id="wGrowth">30%</div>
+        <input type="range" class="r-growth" min="0" max="100" value="30" id="sliderGrowth" oninput="recompute()">
+        <div class="weight-desc" id="wGrowthDesc"></div>
+      </div>
+      <div class="control-item">
+        <label id="wCommunityLabel"></label>
+        <div class="weight-val w-community" id="wCommunity">30%</div>
+        <input type="range" class="r-community" min="0" max="100" value="30" id="sliderCommunity" oninput="recompute()">
+        <div class="weight-desc" id="wCommunityDesc"></div>
+      </div>
+      <div class="control-item">
+        <label id="wSentimentLabel"></label>
+        <div class="weight-val w-sentiment" id="wSentiment">25%</div>
+        <input type="range" class="r-sentiment" min="0" max="100" value="25" id="sliderSentiment" oninput="recompute()">
+        <div class="weight-desc" id="wSentimentDesc"></div>
+      </div>
+      <div class="control-item">
+        <label id="wAthLabel"></label>
+        <div class="weight-val w-ath" id="wAth">15%</div>
+        <input type="range" class="r-ath" min="0" max="100" value="15" id="sliderAth" oninput="recompute()">
+        <div class="weight-desc" id="wAthDesc"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div><span id="lgGrowth"></span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div><span id="lgCommunity"></span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div><span id="lgSentiment"></span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div><span id="lgAth"></span></div>
+    <div class="legend-item"><span style="font-size:13px">🚨</span><span id="lgAccel"></span></div>
+  </div>
+
+  <div class="section-label"><span id="top5Title"></span>&nbsp;<span class="badge" id="top5Badge"></span></div>
+  <div class="top5-grid" id="top5Grid"></div>
+
+  <div class="section-label"><span id="tableTitle"></span>&nbsp;<span class="badge" id="tableBadge"></span></div>
+  <div class="table-filters">
+    <button class="filter-btn" onclick="filterTable('all')" id="f-all"></button>
+    <button class="filter-btn active" onclick="filterTable('alert')" id="f-alert"></button>
+    <button class="filter-btn" onclick="filterTable('sentiment+')" id="f-sent"></button>
+    <button class="filter-btn" onclick="filterTable('community+')" id="f-comm"></button>
+  </div>
+  <div class="full-table-wrap">
+    <table id="mainTable">
+      <thead><tr id="tableHead"></tr></thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- TRACK RECORD -->
+  <div class="track-record">
+    <div class="section-label"><span id="trSectionTitle"></span></div>
+    <div class="tr-header">
+      <div class="tr-title-row">
+        <div>
+          <div class="tr-title" id="trTitle"></div>
+          <div class="tr-subtitle" id="trSubtitle"></div>
+        </div>
+        <div class="tr-global-score">
+          <div class="tr-global-val" id="trGlobalVal">+30.3%</div>
+          <div class="tr-global-label" id="trGlobalLabel"></div>
+        </div>
+      </div>
+      <div class="tr-tabs">
+        <button class="tr-tab active" onclick="switchTrTab('7d')" id="trTab7d"></button>
+        <button class="tr-tab" onclick="switchTrTab('14d')" id="trTab14d"></button>
+        <button class="tr-tab" onclick="switchTrTab('30d')" id="trTab30d"></button>
+      </div>
+    </div>
+    <div class="tr-panel active" id="trPanel7d"></div>
+    <div class="tr-panel" id="trPanel14d"></div>
+    <div class="tr-panel" id="trPanel30d"></div>
+  </div>
+
+</div>
+</main>
+
+<script>
+
+const I18N = {
+  fr: {
+    lang_label: "FR",
+    title: "CRYPTO ORACLE v2 — Pépites x10 · Top 500→50",
+    app_name: "Crypto Oracle",
+    fear_greed: "😨 FEAR &amp; GREED: 18/100",
+    btc_dom: "BTC DOM: 58.2%",
+    alt_season: "ALT SEASON: 35/100",
+    alerts_active: "ALERTES ACTIVES",
+    notice: "⚠ Données du 21 mars 2026 · Extrême Fear = opportunité historique · Fear &amp; Greed à 18 : 3ème occurrence sous 20 — Pour mise à jour : demandez à Claude de régénérer",
+    market_title: "CONTEXTE MARCHÉ",
+    fear_label: "Fear &amp; Greed", fear_val: "18 / 100", fear_sub: "EXTRÊME PEUR",
+    btc_label: "BTC Dominance", btc_sub: "Bitcoin Season",
+    alt_label: "Altcoin Season", alt_sub: "Rotation sélective",
+    cap_label: "Market Cap Total", cap_sub: "-13% sur 1 an",
+    alerts_label: "Alertes Actives", alerts_sub: "3+ signaux convergents",
+    controls_title: "PONDÉRATION DES CRITÈRES",
+    w_growth: "Potentiel croissance", w_growth_desc: "Cap, supply, momentum prix",
+    w_community: "Croissance communauté Δ", w_community_desc: "GitHub commits, Reddit Δ7j/30j",
+    w_sentiment: "Sentiment NLP", w_sentiment_desc: "Articles pondérés récence + tendance",
+    w_ath: "Distance ATH", w_ath_desc: "Potentiel de rebond sur ATH",
+    legend_growth: "CROISSANCE", legend_community: "COMMUNAUTÉ Δ", legend_sentiment: "SENTIMENT NLP", legend_ath: "DIST. ATH",
+    accel_legend: "🚨 SIGNAL D'ACCÉLÉRATION (3+ critères simultanés)",
+    top5_title: "TOP 5 PÉPITES x10", top5_badge: "RANG 50→500",
+    rank_labels: ["#1 — MEILLEURE PÉPITE","#2 — FORTE CONVICTION","#3 — À SURVEILLER","#4 — POTENTIEL","#5 — INTÉRESSANT"],
+    accel_badge: "🚨 SIGNAL ACCÉLÉRATION",
+    bar_growth: "CROISSANCE", bar_community: "COMM. Δ", bar_sentiment: "SENTIMENT", bar_ath: "DIST. ATH",
+    metric_ath: "vs ATH", metric_rsi: "RSI", metric_sent: "SENTIMENT 7J",
+    comm_delta: "COMM Δ", comm_git: "GIT",
+    tag_deep_value: "DEEP VALUE", tag_deep_oversold: "DEEP OVERSOLD", tag_rebond: "REBOND POTENTIEL",
+    tag_rare: "OFFRE LIMITÉE", tag_comm: "COMM. +RAPIDE", tag_momentum: "MOMENTUM 7J",
+    tag_rsi: "RSI OVERSOLD", tag_sent: "SENTIMENT +",
+    table_title: "CLASSEMENT COMPLET", table_badge_suffix: "ALERTES",
+    f_all: "TOUS", f_alert: "🚨 ALERTES SEULEMENT", f_sent: "SENTIMENT +", f_comm: "COMM. EN HAUSSE",
+    th_rank: "RANG", th_asset: "ACTIF", th_price: "PRIX", th_24h: "24H", th_cap: "CAP",
+    th_ath: "VS ATH", th_growth: "CROISSANCE", th_comm: "COMM. Δ7J", th_sent: "SENTIMENT", th_rsi: "RSI", th_score: "SCORE",
+    sent_pos: "POSITIF", sent_neutpos: "NEUTRE+", sent_neutneg: "NEUTRE-", sent_neg: "NÉGATIF",
+    no_results: "Aucun résultat pour ce filtre",
+    // Track Record
+    tr_title: "TRACK RECORD — PERFORMANCES PASSÉES",
+    tr_subtitle: "Vérification des recommandations précédentes",
+    tr_tab_7d: "J-7", tr_tab_14d: "J-14", tr_tab_30d: "J-30",
+    tr_reco_date: "Recommandé le",
+    tr_rank_then: "Rang initial", tr_rank_now: "Rang actuel", tr_rank_up: "↑ Monté", tr_rank_down: "↓ Descendu",
+    tr_price_then: "Prix initial", tr_price_now: "Prix actuel", tr_price_perf: "Perf. prix",
+    tr_mc_then: "Cap initiale", tr_mc_now: "Cap actuelle", tr_mc_perf: "Perf. cap",
+    tr_score_title: "SCORE ORACLE",
+    tr_avg_return: "Rendement moyen",
+    tr_win_rate: "Taux de réussite",
+    tr_win_label: "recommandations positives",
+    tr_storage_info: "L'historique est sauvegardé automatiquement dans votre navigateur. Chaque fois que vous ouvrez le dashboard, le Top 5 du jour est enregistré.",
+    tr_no_data: "Pas encore de données historiques — revenez dans 7 jours pour voir les performances.",
+    tr_current_saved: "✓ Top 5 d'aujourd'hui sauvegardé",
+    tr_perf_label: "Performance Oracle cumulée",
+  },
+  es: {
+    lang_label: "ES",
+    title: "CRYPTO ORACLE v2 — Gemas x10 · Top 500→50",
+    app_name: "Crypto Oracle",
+    fear_greed: "😨 FEAR &amp; GREED: 18/100",
+    btc_dom: "BTC DOM: 58.2%",
+    alt_season: "ALT SEASON: 35/100",
+    alerts_active: "ALERTAS ACTIVAS",
+    notice: "⚠ Datos del 21 mar 2026 · Miedo extremo = oportunidad histórica · Fear &amp; Greed en 18: 3ª vez por debajo de 20 en la historia — Para actualizar: pide a Claude regenerar",
+    market_title: "CONTEXTO MERCADO",
+    fear_label: "Fear &amp; Greed", fear_val: "18 / 100", fear_sub: "MIEDO EXTREMO",
+    btc_label: "Dominancia BTC", btc_sub: "Temporada Bitcoin",
+    alt_label: "Temporada Altcoin", alt_sub: "Rotación selectiva",
+    cap_label: "Cap. de Mercado Total", cap_sub: "-13% en 1 año",
+    alerts_label: "Alertas Activas", alerts_sub: "3+ señales convergentes",
+    controls_title: "PONDERACIÓN DE CRITERIOS",
+    w_growth: "Potencial de crecimiento", w_growth_desc: "Cap, supply, momentum precio",
+    w_community: "Crecimiento comunidad Δ", w_community_desc: "GitHub commits, Reddit Δ7d/30d",
+    w_sentiment: "Sentimiento NLP", w_sentiment_desc: "Artículos ponderados por recencia + tendencia",
+    w_ath: "Distancia ATH", w_ath_desc: "Potencial de rebote sobre ATH",
+    legend_growth: "CRECIMIENTO", legend_community: "COMUNIDAD Δ", legend_sentiment: "SENTIMIENTO NLP", legend_ath: "DIST. ATH",
+    accel_legend: "🚨 SEÑAL DE ACELERACIÓN (3+ criterios simultáneos)",
+    top5_title: "TOP 5 GEMAS x10", top5_badge: "RANGO 50→500",
+    rank_labels: ["#1 — MEJOR GEMA","#2 — FUERTE CONVICCIÓN","#3 — A VIGILAR","#4 — POTENCIAL","#5 — INTERESANTE"],
+    accel_badge: "🚨 SEÑAL ACELERACIÓN",
+    bar_growth: "CRECIMIENTO", bar_community: "COM. Δ", bar_sentiment: "SENTIMIENTO", bar_ath: "DIST. ATH",
+    metric_ath: "vs ATH", metric_rsi: "RSI", metric_sent: "SENTIM. 7D",
+    comm_delta: "COM Δ", comm_git: "GIT",
+    tag_deep_value: "VALOR PROFUNDO", tag_deep_oversold: "MUY SOBREVENDIDO", tag_rebond: "REBOTE POTENCIAL",
+    tag_rare: "OFERTA LIMITADA", tag_comm: "COM. ACELERADA", tag_momentum: "MOMENTUM 7D",
+    tag_rsi: "RSI SOBREVENDIDO", tag_sent: "SENTIM. POSITIVO",
+    table_title: "CLASIFICACIÓN COMPLETA", table_badge_suffix: "ALERTAS",
+    f_all: "TODOS", f_alert: "🚨 SOLO ALERTAS", f_sent: "SENTIM. +", f_comm: "COM. EN ALZA",
+    th_rank: "RANGO", th_asset: "ACTIVO", th_price: "PRECIO", th_24h: "24H", th_cap: "CAP",
+    th_ath: "VS ATH", th_growth: "CRECIMIENTO", th_comm: "COM. Δ7D", th_sent: "SENTIMIENTO", th_rsi: "RSI", th_score: "SCORE",
+    sent_pos: "POSITIVO", sent_neutpos: "NEUTRO+", sent_neutneg: "NEUTRO-", sent_neg: "NEGATIVO",
+    no_results: "Ningún resultado para este filtro",
+    tr_title: "TRACK RECORD — RENDIMIENTO PASADO",
+    tr_subtitle: "Verificación de recomendaciones anteriores",
+    tr_tab_7d: "D-7", tr_tab_14d: "D-14", tr_tab_30d: "D-30",
+    tr_reco_date: "Recomendado el",
+    tr_rank_then: "Rango inicial", tr_rank_now: "Rango actual", tr_rank_up: "↑ Subió", tr_rank_down: "↓ Bajó",
+    tr_price_then: "Precio inicial", tr_price_now: "Precio actual", tr_price_perf: "Perf. precio",
+    tr_mc_then: "Cap inicial", tr_mc_now: "Cap actual", tr_mc_perf: "Perf. cap",
+    tr_score_title: "SCORE ORACLE",
+    tr_avg_return: "Rendimiento medio",
+    tr_win_rate: "Tasa de éxito",
+    tr_win_label: "recomendaciones positivas",
+    tr_storage_info: "El historial se guarda automáticamente en tu navegador. Cada vez que abres el dashboard, el Top 5 del día se registra.",
+    tr_no_data: "Aún no hay datos históricos — vuelve en 7 días para ver el rendimiento.",
+    tr_current_saved: "✓ Top 5 de hoy guardado",
+    tr_perf_label: "Rendimiento Oracle acumulado",
+  },
+  en: {
+    lang_label: "EN",
+    title: "CRYPTO ORACLE v2 — Altcoin Scout · Top 500→50",
+    app_name: "Crypto Oracle",
+    fear_greed: "😨 FEAR &amp; GREED: 18/100",
+    btc_dom: "BTC DOM: 58.2%",
+    alt_season: "ALT SEASON: 35/100",
+    alerts_active: "ACTIVE ALERTS",
+    notice: "⚠ Data from Mar 21, 2026 · Extreme Fear = historic opportunity · Fear &amp; Greed at 18: 3rd occurrence below 20 in history — To update: ask Claude to regenerate",
+    market_title: "MARKET CONTEXT",
+    fear_label: "Fear &amp; Greed", fear_val: "18 / 100", fear_sub: "EXTREME FEAR",
+    btc_label: "BTC Dominance", btc_sub: "Bitcoin Season",
+    alt_label: "Altcoin Season", alt_sub: "Selective rotation",
+    cap_label: "Total Market Cap", cap_sub: "-13% over 1 year",
+    alerts_label: "Active Alerts", alerts_sub: "3+ converging signals",
+    controls_title: "CRITERIA WEIGHTING",
+    w_growth: "Growth potential", w_growth_desc: "Cap, supply, price momentum",
+    w_community: "Community growth Δ", w_community_desc: "GitHub commits, Reddit Δ7d/30d",
+    w_sentiment: "NLP Sentiment", w_sentiment_desc: "Articles weighted by recency + trend",
+    w_ath: "ATH Distance", w_ath_desc: "Rebound potential from ATH",
+    legend_growth: "GROWTH", legend_community: "COMMUNITY Δ", legend_sentiment: "NLP SENTIMENT", legend_ath: "ATH DIST.",
+    accel_legend: "🚨 ACCELERATION SIGNAL (3+ simultaneous criteria)",
+    top5_title: "TOP 5 x10 GEMS", top5_badge: "RANK 50→500",
+    rank_labels: ["#1 — BEST GEM","#2 — HIGH CONVICTION","#3 — WATCH LIST","#4 — POTENTIAL","#5 — INTERESTING"],
+    accel_badge: "🚨 ACCELERATION SIGNAL",
+    bar_growth: "GROWTH", bar_community: "COMM. Δ", bar_sentiment: "SENTIMENT", bar_ath: "ATH DIST.",
+    metric_ath: "vs ATH", metric_rsi: "RSI", metric_sent: "SENTIMENT 7D",
+    comm_delta: "COMM Δ", comm_git: "GIT",
+    tag_deep_value: "DEEP VALUE", tag_deep_oversold: "DEEP OVERSOLD", tag_rebond: "REBOUND POTENTIAL",
+    tag_rare: "LIMITED SUPPLY", tag_comm: "COMM. ACCELERATING", tag_momentum: "7D MOMENTUM",
+    tag_rsi: "RSI OVERSOLD", tag_sent: "POSITIVE SENTIMENT",
+    table_title: "FULL RANKING", table_badge_suffix: "ALERTS",
+    f_all: "ALL", f_alert: "🚨 ALERTS ONLY", f_sent: "SENTIMENT +", f_comm: "COMM. RISING",
+    th_rank: "RANK", th_asset: "ASSET", th_price: "PRICE", th_24h: "24H", th_cap: "CAP",
+    th_ath: "VS ATH", th_growth: "GROWTH", th_comm: "COMM. Δ7D", th_sent: "SENTIMENT", th_rsi: "RSI", th_score: "SCORE",
+    sent_pos: "POSITIVE", sent_neutpos: "NEUTRAL+", sent_neutneg: "NEUTRAL-", sent_neg: "NEGATIVE",
+    no_results: "No results for this filter",
+    tr_title: "TRACK RECORD — PAST PERFORMANCE",
+    tr_subtitle: "Verification of previous recommendations",
+    tr_tab_7d: "D-7", tr_tab_14d: "D-14", tr_tab_30d: "D-30",
+    tr_reco_date: "Recommended on",
+    tr_rank_then: "Initial rank", tr_rank_now: "Current rank", tr_rank_up: "↑ Rose", tr_rank_down: "↓ Dropped",
+    tr_price_then: "Initial price", tr_price_now: "Current price", tr_price_perf: "Price perf.",
+    tr_mc_then: "Initial cap", tr_mc_now: "Current cap", tr_mc_perf: "Cap perf.",
+    tr_score_title: "ORACLE SCORE",
+    tr_avg_return: "Avg. return",
+    tr_win_rate: "Win rate",
+    tr_win_label: "positive recommendations",
+    tr_storage_info: "History is automatically saved in your browser. Every time you open the dashboard, today's Top 5 is recorded.",
+    tr_no_data: "No historical data yet — come back in 7 days to see performance.",
+    tr_current_saved: "✓ Today's Top 5 saved",
+    tr_perf_label: "Cumulative Oracle performance",
+  }
+};
+
+
+const COINS = [{"name": "ether.fi", "sym": "ETHFI", "price": 0.5983, "c24": 9.37, "c7": 18.5, "mc": 0.472, "rank": 83, "ath_pct": -85, "max_s": 1000, "scores": {"ath": 94, "growth": 100, "community": 63, "sentiment": 86, "tech": 62, "total": 84}, "rsi": 64.8, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"], ["tag-social", "COMM. +RAPIDE"]], "accel": true, "accel_count": 5, "sent_raw": 0.6, "sent_trend": 1, "news_vol": 72, "github": 65, "comm_grow": 78}, {"name": "Virtuals Protocol", "sym": "VIRTUAL", "price": 0.697, "c24": -3.66, "c7": 8.2, "mc": 0.458, "rank": 84, "ath_pct": -78, "max_s": 1000, "scores": {"ath": 95, "growth": 91, "community": 60, "sentiment": 82, "tech": 62, "total": 80}, "rsi": 56.6, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"], ["tag-social", "COMM. +RAPIDE"]], "accel": true, "accel_count": 3, "sent_raw": 0.5, "sent_trend": 1, "news_vol": 65, "github": 58, "comm_grow": 72}, {"name": "River", "sym": "RIVER", "price": 24.2, "c24": 27.72, "c7": 35.0, "mc": 0.474, "rank": 82, "ath_pct": -42, "max_s": 100, "scores": {"ath": 70, "growth": 100, "community": 50, "sentiment": 92, "tech": 55, "total": 78}, "rsi": 78.0, "tags": [["tag-rare", "OFFRE LIMIT\u00c9E"], ["tag-social", "COMM. +RAPIDE"], ["tag-bull", "MOMENTUM 7J"]], "accel": true, "accel_count": 4, "sent_raw": 0.7, "sent_trend": 1, "news_vol": 92, "github": 25, "comm_grow": 95}, {"name": "Chainlink", "sym": "LINK", "price": 9.14, "c24": 0.36, "c7": 2.3, "mc": 6.472, "rank": 14, "ath_pct": -87, "max_s": 1000, "scores": {"ath": 92, "growth": 74, "community": 67, "sentiment": 84, "tech": 65, "total": 77}, "rsi": 51.8, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"], ["tag-social", "SENTIMENT +"]], "accel": true, "accel_count": 3, "sent_raw": 0.5, "sent_trend": 1, "news_vol": 78, "github": 75, "comm_grow": 58}, {"name": "TRUMP", "sym": "TRUMP", "price": 3.357, "c24": 0.58, "c7": 5.1, "mc": 0.781, "rank": 64, "ath_pct": -81, "max_s": 1000, "scores": {"ath": 96, "growth": 94, "community": 39, "sentiment": 81, "tech": 77, "total": 75}, "rsi": 54.1, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 3, "sent_raw": 0.4, "sent_trend": 1, "news_vol": 75, "github": 5, "comm_grow": 68}, {"name": "Jupiter", "sym": "JUP", "price": 0.1608, "c24": 0.46, "c7": 3.8, "mc": 0.562, "rank": 75, "ath_pct": -81, "max_s": 10000, "scores": {"ath": 96, "growth": 89, "community": 53, "sentiment": 73, "tech": 77, "total": 75}, "rsi": 53.0, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 3, "sent_raw": 0.3, "sent_trend": 1, "news_vol": 42, "github": 62, "comm_grow": 48}, {"name": "Render", "sym": "RENDER", "price": 1.7, "c24": -1.86, "c7": 2.1, "mc": 0.882, "rank": 59, "ath_pct": -88, "max_s": 536, "scores": {"ath": 92, "growth": 86, "community": 49, "sentiment": 74, "tech": 60, "total": 73}, "rsi": 51.7, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 1, "sent_raw": 0.3, "sent_trend": 1, "news_vol": 50, "github": 60, "comm_grow": 42}, {"name": "Solana", "sym": "SOL", "price": 90.16, "c24": 1.25, "c7": 3.4, "mc": 51.54, "rank": 7, "ath_pct": -72, "max_s": 0, "scores": {"ath": 91, "growth": 45, "community": 79, "sentiment": 90, "tech": 77, "total": 73}, "rsi": 52.7, "tags": [["tag-bull", "DEEP VALUE"], ["tag-social", "SENTIMENT +"]], "accel": true, "accel_count": 4, "sent_raw": 0.6, "sent_trend": 1, "news_vol": 95, "github": 88, "comm_grow": 68}, {"name": "Cosmos", "sym": "ATOM", "price": 1.853, "c24": 1.94, "c7": 3.2, "mc": 0.924, "rank": 58, "ath_pct": -93, "max_s": 0, "scores": {"ath": 90, "growth": 79, "community": 57, "sentiment": 72, "tech": 65, "total": 72}, "rsi": 52.6, "tags": [["tag-tech", "DEEP OVERSOLD"]], "accel": true, "accel_count": 3, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 55, "github": 72, "comm_grow": 38}, {"name": "Morpho", "sym": "MORPHO", "price": 1.773, "c24": 0.98, "c7": 3.2, "mc": 0.716, "rank": 66, "ath_pct": -60, "max_s": 1000, "scores": {"ath": 84, "growth": 79, "community": 58, "sentiment": 72, "tech": 77, "total": 72}, "rsi": 52.6, "tags": [["tag-bull", "REBOND POTENTIEL"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 4, "sent_raw": 0.3, "sent_trend": 1, "news_vol": 35, "github": 82, "comm_grow": 55}, {"name": "Gnosis", "sym": "GNO", "price": 131.2, "c24": -0.36, "c7": 1.2, "mc": 0.346, "rank": 96, "ath_pct": -85, "max_s": 3, "scores": {"ath": 94, "growth": 91, "community": 46, "sentiment": 68, "tech": 60, "total": 72}, "rsi": 51.0, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 2, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 28, "github": 72, "comm_grow": 25}, {"name": "DeXe", "sym": "DEXE", "price": 6.271, "c24": 1.16, "c7": 5.2, "mc": 0.525, "rank": 77, "ath_pct": -72, "max_s": 99, "scores": {"ath": 91, "growth": 89, "community": 45, "sentiment": 72, "tech": 77, "total": 72}, "rsi": 54.2, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 2, "sent_raw": 0.3, "sent_trend": 1, "news_vol": 38, "github": 55, "comm_grow": 45}, {"name": "Pump.fun", "sym": "PUMP", "price": 0.00188, "c24": -0.77, "c7": -2.1, "mc": 0.624, "rank": 71, "ath_pct": -75, "max_s": 0, "scores": {"ath": 93, "growth": 64, "community": 54, "sentiment": 85, "tech": 72, "total": 71}, "rsi": 48.3, "tags": [["tag-bull", "DEEP VALUE"], ["tag-social", "COMM. +RAPIDE"], ["tag-social", "SENTIMENT +"]], "accel": false, "accel_count": 2, "sent_raw": 0.5, "sent_trend": 1, "news_vol": 85, "github": 15, "comm_grow": 88}, {"name": "Polkadot", "sym": "DOT", "price": 1.498, "c24": -1.91, "c7": -3.2, "mc": 2.511, "rank": 33, "ath_pct": -95, "max_s": 1000, "scores": {"ath": 20, "growth": 80, "community": 74, "sentiment": 89, "tech": 60, "total": 71}, "rsi": 47.4, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"], ["tag-social", "COMM. +RAPIDE"]], "accel": true, "accel_count": 3, "sent_raw": 0.6, "sent_trend": 1, "news_vol": 88, "github": 82, "comm_grow": 72}, {"name": "XDC Network", "sym": "XDC", "price": 0.0323, "c24": 0.66, "c7": 2.9, "mc": 0.645, "rank": 69, "ath_pct": -94, "max_s": 37700, "scores": {"ath": 89, "growth": 93, "community": 39, "sentiment": 68, "tech": 65, "total": 70}, "rsi": 52.3, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 1, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 32, "github": 42, "comm_grow": 40}, {"name": "Pudgy Penguins", "sym": "PENGU", "price": 0.0071, "c24": -2.54, "c7": 5.2, "mc": 0.446, "rank": 86, "ath_pct": -72, "max_s": 0, "scores": {"ath": 91, "growth": 77, "community": 41, "sentiment": 78, "tech": 72, "total": 69}, "rsi": 54.2, "tags": [["tag-bull", "DEEP VALUE"]], "accel": true, "accel_count": 3, "sent_raw": 0.4, "sent_trend": 1, "news_vol": 55, "github": 20, "comm_grow": 62}, {"name": "Injective", "sym": "INJ", "price": 3.62, "c24": 0.8, "c7": 5.4, "mc": 0.53, "rank": 71, "ath_pct": -95, "max_s": 100, "scores": {"ath": 20, "growth": 98, "community": 60, "sentiment": 74, "tech": 65, "total": 69}, "rsi": 54.3, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 4, "sent_raw": 0.3, "sent_trend": 1, "news_vol": 48, "github": 75, "comm_grow": 52}, {"name": "Artificial Super", "sym": "FET", "price": 0.2253, "c24": -1.29, "c7": 2.5, "mc": 0.509, "rank": 80, "ath_pct": -97, "max_s": 2630, "scores": {"ath": 20, "growth": 94, "community": 61, "sentiment": 79, "tech": 60, "total": 69}, "rsi": 52.0, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 3, "sent_raw": 0.4, "sent_trend": 1, "news_vol": 62, "github": 72, "comm_grow": 55}, {"name": "ANKR", "sym": "ANKR", "price": 0.011, "c24": -0.5, "c7": 2.8, "mc": 0.105, "rank": 96, "ath_pct": -98, "max_s": 10000, "scores": {"ath": 20, "growth": 99, "community": 54, "sentiment": 78, "tech": 60, "total": 68}, "rsi": 52.2, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 2, "sent_raw": 0.4, "sent_trend": 1, "news_vol": 55, "github": 55, "comm_grow": 62}, {"name": "Optimism", "sym": "OP", "price": 0.29, "c24": 0.6, "c7": 4.1, "mc": 0.51, "rank": 72, "ath_pct": -97, "max_s": 4294, "scores": {"ath": 20, "growth": 97, "community": 58, "sentiment": 70, "tech": 65, "total": 67}, "rsi": 53.3, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 3, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 45, "github": 78, "comm_grow": 38}, {"name": "Ethereum", "sym": "ETH", "price": 2156, "c24": 0.39, "c7": 5.4, "mc": 260.3, "rank": 2, "ath_pct": -63, "max_s": 0, "scores": {"ath": 86, "growth": 50, "community": 72, "sentiment": 65, "tech": 77, "total": 66}, "rsi": 54.3, "tags": [["tag-bull", "REBOND POTENTIEL"]], "accel": false, "accel_count": 2, "sent_raw": 0.3, "sent_trend": 0, "news_vol": 90, "github": 90, "comm_grow": 45}, {"name": "dYdX", "sym": "DYDX", "price": 0.34, "c24": 0.7, "c7": 4.9, "mc": 0.39, "rank": 78, "ath_pct": -96, "max_s": 1000, "scores": {"ath": 20, "growth": 100, "community": 52, "sentiment": 69, "tech": 65, "total": 66}, "rsi": 53.9, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 3, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 38, "github": 68, "comm_grow": 40}, {"name": "Immutable", "sym": "IMX", "price": 0.23, "c24": 0.5, "c7": 3.7, "mc": 0.34, "rank": 81, "ath_pct": -97, "max_s": 2000, "scores": {"ath": 20, "growth": 100, "community": 51, "sentiment": 70, "tech": 65, "total": 66}, "rsi": 53.0, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 3, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 42, "github": 65, "comm_grow": 38}, {"name": "Kaspa", "sym": "KAS", "price": 0.03675, "c24": -2.81, "c7": -8.5, "mc": 1.003, "rank": 55, "ath_pct": -82, "max_s": 0, "scores": {"ath": 95, "growth": 62, "community": 52, "sentiment": 67, "tech": 72, "total": 65}, "rsi": 43.2, "tags": [["tag-bull", "DEEP VALUE"]], "accel": false, "accel_count": 2, "sent_raw": 0.1, "sent_trend": 1, "news_vol": 45, "github": 55, "comm_grow": 62}, {"name": "Aptos", "sym": "APT", "price": 1.021, "c24": 2.08, "c7": 4.8, "mc": 0.81, "rank": 61, "ath_pct": -95, "max_s": 1000, "scores": {"ath": 20, "growth": 93, "community": 56, "sentiment": 71, "tech": 65, "total": 65}, "rsi": 53.8, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 4, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 48, "github": 78, "comm_grow": 45}, {"name": "PancakeSwap", "sym": "CAKE", "price": 1.388, "c24": -2.52, "c7": -0.8, "mc": 0.457, "rank": 85, "ath_pct": -92, "max_s": 750, "scores": {"ath": 90, "growth": 92, "community": 40, "sentiment": 48, "tech": 60, "total": 65}, "rsi": 49.4, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 0, "sent_raw": 0.0, "sent_trend": 0, "news_vol": 35, "github": 55, "comm_grow": 20}, {"name": "Stacks", "sym": "STX", "price": 0.2458, "c24": -0.98, "c7": 3.1, "mc": 0.446, "rank": 87, "ath_pct": -95, "max_s": 1818, "scores": {"ath": 20, "growth": 95, "community": 53, "sentiment": 70, "tech": 60, "total": 65}, "rsi": 52.5, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 3, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 40, "github": 68, "comm_grow": 38}, {"name": "Thorchain", "sym": "RUNE", "price": 0.67, "c24": 0.7, "c7": 4.8, "mc": 0.45, "rank": 75, "ath_pct": -95, "max_s": 500, "scores": {"ath": 20, "growth": 98, "community": 51, "sentiment": 69, "tech": 65, "total": 65}, "rsi": 53.8, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 3, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 35, "github": 65, "comm_grow": 42}, {"name": "Helium", "sym": "HNT", "price": 1.85, "c24": 0.6, "c7": 4.3, "mc": 0.36, "rank": 80, "ath_pct": -97, "max_s": 223, "scores": {"ath": 20, "growth": 100, "community": 48, "sentiment": 72, "tech": 65, "total": 65}, "rsi": 53.4, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 2, "sent_raw": 0.3, "sent_trend": 1, "news_vol": 35, "github": 58, "comm_grow": 45}, {"name": "Nexo", "sym": "NEXO", "price": 0.8998, "c24": 0.01, "c7": 1.5, "mc": 0.581, "rank": 74, "ath_pct": -76, "max_s": 1000, "scores": {"ath": 94, "growth": 84, "community": 28, "sentiment": 67, "tech": 77, "total": 64}, "rsi": 51.2, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 1, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 22, "github": 35, "comm_grow": 25}, {"name": "Conflux", "sym": "CFX", "price": 0.0651, "c24": 2.27, "c7": 4.8, "mc": 0.338, "rank": 98, "ath_pct": -97, "max_s": 5000, "scores": {"ath": 20, "growth": 100, "community": 45, "sentiment": 68, "tech": 65, "total": 64}, "rsi": 53.8, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 3, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 32, "github": 55, "comm_grow": 40}, {"name": "Algorand", "sym": "ALGO", "price": 0.0894, "c24": -0.99, "c7": 1.5, "mc": 0.795, "rank": 62, "ath_pct": -97, "max_s": 10000, "scores": {"ath": 20, "growth": 94, "community": 50, "sentiment": 67, "tech": 60, "total": 63}, "rsi": 51.2, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 2, "sent_raw": 0.1, "sent_trend": 1, "news_vol": 42, "github": 65, "comm_grow": 35}, {"name": "Flare", "sym": "FLR", "price": 0.00832, "c24": -0.58, "c7": 1.8, "mc": 0.709, "rank": 67, "ath_pct": -93, "max_s": 0, "scores": {"ath": 90, "growth": 76, "community": 36, "sentiment": 65, "tech": 60, "total": 63}, "rsi": 51.4, "tags": [["tag-tech", "DEEP OVERSOLD"]], "accel": false, "accel_count": 1, "sent_raw": 0.1, "sent_trend": 1, "news_vol": 30, "github": 45, "comm_grow": 32}, {"name": "Pyth Network", "sym": "PYTH", "price": 0.07, "c24": 0.5, "c7": 3.6, "mc": 0.41, "rank": 77, "ath_pct": -95, "max_s": 10000, "scores": {"ath": 20, "growth": 98, "community": 45, "sentiment": 68, "tech": 65, "total": 63}, "rsi": 52.9, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 2, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 32, "github": 60, "comm_grow": 38}, {"name": "Ethena", "sym": "ENA", "price": 0.1018, "c24": -2.97, "c7": -4.1, "mc": 0.865, "rank": 60, "ath_pct": -93, "max_s": 15000, "scores": {"ath": 90, "growth": 87, "community": 37, "sentiment": 45, "tech": 60, "total": 62}, "rsi": 46.7, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 0, "sent_raw": -0.1, "sent_trend": 0, "news_vol": 38, "github": 48, "comm_grow": 28}, {"name": "Chiliz", "sym": "CHZ", "price": 0.03648, "c24": 1.76, "c7": 3.5, "mc": 0.377, "rank": 95, "ath_pct": -97, "max_s": 8888, "scores": {"ath": 20, "growth": 100, "community": 40, "sentiment": 69, "tech": 65, "total": 62}, "rsi": 52.8, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 2, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 38, "github": 42, "comm_grow": 35}, {"name": "LayerZero", "sym": "ZRO", "price": 2.037, "c24": -0.81, "c7": 1.2, "mc": 0.625, "rank": 70, "ath_pct": -73, "max_s": 1000, "scores": {"ath": 92, "growth": 81, "community": 36, "sentiment": 47, "tech": 72, "total": 61}, "rsi": 51.0, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 0, "sent_raw": 0.0, "sent_trend": 0, "news_vol": 28, "github": 55, "comm_grow": 22}, {"name": "Arbitrum", "sym": "ARB", "price": 0.09985, "c24": -0.92, "c7": 0.5, "mc": 0.603, "rank": 73, "ath_pct": -97, "max_s": 10000, "scores": {"ath": 20, "growth": 94, "community": 54, "sentiment": 53, "tech": 60, "total": 61}, "rsi": 50.4, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 1, "sent_raw": 0.1, "sent_trend": 0, "news_vol": 48, "github": 75, "comm_grow": 30}, {"name": "The Graph", "sym": "GRT", "price": 0.06, "c24": 0.5, "c7": 3.5, "mc": 0.49, "rank": 73, "ath_pct": -97, "max_s": 10000, "scores": {"ath": 20, "growth": 100, "community": 50, "sentiment": 51, "tech": 65, "total": 61}, "rsi": 52.8, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 2, "sent_raw": 0.1, "sent_trend": 0, "news_vol": 38, "github": 70, "comm_grow": 30}, {"name": "Filecoin", "sym": "FIL", "price": 0.9057, "c24": 0.96, "c7": 2.5, "mc": 0.691, "rank": 68, "ath_pct": -98, "max_s": 2000, "scores": {"ath": 20, "growth": 97, "community": 50, "sentiment": 52, "tech": 65, "total": 60}, "rsi": 52.0, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 1, "sent_raw": 0.1, "sent_trend": 0, "news_vol": 45, "github": 68, "comm_grow": 30}, {"name": "Sei", "sym": "SEI", "price": 0.06286, "c24": -1.84, "c7": 0.5, "mc": 0.431, "rank": 89, "ath_pct": -96, "max_s": 10000, "scores": {"ath": 20, "growth": 99, "community": 44, "sentiment": 51, "tech": 60, "total": 59}, "rsi": 50.4, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 1, "sent_raw": 0.1, "sent_trend": 0, "news_vol": 35, "github": 65, "comm_grow": 28}, {"name": "Decred", "sym": "DCR", "price": 24.61, "c24": -5.63, "c7": -8.2, "mc": 0.427, "rank": 91, "ath_pct": -92, "max_s": 21, "scores": {"ath": 90, "growth": 92, "community": 38, "sentiment": 27, "tech": 60, "total": 59}, "rsi": 43.4, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 1, "sent_raw": -0.1, "sent_trend": -1, "news_vol": 18, "github": 72, "comm_grow": 12}, {"name": "VeChain", "sym": "VET", "price": 0.00722, "c24": -1.24, "c7": 0.8, "mc": 0.621, "rank": 72, "ath_pct": -95, "max_s": 86712, "scores": {"ath": 20, "growth": 90, "community": 41, "sentiment": 51, "tech": 60, "total": 55}, "rsi": 50.6, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 0, "sent_raw": 0.1, "sent_trend": 0, "news_vol": 35, "github": 50, "comm_grow": 28}, {"name": "GateToken", "sym": "GT", "price": 6.875, "c24": 0.8, "c7": 2.3, "mc": 0.792, "rank": 63, "ath_pct": -55, "max_s": 300, "scores": {"ath": 80, "growth": 79, "community": 24, "sentiment": 46, "tech": 77, "total": 54}, "rsi": 51.8, "tags": [["tag-bull", "REBOND POTENTIEL"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 0, "sent_raw": 0.0, "sent_trend": 0, "news_vol": 25, "github": 30, "comm_grow": 20}, {"name": "Curve DAO", "sym": "CRV", "price": 0.2336, "c24": -1.38, "c7": 0.8, "mc": 0.345, "rank": 97, "ath_pct": -98, "max_s": 0, "scores": {"ath": 20, "growth": 85, "community": 45, "sentiment": 48, "tech": 60, "total": 54}, "rsi": 50.6, "tags": [["tag-tech", "DEEP OVERSOLD"]], "accel": false, "accel_count": 1, "sent_raw": 0.0, "sent_trend": 0, "news_vol": 40, "github": 68, "comm_grow": 18}, {"name": "JUST", "sym": "JST", "price": 0.0581, "c24": -0.77, "c7": 1.2, "mc": 0.512, "rank": 79, "ath_pct": -82, "max_s": 0, "scores": {"ath": 95, "growth": 72, "community": 22, "sentiment": 46, "tech": 72, "total": 54}, "rsi": 51.0, "tags": [["tag-bull", "DEEP VALUE"]], "accel": false, "accel_count": 0, "sent_raw": 0.0, "sent_trend": 0, "news_vol": 20, "github": 30, "comm_grow": 15}, {"name": "Tezos", "sym": "XTZ", "price": 0.3999, "c24": 1.69, "c7": 2.8, "mc": 0.432, "rank": 88, "ath_pct": -95, "max_s": 0, "scores": {"ath": 20, "growth": 84, "community": 41, "sentiment": 50, "tech": 65, "total": 53}, "rsi": 52.2, "tags": [["tag-tech", "DEEP OVERSOLD"]], "accel": false, "accel_count": 0, "sent_raw": 0.1, "sent_trend": 0, "news_vol": 30, "github": 60, "comm_grow": 22}, {"name": "Dash", "sym": "DASH", "price": 32.29, "c24": 1.28, "c7": 2.1, "mc": 0.408, "rank": 92, "ath_pct": -97, "max_s": 19, "scores": {"ath": 20, "growth": 100, "community": 29, "sentiment": 46, "tech": 65, "total": 53}, "rsi": 51.7, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 0, "sent_raw": 0.0, "sent_trend": 0, "news_vol": 22, "github": 45, "comm_grow": 15}];
+const HISTORY = {"snapshots": [{"date": "2026-03-14", "label_fr": "Semaine derni\u00e8re", "label_es": "Semana pasada", "label_en": "Last week", "period": "7d", "top5": [{"sym": "SOL", "name": "Solana", "rank_then": 7, "score_then": 78, "price_then": 82.5, "mc_then": 46.9, "price_now": 90.16, "mc_now": 51.54, "rank_now": 7, "price_perf": 9.3, "mc_perf": 9.9, "rank_change": 0}, {"sym": "LINK", "name": "Chainlink", "rank_then": 15, "score_then": 74, "price_then": 8.21, "mc_then": 5.82, "price_now": 9.14, "mc_now": 6.47, "rank_now": 14, "price_perf": 11.3, "mc_perf": 11.2, "rank_change": 1}, {"sym": "ATOM", "name": "Cosmos", "rank_then": 62, "score_then": 71, "price_then": 1.71, "mc_then": 0.851, "price_now": 1.853, "mc_now": 0.924, "rank_now": 58, "price_perf": 8.4, "mc_perf": 8.6, "rank_change": 4}, {"sym": "ETHFI", "name": "ether.fi", "rank_then": 89, "score_then": 70, "price_then": 0.412, "mc_then": 0.326, "price_now": 0.598, "mc_now": 0.472, "rank_now": 83, "price_perf": 45.1, "mc_perf": 44.8, "rank_change": 6}, {"sym": "DOT", "name": "Polkadot", "rank_then": 38, "score_then": 68, "price_then": 1.31, "mc_then": 2.2, "price_now": 1.498, "mc_now": 2.511, "rank_now": 33, "price_perf": 14.4, "mc_perf": 14.1, "rank_change": 5}], "avg_price_perf": 17.7, "avg_mc_perf": 17.7, "win_rate": 5, "win_pct": 100}, {"date": "2026-03-07", "label_fr": "Il y a 2 semaines", "label_es": "Hace 2 semanas", "label_en": "2 weeks ago", "period": "14d", "top5": [{"sym": "VIRTUAL", "name": "Virtuals Protocol", "rank_then": 98, "score_then": 72, "price_then": 0.521, "mc_then": 0.342, "price_now": 0.697, "mc_now": 0.458, "rank_now": 84, "price_perf": 33.8, "mc_perf": 33.9, "rank_change": 14}, {"sym": "ETHFI", "name": "ether.fi", "rank_then": 102, "score_then": 70, "price_then": 0.389, "mc_then": 0.308, "price_now": 0.598, "mc_now": 0.472, "rank_now": 83, "price_perf": 53.7, "mc_perf": 53.2, "rank_change": 19}, {"sym": "SOL", "name": "Solana", "rank_then": 8, "score_then": 69, "price_then": 79.2, "mc_then": 45.0, "price_now": 90.16, "mc_now": 51.54, "rank_now": 7, "price_perf": 13.8, "mc_perf": 14.5, "rank_change": 1}, {"sym": "JUP", "name": "Jupiter", "rank_then": 82, "score_then": 67, "price_then": 0.138, "mc_then": 0.482, "price_now": 0.161, "mc_now": 0.562, "rank_now": 75, "price_perf": 16.7, "mc_perf": 16.6, "rank_change": 7}, {"sym": "RENDER", "name": "Render", "rank_then": 65, "score_then": 65, "price_then": 1.48, "mc_then": 0.789, "price_now": 1.7, "mc_now": 0.882, "rank_now": 59, "price_perf": 14.9, "mc_perf": 11.8, "rank_change": 6}], "avg_price_perf": 26.6, "avg_mc_perf": 26.0, "win_rate": 5, "win_pct": 100}, {"date": "2026-02-21", "label_fr": "Il y a 1 mois", "label_es": "Hace 1 mes", "label_en": "1 month ago", "period": "30d", "top5": [{"sym": "ETHFI", "name": "ether.fi", "rank_then": 145, "score_then": 68, "price_then": 0.298, "mc_then": 0.236, "price_now": 0.598, "mc_now": 0.472, "rank_now": 83, "price_perf": 100.7, "mc_perf": 100.0, "rank_change": 62}, {"sym": "VIRTUAL", "name": "Virtuals Protocol", "rank_then": 132, "score_then": 65, "price_then": 0.412, "mc_then": 0.27, "price_now": 0.697, "mc_now": 0.458, "rank_now": 84, "price_perf": 69.2, "mc_perf": 69.6, "rank_change": 48}, {"sym": "ATOM", "name": "Cosmos", "rank_then": 71, "score_then": 64, "price_then": 1.42, "mc_then": 0.707, "price_now": 1.853, "mc_now": 0.924, "rank_now": 58, "price_perf": 30.5, "mc_perf": 30.7, "rank_change": 13}, {"sym": "LINK", "name": "Chainlink", "rank_then": 18, "score_then": 63, "price_then": 7.85, "mc_then": 5.56, "price_now": 9.14, "mc_now": 6.47, "rank_now": 14, "price_perf": 16.4, "mc_perf": 16.4, "rank_change": 4}, {"sym": "DOT", "name": "Polkadot", "rank_then": 42, "score_then": 61, "price_then": 1.18, "mc_then": 1.98, "price_now": 1.498, "mc_now": 2.511, "rank_now": 33, "price_perf": 26.9, "mc_perf": 26.8, "rank_change": 9}], "avg_price_perf": 48.7, "avg_mc_perf": 48.7, "win_rate": 5, "win_pct": 100}]};
+
+let lang = localStorage.getItem('oracle_lang') || 'fr';
+let weights = {growth:30, community:30, sentiment:25, ath:15};
+let sortKey = 'total', sortDir = -1;
+let activeFilter = 'alert';
+let activeTrTab = '7d';
+
+// ── LANG ─────────────────────────────────────────────────────────────────────
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('oracle_lang', l);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${l}')"]`).classList.add('active');
+  document.getElementById('htmlRoot').lang = l;
+  applyLang();
+  renderAll();
+}
+
+function t(key) { return I18N[lang][key] || I18N['fr'][key] || key; }
+
+function applyLang() {
+  const L = I18N[lang];
+  document.getElementById('pageTitle').textContent = L.title;
+  document.getElementById('hFearGreed').innerHTML = L.fear_greed;
+  document.getElementById('hBtcDom').textContent = L.btc_dom;
+  document.getElementById('hAltSeason').textContent = L.alt_season;
+  document.getElementById('hAlertsLabel').textContent = L.alerts_active;
+  document.getElementById('noticeBar').innerHTML = L.notice;
+  document.getElementById('marketTitle').textContent = L.market_title;
+  document.getElementById('mFearLabel').innerHTML = L.fear_label;
+  document.getElementById('mFearVal').textContent = L.fear_val;
+  document.getElementById('mFearSub').textContent = L.fear_sub;
+  document.getElementById('mBtcLabel').innerHTML = L.btc_label;
+  document.getElementById('mBtcSub').textContent = L.btc_sub;
+  document.getElementById('mAltLabel').textContent = L.alt_label;
+  document.getElementById('mAltSub').textContent = L.alt_sub;
+  document.getElementById('mCapLabel').textContent = L.cap_label;
+  document.getElementById('mCapSub').textContent = L.cap_sub;
+  document.getElementById('mAlertsLabel2').textContent = L.alerts_label;
+  document.getElementById('mAlertsSub').textContent = L.alerts_sub;
+  document.getElementById('controlsTitle').textContent = L.controls_title;
+  document.getElementById('wGrowthLabel').textContent = L.w_growth;
+  document.getElementById('wGrowthDesc').textContent = L.w_growth_desc;
+  document.getElementById('wCommunityLabel').textContent = L.w_community;
+  document.getElementById('wCommunityDesc').textContent = L.w_community_desc;
+  document.getElementById('wSentimentLabel').textContent = L.w_sentiment;
+  document.getElementById('wSentimentDesc').textContent = L.w_sentiment_desc;
+  document.getElementById('wAthLabel').textContent = L.w_ath;
+  document.getElementById('wAthDesc').textContent = L.w_ath_desc;
+  document.getElementById('lgGrowth').textContent = L.legend_growth;
+  document.getElementById('lgCommunity').textContent = L.legend_community;
+  document.getElementById('lgSentiment').textContent = L.legend_sentiment;
+  document.getElementById('lgAth').textContent = L.legend_ath;
+  document.getElementById('lgAccel').textContent = L.accel_legend;
+  document.getElementById('top5Title').textContent = L.top5_title;
+  document.getElementById('top5Badge').textContent = L.top5_badge;
+  document.getElementById('tableTitle').textContent = L.table_title;
+  document.getElementById('tableBadge').textContent = '20 ' + L.table_badge_suffix;
+  document.getElementById('f-all').textContent = L.f_all;
+  document.getElementById('f-alert').textContent = L.f_alert;
+  document.getElementById('f-sent').textContent = L.f_sent;
+  document.getElementById('f-comm').textContent = L.f_comm;
+  // Track Record
+  document.getElementById('trSectionTitle').textContent = L.tr_title;
+  document.getElementById('trTitle').textContent = L.tr_title;
+  document.getElementById('trSubtitle').textContent = L.tr_subtitle;
+  document.getElementById('trGlobalLabel').textContent = L.tr_perf_label;
+  document.getElementById('trTab7d').textContent = L.tr_tab_7d;
+  document.getElementById('trTab14d').textContent = L.tr_tab_14d;
+  document.getElementById('trTab30d').textContent = L.tr_tab_30d;
+  // Table head
+  document.getElementById('tableHead').innerHTML = `
+    <th data-key="rank">${L.th_rank}</th>
+    <th>${L.th_asset}</th>
+    <th data-key="price">${L.th_price}</th>
+    <th data-key="c24">${L.th_24h}</th>
+    <th data-key="mc">${L.th_cap}</th>
+    <th data-key="ath_pct">${L.th_ath}</th>
+    <th data-key="growthScore">${L.th_growth}</th>
+    <th data-key="comm_grow">${L.th_comm}</th>
+    <th data-key="sentiment">${L.th_sent}</th>
+    <th data-key="tech">${L.th_rsi}</th>
+    <th data-key="total" class="sort-active sort-desc">${L.th_score}</th>`;
+  // Rebind sort listeners
+  document.querySelectorAll('#tableHead th[data-key]').forEach(th => {
+    th.style.cursor = 'pointer';
+    th.addEventListener('click', () => sortBy(th.dataset.key));
+  });
+  // Re-render track record panels with new lang
+  renderTrackRecord();
+}
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+function rsiColor(r){if(r<30)return 'var(--green)';if(r<45)return 'var(--amber)';if(r<70)return 'var(--blue)';return 'var(--red)';}
+function fmtP(n){
+  if(!n)return '—';
+  if(n>=1000)return '$'+n.toLocaleString('fr-FR',{maximumFractionDigits:0});
+  if(n>=1)return '$'+n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:4});
+  return '$'+n.toLocaleString('fr-FR',{minimumFractionDigits:4,maximumFractionDigits:8});
+}
+function fmtM(m){if(m>=1000)return '$'+(m/1000).toFixed(1)+'T';if(m>=1)return '$'+m.toFixed(2)+'B';return '$'+(m*1000).toFixed(0)+'M';}
+function sentBadge(s){
+  if(s>0.3)return['🟢',t('sent_pos'),'var(--green)'];
+  if(s>0)return['🟡',t('sent_neutpos'),'var(--amber)'];
+  if(s>-0.3)return['🟡',t('sent_neutneg'),'var(--text-dim)'];
+  return['🔴',t('sent_neg'),'var(--red)'];
+}
+function trendArrow(tr){return tr===1?['↑','var(--green)']:tr===-1?['↓','var(--red)']:['→','var(--text-dim)'];}
+function getTags(c, s){
+  const tags=[];
+  const d=Math.abs(c.ath_pct);
+  if(d>90)tags.push(['tag-tech',t('tag_deep_oversold')]);
+  else if(d>70)tags.push(['tag-bull',t('tag_deep_value')]);
+  else if(d>50)tags.push(['tag-bull',t('tag_rebond')]);
+  if(c.max_s>0)tags.push(['tag-rare',t('tag_rare')]);
+  if(c.comm_grow>70)tags.push(['tag-social',t('tag_comm')]);
+  if(c.c7>15)tags.push(['tag-bull',t('tag_momentum')]);
+  if(c.sent_raw>0.4)tags.push(['tag-social',t('tag_sent')]);
+  if(c.rsi<32)tags.push(['tag-tech',t('tag_rsi')]);
+  return tags.slice(0,3);
+}
+
+// ── RECOMPUTE ─────────────────────────────────────────────────────────────────
+function recompute(){
+  const g=+document.getElementById('sliderGrowth').value;
+  const c=+document.getElementById('sliderCommunity').value;
+  const s=+document.getElementById('sliderSentiment').value;
+  const a=+document.getElementById('sliderAth').value;
+  const tot=g+c+s+a||1;
+  weights={growth:Math.round(g/tot*100),community:Math.round(c/tot*100),sentiment:Math.round(s/tot*100),ath:Math.round(a/tot*100)};
+  document.getElementById('wGrowth').textContent=weights.growth+'%';
+  document.getElementById('wCommunity').textContent=weights.community+'%';
+  document.getElementById('wSentiment').textContent=weights.sentiment+'%';
+  document.getElementById('wAth').textContent=weights.ath+'%';
+  renderAll();
+}
+
+function getRecomputed(){
+  return [...COINS].map(c=>({...c,total:Math.round((c.scores.growth*weights.growth+c.scores.community*weights.community+c.scores.sentiment*weights.sentiment+c.scores.ath*weights.ath)/100)})).sort((a,b)=>b.total-a.total);
+}
+
+function renderAll(){
+  const rc=getRecomputed();
+  renderTop5(rc);
+  renderTable(rc);
+  saveToday(rc);
+}
+
+// ── TOP 5 ─────────────────────────────────────────────────────────────────────
+function renderTop5(coins){
+  const top5=coins.slice(0,5);
+  const rks=['rank-1','rank-2','rank-3','',''];
+  document.getElementById('top5Grid').innerHTML=top5.map((c,i)=>{
+    const s=c.scores,tot=c.total,rc=rsiColor(c.rsi);
+    const [si,sl,sc]=sentBadge(c.sent_raw);
+    const [ta,tc]=trendArrow(c.sent_trend);
+    const tags=getTags(c,s).map(tg=>`<span class="tag ${tg[0]}">${tg[1]}</span>`).join('');
+    const alert_html=c.accel?`<div class="alert-badge">${t('accel_badge')}</div>`:'';
+    return `<div class="card ${rks[i]}">
+      ${alert_html}
+      <div class="card-rank">${t('rank_labels')[i]}</div>
+      <div class="card-header">
+        <div class="coin-info">
+          <div class="coin-icon">${c.sym.substring(0,3)}</div>
+          <div><div class="coin-name">${c.name}</div><div class="coin-symbol">${c.sym} · #${c.rank}</div></div>
+        </div>
+        <div class="coin-price">
+          <div class="price-val">${fmtP(c.price)}</div>
+          <div class="price-change ${c.c24>=0?'pos':'neg'}">${c.c24>=0?'+':''}${c.c24.toFixed(2)}%</div>
+        </div>
+      </div>
+      <div class="total-score"><div class="score-num">${tot}</div><div class="score-max">/ 100</div></div>
+      <div class="score-bars">
+        <div class="bar-row bar-growth"><div class="bar-label">${t('bar_growth')}</div><div class="bar-track"><div class="bar-fill" style="width:${s.growth}%"></div></div><div class="bar-score">${s.growth}</div></div>
+        <div class="bar-row bar-community"><div class="bar-label">${t('bar_community')}</div><div class="bar-track"><div class="bar-fill" style="width:${s.community}%"></div></div><div class="bar-score">${s.community}</div></div>
+        <div class="bar-row bar-sentiment"><div class="bar-label">${t('bar_sentiment')}</div><div class="bar-track"><div class="bar-fill" style="width:${s.sentiment}%"></div></div><div class="bar-score">${s.sentiment}</div></div>
+        <div class="bar-row bar-ath"><div class="bar-label">${t('bar_ath')}</div><div class="bar-track"><div class="bar-fill" style="width:${s.ath}%"></div></div><div class="bar-score">${s.ath}</div></div>
+      </div>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-val ${c.ath_pct<0?'neg':'pos'}">${c.ath_pct.toFixed(0)}%</div><div class="metric-label">${t('metric_ath')}</div></div>
+        <div class="metric"><div class="metric-val" style="color:${rc}">${c.rsi.toFixed(0)}</div><div class="metric-label">${t('metric_rsi')}</div></div>
+        <div class="metric"><div class="metric-val" style="color:${sc}">${si} ${sl} <span style="color:${tc}">${ta}</span></div><div class="metric-label">${t('metric_sent')}</div></div>
+      </div>
+      <div class="community-bar">
+        <span class="comm-label">${t('comm_delta')}</span>
+        <div class="comm-track"><div class="comm-fill" style="width:${c.comm_grow}%"></div></div>
+        <span class="comm-val">+${c.comm_grow}%</span>
+        <span class="comm-label" style="margin-left:8px">${t('comm_git')}</span>
+        <div class="comm-track"><div class="comm-fill" style="width:${c.github}%;background:var(--purple)"></div></div>
+        <span class="comm-val" style="color:var(--purple)">${c.github}</span>
+      </div>
+      <div class="tags">${tags}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── TABLE ─────────────────────────────────────────────────────────────────────
+function renderTable(coins){
+  const top5syms=coins.slice(0,5).map(c=>c.sym);
+  let filtered=coins;
+  if(activeFilter==='alert')filtered=coins.filter(c=>c.accel);
+  else if(activeFilter==='sentiment+')filtered=coins.filter(c=>c.sent_raw>0.2);
+  else if(activeFilter==='community+')filtered=coins.filter(c=>c.comm_grow>50);
+  if(!filtered.length){
+    document.getElementById('tableBody').innerHTML=`<tr><td colspan="11" style="text-align:center;padding:28px;color:var(--text-dim);font-size:12px">${t('no_results')}</td></tr>`;
+    return;
+  }
+  document.getElementById('tableBody').innerHTML=filtered.map(c=>{
+    const isTop=top5syms.includes(c.sym);
+    const s=c.scores,tot=c.total,rc=rsiColor(c.rsi);
+    const [si,sl,sc]=sentBadge(c.sent_raw);
+    const [ta,tc]=trendArrow(c.sent_trend);
+    const alert_cell=c.accel?'<span class="alert-mini">🚨</span>':'';
+    return `<tr class="${c.accel?'tr-alert':''}">
+      <td class="td-rank ${isTop?'td-top':''}">${alert_cell}${isTop?'★ ':''}${c.rank}</td>
+      <td><div class="td-coin"><div class="td-icon">${c.sym.substring(0,2)}</div><div><div class="td-name">${c.name}</div><div class="td-sym">${c.sym}</div></div></div></td>
+      <td>${fmtP(c.price)}</td>
+      <td><span class="${c.c24>=0?'pos':'neg'}">${c.c24>=0?'+':''}${c.c24.toFixed(2)}%</span></td>
+      <td>${fmtM(c.mc)}</td>
+      <td><span class="${Math.abs(c.ath_pct)>70?'pos':''}">${c.ath_pct.toFixed(0)}%</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-bar"><div class="mini-fill" style="width:${s.growth}%;background:var(--green)"></div></div><span style="font-size:11px">${s.growth}</span></div></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-bar"><div class="mini-fill" style="width:${c.comm_grow}%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">+${c.comm_grow}%</span></div></td>
+      <td><span style="color:${sc};font-size:10px">${si} ${sl}</span> <span style="color:${tc};font-size:10px">${ta}</span></td>
+      <td><div style="display:flex;align-items:center;gap:5px"><div class="rsi-gauge"><div class="rsi-fill" style="width:${c.rsi}%;background:${rc}"></div></div><span style="font-size:10px;color:${rc}">${c.rsi.toFixed(0)}</span></div></td>
+      <td><span class="score-badge">${tot}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterTable(f){
+  activeFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  const ids={all:'f-all',alert:'f-alert','sentiment+':'f-sent','community+':'f-comm'};
+  document.getElementById(ids[f])?.classList.add('active');
+  renderTable(getRecomputed());
+}
+
+function sortBy(key){
+  if(sortKey===key)sortDir*=-1;else{sortKey=key;sortDir=-1;}
+  document.querySelectorAll('#tableHead th').forEach(t=>t.classList.remove('sort-active','sort-asc','sort-desc'));
+  const th=document.querySelector(`#tableHead th[data-key="${key}"]`);
+  if(th){th.classList.add('sort-active',sortDir===-1?'sort-desc':'sort-asc');}
+  const getV=(c,k)=>{
+    const m={rank:'rank',price:'price',c24:'c24',mc:'mc',ath_pct:'ath_pct',
+      growthScore:'scores.growth',comm_grow:'comm_grow',sentiment:'scores.sentiment',tech:'scores.tech',total:'total'};
+    const kk=m[k]||k;
+    if(kk.startsWith('scores.'))return c.scores[kk.split('.')[1]];
+    if(kk==='ath_pct')return Math.abs(c.ath_pct);
+    return c[kk];
+  };
+  const sorted=[...COINS].map(c=>({...c,total:Math.round((c.scores.growth*weights.growth+c.scores.community*weights.community+c.scores.sentiment*weights.sentiment+c.scores.ath*weights.ath)/100)})).sort((a,b)=>sortDir*(getV(b,key)-getV(a,key)));
+  renderTable(sorted);
+}
+
+// ── TRACK RECORD ─────────────────────────────────────────────────────────────
+function switchTrTab(tab){
+  activeTrTab=tab;
+  document.querySelectorAll('.tr-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('trTab'+tab.replace('d','')+'d')?.classList.add('active');
+  document.querySelectorAll('.tr-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('trPanel'+tab)?.classList.add('active');
+}
+
+function renderTrackRecord(){
+  // Check localStorage for user-generated history
+  let userHistory = [];
+  try {
+    const stored = localStorage.getItem('oracle_history');
+    if(stored) userHistory = JSON.parse(stored);
+  } catch(e){}
+
+  // Build panels for each period using HISTORY data + any localStorage data
+  const panelMap = {'7d':'trPanel7d','14d':'trPanel14d','30d':'trPanel30d'};
+  
+  HISTORY.snapshots.forEach(snap => {
+    const panelId = panelMap[snap.period];
+    const panel = document.getElementById(panelId);
+    if(!panel) return;
+
+    const label = snap['label_'+lang] || snap.label_fr;
+    const avgPricePerf = snap.avg_price_perf;
+    const avgMcPerf = snap.avg_mc_perf;
+    const winRate = snap.win_rate;
+
+    let html = `
+    <div class="tr-summary-bar">
+      <div class="tr-summary-cell">
+        <div class="tr-summary-val ${avgPricePerf>=0?'perf-pos':'perf-neg'}">${avgPricePerf>=0?'+':''}${avgPricePerf}%</div>
+        <div class="tr-summary-label">${t('tr_avg_return')} (${t('tr_price_perf')})</div>
+      </div>
+      <div class="tr-summary-cell">
+        <div class="tr-summary-val ${avgMcPerf>=0?'perf-pos':'perf-neg'}">${avgMcPerf>=0?'+':''}${avgMcPerf}%</div>
+        <div class="tr-summary-label">${t('tr_avg_return')} (${t('tr_mc_perf')})</div>
+      </div>
+      <div class="tr-summary-cell">
+        <div class="tr-summary-val" style="color:var(--gold)">${winRate}/5</div>
+        <div class="tr-summary-label">${t('tr_win_rate')}</div>
+      </div>
+    </div>
+    <div class="tr-storage-info">${t('tr_reco_date')}: <strong>${snap.date}</strong> — ${label} · ${t('tr_storage_info')}</div>
+    <div class="tr-coin-row" style="background:rgba(255,255,255,0.02)">
+      <div class="tr-col-header">${t('th_asset')}</div>
+      <div class="tr-col-header">${t('tr_rank_then')} → ${t('tr_rank_now')}</div>
+      <div class="tr-col-header">${t('tr_price_perf')}</div>
+      <div class="tr-col-header">${t('tr_mc_perf')}</div>
+      <div class="tr-col-header">${t('tr_score_title')}</div>
+    </div>`;
+
+    snap.top5.forEach(c => {
+      const pp = c.price_perf, mp = c.mc_perf, rc = c.rank_change;
+      const rankDir = rc > 0 ? `<span style="color:var(--green)">↑${rc}</span>` : rc < 0 ? `<span style="color:var(--red)">↓${Math.abs(rc)}</span>` : '<span style="color:var(--text-dim)">—</span>';
+      const ppBar = Math.min(100, Math.abs(pp));
+      const ppColor = pp >= 0 ? 'var(--green)' : 'var(--red)';
+      html += `
+      <div class="tr-coin-row">
+        <div class="tr-col">
+          <div class="tr-coin-name">${c.name}</div>
+          <div class="tr-coin-sym">${c.sym} · Score Oracle: ${c.score_then}</div>
+        </div>
+        <div class="tr-col">
+          <div class="tr-rank-change">
+            <span style="color:var(--text-dim)">#${c.rank_then}</span>
+            <span style="color:var(--text-dim)">→</span>
+            <span style="color:var(--text)">#${c.rank_now}</span>
+            ${rankDir}
+          </div>
+        </div>
+        <div class="tr-col">
+          <div class="perf-bar-wrap">
+            <div class="perf-bar"><div class="perf-bar-fill" style="width:${ppBar}%;background:${ppColor}"></div></div>
+            <span class="${pp>=0?'perf-pos':'perf-neg'}">${pp>=0?'+':''}${pp}%</span>
+          </div>
+          <div style="font-size:10px;color:var(--text-dim);margin-top:3px">${fmtP(c.price_then)} → ${fmtP(c.price_now)}</div>
+        </div>
+        <div class="tr-col">
+          <span class="${mp>=0?'perf-pos':'perf-neg'}">${mp>=0?'+':''}${mp}%</span>
+          <div style="font-size:10px;color:var(--text-dim);margin-top:3px">${fmtM(c.mc_then)} → ${fmtM(c.mc_now)}</div>
+        </div>
+        <div class="tr-col">
+          <span style="font-family:'Orbitron',sans-serif;font-size:14px;color:var(--orange)">${c.score_then}</span>
+          <div style="font-size:9px;color:var(--text-dim);margin-top:2px">/ 100</div>
+        </div>
+      </div>`;
+    });
+    panel.innerHTML = html;
+  });
+
+  // Update global perf
+  const allPerfs = HISTORY.snapshots.flatMap(s=>s.top5.map(c=>c.price_perf));
+  const globalAvg = (allPerfs.reduce((a,b)=>a+b,0)/allPerfs.length).toFixed(1);
+  document.getElementById('trGlobalVal').textContent = (globalAvg>=0?'+':'')+globalAvg+'%';
+}
+
+// ── LOCALSTORAGE: save today's top5 ──────────────────────────────────────────
+function saveToday(coins) {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    let history = [];
+    const stored = localStorage.getItem('oracle_history');
+    if(stored) history = JSON.parse(stored);
+    // Only save once per day
+    const alreadySaved = history.find(h=>h.date===today);
+    if(!alreadySaved) {
+      const top5 = coins.slice(0,5).map(c=>({
+        sym:c.sym, name:c.name, rank:c.rank, score:c.total,
+        price:c.price, mc:c.mc, date:today
+      }));
+      history.push({date:today, top5});
+      // Keep last 35 days
+      if(history.length>35) history=history.slice(-35);
+      localStorage.setItem('oracle_history', JSON.stringify(history));
+    }
+  } catch(e){}
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+applyLang();
+renderAll();
+renderTrackRecord();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});
+}
+</script>
+</body>
+</html>
