@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide d'installation — Crypto Oracle v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=IBM+Plex+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#f5c518;--orange:#ff6b35;--green:#00ff9d;--blue:#00c8ff;--bg:#060810;--bg2:#0c1020;--border:rgba(245,197,24,0.15);--text:#e0e8f0;--text-dim:#6b7a8d}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Mono',monospace;padding:32px 24px;max-width:860px;margin:0 auto;line-height:1.7}
+h1{font-family:'Orbitron',sans-serif;color:var(--orange);font-size:22px;letter-spacing:3px;margin-bottom:6px}
+.subtitle{color:var(--text-dim);font-size:12px;letter-spacing:2px;margin-bottom:40px}
+h2{font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:3px;color:var(--gold);margin:36px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.step{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--orange);padding:18px 20px;margin-bottom:12px}
+.step-num{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--orange);letter-spacing:2px;margin-bottom:6px}
+.step-title{font-size:14px;font-weight:600;margin-bottom:8px}
+.step-desc{font-size:12px;color:var(--text-dim);line-height:1.7}
+.step-desc strong{color:var(--text)}
+code{background:rgba(245,197,24,0.08);border:1px solid rgba(245,197,24,0.2);padding:2px 8px;font-size:11px;color:var(--gold)}
+.files-list{background:rgba(0,200,255,0.04);border:1px solid rgba(0,200,255,0.2);padding:16px 20px;margin:16px 0}
+.files-list .file{display:flex;align-items:center;gap:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.files-list .file:last-child{border-bottom:none}
+.file-name{color:var(--blue);font-size:12px;width:160px;flex-shrink:0}
+.file-desc{font-size:11px;color:var(--text-dim)}
+.note{background:rgba(255,107,53,0.05);border:1px solid rgba(255,107,53,0.2);padding:12px 16px;font-size:11px;color:var(--text-dim);margin:12px 0}
+.note strong{color:var(--orange)}
+.pill{display:inline-block;padding:3px 10px;font-size:10px;letter-spacing:1px;border-radius:0;font-weight:600}
+.pill-free{background:rgba(0,255,157,0.08);border:1px solid rgba(0,255,157,0.3);color:var(--green)}
+.pill-nocode{background:rgba(0,200,255,0.08);border:1px solid rgba(0,200,255,0.3);color:var(--blue)}
+.url-box{background:rgba(245,197,24,0.05);border:1px solid rgba(245,197,24,0.25);padding:10px 14px;font-size:11px;color:var(--gold);margin:8px 0;word-break:break-all}
+.trigger-schema{background:var(--bg2);border:1px solid var(--border);padding:16px;margin:12px 0;font-size:11px}
+.trigger-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.trigger-row:last-child{border-bottom:none}
+.trigger-icon{font-size:16px;width:24px;text-align:center}
+.trigger-label{color:var(--text-dim)}
+.trigger-val{color:var(--text);margin-left:auto}
+</style>
+</head>
+<body>
+
+<h1>GUIDE D'INSTALLATION</h1>
+<div class="subtitle">CRYPTO ORACLE v2 — APP MOBILE + ALERTES EMAIL · <span class="pill pill-free">GRATUIT</span> <span class="pill pill-nocode">SANS CODE</span></div>
+
+<!-- FILES -->
+<h2>FICHIERS À DÉPLOYER</h2>
+<div class="files-list">
+  <div class="file"><span class="file-name">index.html</span><span class="file-desc">Le dashboard principal (renommé depuis crypto-oracle-v2.html)</span></div>
+  <div class="file"><span class="file-name">manifest.json</span><span class="file-desc">Manifeste PWA — permet l'installation sur écran d'accueil</span></div>
+  <div class="file"><span class="file-name">sw.js</span><span class="file-desc">Service Worker — permet l'utilisation hors connexion</span></div>
+  <div class="file"><span class="file-name">icon-192.svg</span><span class="file-desc">Icône de l'app sur l'écran d'accueil</span></div>
+  <div class="file"><span class="file-name">alerts.json</span><span class="file-desc">Flux d'alertes — surveillé par Make.com pour les emails</span></div>
+</div>
+<div class="note"><strong>Important :</strong> Tous ces fichiers doivent être dans le même dossier avant le déploiement.</div>
+
+<!-- PARTIE 1 : NETLIFY -->
+<h2>PARTIE 1 — APP MOBILE VIA NETLIFY DROP</h2>
+
+<div class="step">
+  <div class="step-num">ÉTAPE 01</div>
+  <div class="step-title">Déposer les fichiers sur Netlify</div>
+  <div class="step-desc">
+    Allez sur <strong>netlify.com/drop</strong> (pas besoin de compte).<br>
+    Créez un dossier sur votre bureau, mettez-y les 5 fichiers ci-dessus.<br>
+    <strong>Glissez-déposez le dossier entier</strong> dans la zone bleue de Netlify Drop.<br>
+    En 10 secondes vous obtenez une URL du type :
+  </div>
+  <div class="url-box">https://wonderful-name-12345.netlify.app</div>
+  <div class="step-desc">Notez cette URL, vous en aurez besoin pour Make.com.</div>
+</div>
+
+<div class="step">
+  <div class="step-num">ÉTAPE 02 — Sur iPhone</div>
+  <div class="step-title">Ajouter à l'écran d'accueil (iOS)</div>
+  <div class="step-desc">
+    1. Ouvrez <strong>Safari</strong> (pas Chrome, pas Firefox — uniquement Safari pour iOS)<br>
+    2. Allez sur votre URL Netlify<br>
+    3. Appuyez sur l'icône <strong>Partager</strong> (carré avec flèche vers le haut)<br>
+    4. Faites défiler et tapez <strong>"Sur l'écran d'accueil"</strong><br>
+    5. Nommez l'app <strong>"Crypto Oracle"</strong> → <strong>Ajouter</strong><br><br>
+    L'app apparaît sur votre écran d'accueil avec l'icône, s'ouvre en plein écran sans barre Safari.
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">ÉTAPE 02 — Sur Android</div>
+  <div class="step-title">Ajouter à l'écran d'accueil (Android)</div>
+  <div class="step-desc">
+    1. Ouvrez <strong>Chrome</strong><br>
+    2. Allez sur votre URL Netlify<br>
+    3. Tapez les <strong>3 points</strong> en haut à droite<br>
+    4. <strong>"Ajouter à l'écran d'accueil"</strong><br>
+    5. Confirmer → <strong>Ajouter</strong><br><br>
+    Chrome peut même afficher une bannière <em>"Installer l'application"</em> automatiquement.
+  </div>
+</div>
+
+<div class="note">
+  <strong>Pour mettre à jour le dashboard</strong> (nouvelles données) : redemandez à Claude de régénérer les fichiers, puis revenez sur netlify.com/drop et redéposez le dossier mis à jour. L'URL reste la même si vous utilisez le même site Netlify (créez un compte gratuit pour garder la même URL).
+</div>
+
+<!-- PARTIE 2 : MAKE.COM -->
+<h2>PARTIE 2 — ALERTES EMAIL VIA MAKE.COM</h2>
+
+<div class="step">
+  <div class="step-num">ÉTAPE 01</div>
+  <div class="step-title">Créer un compte Make.com gratuit</div>
+  <div class="step-desc">
+    Allez sur <strong>make.com</strong> → <strong>Sign up free</strong>.<br>
+    Le plan gratuit inclut 1000 opérations/mois — largement suffisant pour des vérifications horaires.<br>
+    Une vérification par heure = 24/jour = 720/mois.
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">ÉTAPE 02</div>
+  <div class="step-title">Créer un nouveau scénario</div>
+  <div class="step-desc">
+    Dans Make.com : <strong>Create a new scenario</strong><br>
+    Cliquez sur le <strong>+</strong> pour ajouter le premier module.
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">ÉTAPE 03</div>
+  <div class="step-title">Module 1 — Déclencheur : Schedule</div>
+  <div class="step-desc">
+    Cherchez <strong>"Schedule"</strong> → sélectionnez-le comme déclencheur.<br>
+    Configurez :
+  </div>
+  <div class="trigger-schema">
+    <div class="trigger-row"><span class="trigger-icon">⏱</span><span class="trigger-label">Run scenario</span><span class="trigger-val">Every 1 hour</span></div>
+    <div class="trigger-row"><span class="trigger-icon">📅</span><span class="trigger-label">Days</span><span class="trigger-val">Every day</span></div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">ÉTAPE 04</div>
+  <div class="step-title">Module 2 — Récupérer le fichier alerts.json</div>
+  <div class="step-desc">
+    Ajoutez un module <strong>"HTTP" → "Make a request"</strong>.<br>
+    Configurez :
+  </div>
+  <div class="trigger-schema">
+    <div class="trigger-row"><span class="trigger-icon">🌐</span><span class="trigger-label">URL</span><span class="trigger-val" style="font-size:10px">https://VOTRE-SITE.netlify.app/alerts.json</span></div>
+    <div class="trigger-row"><span class="trigger-icon">📋</span><span class="trigger-label">Method</span><span class="trigger-val">GET</span></div>
+    <div class="trigger-row"><span class="trigger-icon">📦</span><span class="trigger-label">Parse response</span><span class="trigger-val">Yes (JSON)</span></div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">ÉTAPE 05</div>
+  <div class="step-title">Module 3 — Filtre : Score ≥ 80 ET alerte EXTREME</div>
+  <div class="step-desc">
+    Entre le module HTTP et le module Email, ajoutez un <strong>Filter</strong> (l'entonnoir entre deux modules).<br>
+    Condition :
+  </div>
+  <div class="trigger-schema">
+    <div class="trigger-row"><span class="trigger-icon">🔢</span><span class="trigger-label">summary.alerts_extreme</span><span class="trigger-val">Greater than: 0</span></div>
+  </div>
+  <div class="step-desc" style="margin-top:8px">
+    → Le scénario continue <strong>uniquement</strong> si au moins une alerte EXTREME est présente.
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">ÉTAPE 06</div>
+  <div class="step-title">Module 4 — Envoyer l'email</div>
+  <div class="step-desc">
+    Ajoutez le module <strong>"Email" → "Send an email"</strong> (ou Gmail si vous préférez).<br>
+    Configurez :
+  </div>
+  <div class="trigger-schema">
+    <div class="trigger-row"><span class="trigger-icon">📧</span><span class="trigger-label">To</span><span class="trigger-val">votre@email.com</span></div>
+    <div class="trigger-row"><span class="trigger-icon">📌</span><span class="trigger-label">Subject</span><span class="trigger-val">🚨 CRYPTO ORACLE — Alerte EXTREME détectée</span></div>
+    <div class="trigger-row"><span class="trigger-icon">📝</span><span class="trigger-label">Content</span><span class="trigger-val">Voir ci-dessous</span></div>
+  </div>
+  <div class="step-desc" style="margin-top:12px">
+    Dans le corps du message, utilisez les variables Make.com :<br><br>
+    <code>🚨 ALERTE EXTRÊME — Crypto Oracle v2</code><br><br>
+    <code>Top coin : {{summary.top_coin}}</code><br>
+    <code>Score : {{summary.top_score}} / 100</code><br>
+    <code>Alertes extrêmes : {{summary.alerts_extreme}}</code><br>
+    <code>Fear &amp; Greed : {{market_context.fear_greed}}</code><br><br>
+    <code>Ouvrir le dashboard : https://VOTRE-SITE.netlify.app</code>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">ÉTAPE 07</div>
+  <div class="step-title">Activer le scénario</div>
+  <div class="step-desc">
+    Cliquez sur <strong>Save</strong> puis activez le toggle en bas à gauche.<br>
+    Cliquez <strong>"Run once"</strong> pour tester immédiatement.<br>
+    Si tout est vert → le scénario tourne automatiquement toutes les heures.
+  </div>
+</div>
+
+<div class="note">
+  <strong>Pour des alertes encore plus urgentes :</strong> Make.com supporte aussi les notifications push (via Pushover, Pushbullet) et les SMS (via Twilio). Même logique, module différent à l'étape 6.
+</div>
+
+<h2>RÉCAPITULATIF</h2>
+<div class="step">
+  <div class="step-desc">
+    ✅ <strong>App mobile</strong> : Netlify Drop → Safari/Chrome → Écran d'accueil<br>
+    ✅ <strong>Alertes email</strong> : Make.com surveille alerts.json toutes les heures<br>
+    ✅ <strong>Mise à jour des données</strong> : Demandez à Claude, redéposez sur Netlify<br>
+    ✅ <strong>Coût total</strong> : 0€<br><br>
+    <strong style="color:var(--orange)">Prochaine étape recommandée :</strong> une fois Netlify configuré, partagez l'URL ici pour vérifier que alerts.json est bien accessible publiquement avant de configurer Make.com.
+  </div>
+</div>
+
+</body>
+</html>

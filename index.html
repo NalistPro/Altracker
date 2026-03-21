@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Crypto Oracle">
+<meta name="theme-color" content="#060810">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.svg">
+<title>CRYPTO ORACLE v2 — Pépites x10 · Top 500→50</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=IBM+Plex+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#f5c518;--gold-dim:#a88a10;--amber:#ff8c00;
+  --green:#00ff9d;--red:#ff3b5c;--blue:#00c8ff;--purple:#bd93f9;
+  --orange:#ff6b35;
+  --bg:#060810;--bg2:#0c1020;--bg3:#111827;
+  --border:rgba(245,197,24,0.15);--border-bright:rgba(245,197,24,0.5);
+  --text:#e0e8f0;--text-dim:#6b7a8d;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Mono',monospace;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(245,197,24,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(245,197,24,0.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 10% 0%,rgba(255,107,53,0.06) 0%,transparent 40%),radial-gradient(ellipse at 90% 100%,rgba(0,200,255,0.04) 0%,transparent 50%);pointer-events:none;z-index:0}
+.container{max-width:1700px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+/* HEADER */
+header{border-bottom:1px solid var(--border);padding:16px 0;background:rgba(6,8,16,0.97);position:sticky;top:0;z-index:100;backdrop-filter:blur(16px)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;max-width:1700px;margin:0 auto;padding:0 24px;flex-wrap:wrap;gap:12px}
+.logo{font-family:'Orbitron',sans-serif;font-weight:900;font-size:20px;color:var(--orange);letter-spacing:3px;text-shadow:0 0 20px rgba(255,107,53,0.4)}
+.logo-v{color:var(--gold);font-size:14px;vertical-align:super;margin-left:4px}
+.logo span{color:var(--text-dim);font-weight:400}
+.header-pills{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.pill{padding:5px 12px;border:1px solid;font-size:10px;letter-spacing:1.5px;text-transform:uppercase}
+.pill-fear{border-color:rgba(255,59,92,0.4);color:var(--red);background:rgba(255,59,92,0.06)}
+.pill-btc{border-color:rgba(245,197,24,0.3);color:var(--gold);background:rgba(245,197,24,0.05)}
+.pill-alt{border-color:rgba(0,200,255,0.3);color:var(--blue);background:rgba(0,200,255,0.05)}
+.pill-alert{border-color:rgba(255,107,53,0.5);color:var(--orange);background:rgba(255,107,53,0.08);animation:alertpulse 2s infinite}
+@keyframes alertpulse{0%,100%{box-shadow:none}50%{box-shadow:0 0 12px rgba(255,107,53,0.4)}}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;display:inline-block;margin-right:6px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+/* NOTICE */
+.notice-bar{background:rgba(255,107,53,0.05);border-bottom:1px solid rgba(255,107,53,0.2);padding:8px 24px;font-size:10px;color:rgba(255,107,53,0.7);letter-spacing:1px;text-align:center}
+
+main{padding:28px 0 60px}
+
+/* SECTION */
+.section-label{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:4px;color:var(--gold-dim);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.section-label .badge{font-size:9px;color:var(--orange);border:1px solid rgba(255,107,53,0.4);padding:2px 8px;background:rgba(255,107,53,0.06)}
+
+/* MARKET CONTEXT BAR */
+.market-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:28px}
+@media(max-width:900px){.market-bar{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:500px){.market-bar{grid-template-columns:repeat(2,1fr)}}
+.market-cell{background:var(--bg2);border:1px solid var(--border);padding:14px 16px}
+.market-cell-label{font-size:9px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:6px}
+.market-cell-val{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700}
+.market-cell-sub{font-size:10px;color:var(--text-dim);margin-top:4px}
+
+/* CONTROLS */
+.controls-panel{background:var(--bg2);border:1px solid var(--border);padding:22px;margin-bottom:28px}
+.controls-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+@media(max-width:900px){.controls-grid{grid-template-columns:repeat(2,1fr)}}
+.control-item label{display:block;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:6px}
+.control-item .weight-val{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px}
+.control-item .weight-desc{font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-top:4px}
+.w-growth{color:var(--green)}.w-community{color:var(--blue)}.w-sentiment{color:var(--orange)}.w-ath{color:var(--amber)}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--border);outline:none;cursor:pointer}
+input[type=range].r-growth::-webkit-slider-thumb{appearance:none;width:14px;height:14px;background:var(--green);border-radius:0;box-shadow:0 0 10px var(--green)}
+input[type=range].r-community::-webkit-slider-thumb{appearance:none;width:14px;height:14px;background:var(--blue);border-radius:0;box-shadow:0 0 10px var(--blue)}
+input[type=range].r-sentiment::-webkit-slider-thumb{appearance:none;width:14px;height:14px;background:var(--orange);border-radius:0;box-shadow:0 0 10px var(--orange)}
+input[type=range].r-ath::-webkit-slider-thumb{appearance:none;width:14px;height:14px;background:var(--amber);border-radius:0;box-shadow:0 0 10px var(--amber)}
+
+/* TOP 5 */
+.top5-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px}
+@media(max-width:1100px){.top5-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.top5-grid{grid-template-columns:1fr}}
+
+.card{background:var(--bg2);border:1px solid var(--border);padding:22px;position:relative;transition:border-color 0.3s,box-shadow 0.3s;animation:fadeSlide 0.5s ease both}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.card:nth-child(1){animation-delay:.05s}.card:nth-child(2){animation-delay:.1s}.card:nth-child(3){animation-delay:.15s}.card:nth-child(4){animation-delay:.2s}.card:nth-child(5){animation-delay:.25s}
+.card:hover{border-color:var(--border-bright);box-shadow:0 0 30px rgba(245,197,24,0.06)}
+.card.rank-1{border-color:rgba(255,107,53,0.5)}
+.card.rank-1::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--orange),transparent)}
+.card.rank-2{border-color:rgba(245,197,24,0.35)}
+.card.rank-3{border-color:rgba(0,200,255,0.25)}
+
+.alert-badge{display:inline-flex;align-items:center;gap:6px;font-size:9px;letter-spacing:2px;color:var(--orange);border:1px solid rgba(255,107,53,0.4);padding:4px 10px;background:rgba(255,107,53,0.08);margin-bottom:10px;animation:alertpulse 2s infinite}
+.card-rank{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:3px;color:var(--text-dim);margin-bottom:10px}
+.rank-1 .card-rank{color:var(--orange)}.rank-2 .card-rank{color:var(--gold)}.rank-3 .card-rank{color:var(--blue)}
+
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.coin-info{display:flex;align-items:center;gap:12px}
+.coin-icon{width:42px;height:42px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:12px;color:var(--gold);flex-shrink:0}
+.coin-name{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px}
+.coin-symbol{font-size:10px;color:var(--text-dim);letter-spacing:2px;margin-top:3px}
+.coin-price{text-align:right}
+.price-val{font-family:'Orbitron',sans-serif;font-size:13px}
+.price-change{font-size:11px;margin-top:4px;font-weight:600}
+.pos{color:var(--green)}.neg{color:var(--red)}
+
+.total-score{display:flex;align-items:baseline;gap:6px;margin-bottom:18px}
+.score-num{font-family:'Orbitron',sans-serif;font-size:34px;font-weight:900;color:var(--orange);text-shadow:0 0 20px rgba(255,107,53,0.3);line-height:1}
+.score-max{color:var(--text-dim);font-size:13px}
+
+.score-bars{display:flex;flex-direction:column;gap:9px;margin-bottom:16px}
+.bar-row{display:flex;align-items:center;gap:10px}
+.bar-label{font-size:9px;letter-spacing:1.5px;color:var(--text-dim);text-transform:uppercase;width:80px;flex-shrink:0}
+.bar-track{flex:1;height:4px;background:rgba(255,255,255,0.05)}
+.bar-fill{height:100%;transition:width 1s cubic-bezier(0.16,1,0.3,1);position:relative}
+.bar-fill::after{content:'';position:absolute;right:0;top:50%;transform:translate(50%,-50%);width:5px;height:5px;background:inherit;box-shadow:0 0 8px currentColor}
+.bar-growth .bar-fill{background:var(--green)}
+.bar-community .bar-fill{background:var(--blue)}
+.bar-sentiment .bar-fill{background:var(--orange)}
+.bar-ath .bar-fill{background:var(--amber)}
+.bar-score{font-size:11px;color:var(--text);width:28px;text-align:right;flex-shrink:0;font-family:'Share Tech Mono',monospace}
+
+.metrics-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;padding:14px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.metric{text-align:center}
+.metric-val{font-family:'Share Tech Mono',monospace;font-size:12px;white-space:nowrap}
+.metric-label{font-size:9px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;margin-top:3px}
+
+.community-bar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.comm-label{font-size:9px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.comm-track{flex:1;min-width:40px;height:3px;background:rgba(255,255,255,0.05)}
+.comm-fill{height:100%;background:var(--blue);transition:width 1s}
+.comm-val{font-size:10px;color:var(--blue);font-family:'Share Tech Mono',monospace;white-space:nowrap}
+
+.tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{font-size:9px;letter-spacing:1.5px;padding:3px 8px;border:1px solid;text-transform:uppercase}
+.tag-bull{border-color:rgba(0,255,157,0.4);color:var(--green);background:rgba(0,255,157,0.05)}
+.tag-rare{border-color:rgba(245,197,24,0.4);color:var(--gold);background:rgba(245,197,24,0.05)}
+.tag-social{border-color:rgba(0,200,255,0.4);color:var(--blue);background:rgba(0,200,255,0.05)}
+.tag-tech{border-color:rgba(255,107,53,0.4);color:var(--orange);background:rgba(255,107,53,0.05)}
+
+/* TABLE */
+.table-filters{display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.filter-btn{padding:6px 14px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;transition:all 0.2s;text-transform:uppercase}
+.filter-btn:hover,.filter-btn.active{border-color:var(--orange);color:var(--orange);background:rgba(255,107,53,0.06)}
+.filter-btn.alert-filter{border-color:rgba(255,107,53,0.4);color:var(--orange)}
+.filter-btn.alert-filter.active{background:rgba(255,107,53,0.1);box-shadow:0 0 12px rgba(255,107,53,0.2)}
+
+.full-table-wrap{background:var(--bg2);border:1px solid var(--border);overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead tr{border-bottom:1px solid var(--border)}
+th{padding:12px 14px;font-size:9px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;text-align:left;font-weight:400;cursor:pointer;white-space:nowrap;transition:color 0.2s;user-select:none}
+th:hover{color:var(--gold)}.sort-active{color:var(--gold)!important}
+.sort-asc::after{content:" ↑"}.sort-desc::after{content:" ↓"}
+tbody tr{border-bottom:1px solid rgba(245,197,24,0.04);transition:background 0.15s}
+tbody tr:hover{background:rgba(245,197,24,0.03)}
+tbody tr.tr-alert{border-left:2px solid rgba(255,107,53,0.5)}
+td{padding:11px 14px;vertical-align:middle;white-space:nowrap}
+.td-rank{color:var(--text-dim);font-size:11px}.td-top{color:var(--gold);font-weight:600}
+.td-coin{display:flex;align-items:center;gap:10px}
+.td-icon{width:26px;height:26px;border-radius:50%;background:var(--bg3);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--gold);border:1px solid var(--border);font-family:'Orbitron',sans-serif}
+.td-name{font-weight:600;font-size:12px}.td-sym{font-size:10px;color:var(--text-dim);letter-spacing:1px}
+.mini-bar{height:3px;background:rgba(255,255,255,0.05);width:70px}
+.mini-fill{height:100%}
+.score-badge{display:inline-block;font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--orange);padding:3px 9px;border:1px solid rgba(255,107,53,0.3);background:rgba(255,107,53,0.06)}
+.rsi-gauge{width:50px;height:5px;background:rgba(255,255,255,0.05)}
+.rsi-fill{height:100%}
+.alert-mini{font-size:12px;margin-right:4px}
+.legend{display:flex;flex-wrap:wrap;gap:20px;padding:12px 0;margin-bottom:20px}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--text-dim);letter-spacing:1px}
+.legend-dot{width:8px;height:8px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">CRYPTO <span>/</span> ORACLE<span class="logo-v">v2</span></div>
+    <div class="header-pills">
+      <span class="pill pill-fear">😨 FEAR &amp; GREED: 18/100</span>
+      <span class="pill pill-btc">BTC DOM: 58.2%</span>
+      <span class="pill pill-alt">ALT SEASON: 35/100</span>
+      <span class="pill pill-alert">20 🚨 ALERTES ACTIVES</span>
+      <span style="font-size:10px;color:var(--text-dim)"><span class="dot"></span>21 mars 2026</span>
+    </div>
+  </div>
+</header>
+
+<div class="notice-bar">
+  ⚠ Données du 21 mars 2026 · Extrême Fear = opportunité historique · Fear &amp; Greed à 18 : 3ème occurrence sous 20 dans l'histoire — Pour mise à jour : demandez à Claude de régénérer
+</div>
+
+<main>
+<div class="container">
+
+  <!-- MARKET CONTEXT -->
+  <div class="section-label" style="margin-top:0">CONTEXTE MARCHÉ</div>
+  <div class="market-bar">
+    <div class="market-cell">
+      <div class="market-cell-label">Fear &amp; Greed</div>
+      <div class="market-cell-val" style="color:var(--red)">18 / 100</div>
+      <div class="market-cell-sub">EXTRÊME PEUR</div>
+    </div>
+    <div class="market-cell">
+      <div class="market-cell-label">BTC Dominance</div>
+      <div class="market-cell-val" style="color:var(--gold)">58.2%</div>
+      <div class="market-cell-sub">Bitcoin Season</div>
+    </div>
+    <div class="market-cell">
+      <div class="market-cell-label">Altcoin Season</div>
+      <div class="market-cell-val" style="color:var(--blue)">35 / 100</div>
+      <div class="market-cell-sub">Rotation sélective</div>
+    </div>
+    <div class="market-cell">
+      <div class="market-cell-label">Market Cap Total</div>
+      <div class="market-cell-val" style="color:var(--text)">$2.42T</div>
+      <div class="market-cell-sub">-13% sur 1 an</div>
+    </div>
+    <div class="market-cell">
+      <div class="market-cell-label">Alertes Actives</div>
+      <div class="market-cell-val" style="color:var(--orange)">20 / 48</div>
+      <div class="market-cell-sub">3+ signaux convergents</div>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="section-label">PONDÉRATION DES CRITÈRES</div>
+  <div class="controls-panel">
+    <div class="controls-grid">
+      <div class="control-item">
+        <label>Potentiel croissance</label>
+        <div class="weight-val w-growth" id="wGrowth">30%</div>
+        <input type="range" class="r-growth" min="0" max="100" value="30" id="sliderGrowth" oninput="recompute()">
+        <div class="weight-desc">Cap, supply, momentum prix</div>
+      </div>
+      <div class="control-item">
+        <label>Croissance communauté Δ</label>
+        <div class="weight-val w-community" id="wCommunity">30%</div>
+        <input type="range" class="r-community" min="0" max="100" value="30" id="sliderCommunity" oninput="recompute()">
+        <div class="weight-desc">GitHub commits, Reddit Δ7j/30j</div>
+      </div>
+      <div class="control-item">
+        <label>Sentiment NLP</label>
+        <div class="weight-val w-sentiment" id="wSentiment">25%</div>
+        <input type="range" class="r-sentiment" min="0" max="100" value="25" id="sliderSentiment" oninput="recompute()">
+        <div class="weight-desc">Articles pondérés récence + tendance</div>
+      </div>
+      <div class="control-item">
+        <label>Distance ATH</label>
+        <div class="weight-val w-ath" id="wAth">15%</div>
+        <input type="range" class="r-ath" min="0" max="100" value="15" id="sliderAth" oninput="recompute()">
+        <div class="weight-desc">Potentiel de rebond sur ATH</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>CROISSANCE</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>COMMUNAUTÉ Δ</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>SENTIMENT NLP</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>DIST. ATH</div>
+    <div class="legend-item"><span style="font-size:14px">🚨</span> SIGNAL D'ACCÉLÉRATION (3+ critères simultanés)</div>
+  </div>
+
+  <!-- TOP 5 -->
+  <div class="section-label">TOP 5 PÉPITES x10 <span class="badge">RANG 50→500</span></div>
+  <div class="top5-grid" id="top5Grid"><div class="card rank-1">
+      <div class="alert-badge">🚨 SIGNAL ACCÉLÉRATION</div>
+      <div class="card-rank">#1 — MEILLEURE PÉPITE</div>
+      <div class="card-header">
+        <div class="coin-info">
+          <div class="coin-icon">ETH</div>
+          <div>
+            <div class="coin-name">ether.fi</div>
+            <div class="coin-symbol">ETHFI · #83</div>
+          </div>
+        </div>
+        <div class="coin-price">
+          <div class="price-val">$0.59830</div>
+          <div class="price-change pos">+9.37%</div>
+        </div>
+      </div>
+
+      <div class="total-score"><div class="score-num">84</div><div class="score-max">/ 100</div></div>
+
+      <div class="score-bars">
+        <div class="bar-row bar-growth"><div class="bar-label">CROISSANCE</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-score">100</div></div>
+        <div class="bar-row bar-community"><div class="bar-label">COMM. Δ</div><div class="bar-track"><div class="bar-fill" style="width:63%"></div></div><div class="bar-score">63</div></div>
+        <div class="bar-row bar-sentiment"><div class="bar-label">SENTIMENT</div><div class="bar-track"><div class="bar-fill" style="width:86%"></div></div><div class="bar-score">86</div></div>
+        <div class="bar-row bar-ath"><div class="bar-label">DIST. ATH</div><div class="bar-track"><div class="bar-fill" style="width:94%"></div></div><div class="bar-score">94</div></div>
+      </div>
+
+      <div class="metrics-row">
+        <div class="metric">
+          <div class="metric-val neg">-85%</div>
+          <div class="metric-label">vs ATH</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val" style="color:var(--blue)">65</div>
+          <div class="metric-label">RSI</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val" style="color:var(--green)">🟢 POSITIF <span style="color:var(--green)">↑</span></div>
+          <div class="metric-label">SENTIMENT 7J</div>
+        </div>
+      </div>
+
+      <div class="community-bar">
+        <span class="comm-label">COMM. Δ7J</span>
+        <div class="comm-track"><div class="comm-fill" style="width:78%"></div></div>
+        <span class="comm-val">+78%</span>
+        <span class="comm-label" style="margin-left:12px">GITHUB</span>
+        <div class="comm-track"><div class="comm-fill" style="width:65%;background:var(--purple)"></div></div>
+        <span class="comm-val">65</span>
+      </div>
+
+      <div class="tags"><span class="tag tag-bull">DEEP VALUE</span><span class="tag tag-rare">OFFRE LIMITÉE</span><span class="tag tag-social">COMM. +RAPIDE</span></div>
+    </div><div class="card rank-2">
+      <div class="alert-badge">🚨 SIGNAL ACCÉLÉRATION</div>
+      <div class="card-rank">#2 — FORTE CONVICTION</div>
+      <div class="card-header">
+        <div class="coin-info">
+          <div class="coin-icon">VIR</div>
+          <div>
+            <div class="coin-name">Virtuals Protocol</div>
+            <div class="coin-symbol">VIRTUAL · #84</div>
+          </div>
+        </div>
+        <div class="coin-price">
+          <div class="price-val">$0.69700</div>
+          <div class="price-change neg">-3.66%</div>
+        </div>
+      </div>
+
+      <div class="total-score"><div class="score-num">80</div><div class="score-max">/ 100</div></div>
+
+      <div class="score-bars">
+        <div class="bar-row bar-growth"><div class="bar-label">CROISSANCE</div><div class="bar-track"><div class="bar-fill" style="width:91%"></div></div><div class="bar-score">91</div></div>
+        <div class="bar-row bar-community"><div class="bar-label">COMM. Δ</div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-score">60</div></div>
+        <div class="bar-row bar-sentiment"><div class="bar-label">SENTIMENT</div><div class="bar-track"><div class="bar-fill" style="width:82%"></div></div><div class="bar-score">82</div></div>
+        <div class="bar-row bar-ath"><div class="bar-label">DIST. ATH</div><div class="bar-track"><div class="bar-fill" style="width:95%"></div></div><div class="bar-score">95</div></div>
+      </div>
+
+      <div class="metrics-row">
+        <div class="metric">
+          <div class="metric-val neg">-78%</div>
+          <div class="metric-label">vs ATH</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val" style="color:var(--blue)">57</div>
+          <div class="metric-label">RSI</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val" style="color:var(--green)">🟢 POSITIF <span style="color:var(--green)">↑</span></div>
+          <div class="metric-label">SENTIMENT 7J</div>
+        </div>
+      </div>
+
+      <div class="community-bar">
+        <span class="comm-label">COMM. Δ7J</span>
+        <div class="comm-track"><div class="comm-fill" style="width:72%"></div></div>
+        <span class="comm-val">+72%</span>
+        <span class="comm-label" style="margin-left:12px">GITHUB</span>
+        <div class="comm-track"><div class="comm-fill" style="width:58%;background:var(--purple)"></div></div>
+        <span class="comm-val">58</span>
+      </div>
+
+      <div class="tags"><span class="tag tag-bull">DEEP VALUE</span><span class="tag tag-rare">OFFRE LIMITÉE</span><span class="tag tag-social">COMM. +RAPIDE</span></div>
+    </div><div class="card rank-3">
+      <div class="alert-badge">🚨 SIGNAL ACCÉLÉRATION</div>
+      <div class="card-rank">#3 — À SURVEILLER</div>
+      <div class="card-header">
+        <div class="coin-info">
+          <div class="coin-icon">RIV</div>
+          <div>
+            <div class="coin-name">River</div>
+            <div class="coin-symbol">RIVER · #82</div>
+          </div>
+        </div>
+        <div class="coin-price">
+          <div class="price-val">$24.2000</div>
+          <div class="price-change pos">+27.72%</div>
+        </div>
+      </div>
+
+      <div class="total-score"><div class="score-num">78</div><div class="score-max">/ 100</div></div>
+
+      <div class="score-bars">
+        <div class="bar-row bar-growth"><div class="bar-label">CROISSANCE</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-score">100</div></div>
+        <div class="bar-row bar-community"><div class="bar-label">COMM. Δ</div><div class="bar-track"><div class="bar-fill" style="width:50%"></div></div><div class="bar-score">50</div></div>
+        <div class="bar-row bar-sentiment"><div class="bar-label">SENTIMENT</div><div class="bar-track"><div class="bar-fill" style="width:92%"></div></div><div class="bar-score">92</div></div>
+        <div class="bar-row bar-ath"><div class="bar-label">DIST. ATH</div><div class="bar-track"><div class="bar-fill" style="width:70%"></div></div><div class="bar-score">70</div></div>
+      </div>
+
+      <div class="metrics-row">
+        <div class="metric">
+          <div class="metric-val neg">-42%</div>
+          <div class="metric-label">vs ATH</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val" style="color:var(--red)">78</div>
+          <div class="metric-label">RSI</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val" style="color:var(--green)">🟢 POSITIF <span style="color:var(--green)">↑</span></div>
+          <div class="metric-label">SENTIMENT 7J</div>
+        </div>
+      </div>
+
+      <div class="community-bar">
+        <span class="comm-label">COMM. Δ7J</span>
+        <div class="comm-track"><div class="comm-fill" style="width:95%"></div></div>
+        <span class="comm-val">+95%</span>
+        <span class="comm-label" style="margin-left:12px">GITHUB</span>
+        <div class="comm-track"><div class="comm-fill" style="width:25%;background:var(--purple)"></div></div>
+        <span class="comm-val">25</span>
+      </div>
+
+      <div class="tags"><span class="tag tag-rare">OFFRE LIMITÉE</span><span class="tag tag-social">COMM. +RAPIDE</span><span class="tag tag-bull">MOMENTUM 7J</span></div>
+    </div><div class="card ">
+      <div class="alert-badge">🚨 SIGNAL ACCÉLÉRATION</div>
+      <div class="card-rank">#4 — POTENTIEL</div>
+      <div class="card-header">
+        <div class="coin-info">
+          <div class="coin-icon">LIN</div>
+          <div>
+            <div class="coin-name">Chainlink</div>
+            <div class="coin-symbol">LINK · #14</div>
+          </div>
+        </div>
+        <div class="coin-price">
+          <div class="price-val">$9.1400</div>
+          <div class="price-change pos">+0.36%</div>
+        </div>
+      </div>
+
+      <div class="total-score"><div class="score-num">77</div><div class="score-max">/ 100</div></div>
+
+      <div class="score-bars">
+        <div class="bar-row bar-growth"><div class="bar-label">CROISSANCE</div><div class="bar-track"><div class="bar-fill" style="width:74%"></div></div><div class="bar-score">74</div></div>
+        <div class="bar-row bar-community"><div class="bar-label">COMM. Δ</div><div class="bar-track"><div class="bar-fill" style="width:67%"></div></div><div class="bar-score">67</div></div>
+        <div class="bar-row bar-sentiment"><div class="bar-label">SENTIMENT</div><div class="bar-track"><div class="bar-fill" style="width:84%"></div></div><div class="bar-score">84</div></div>
+        <div class="bar-row bar-ath"><div class="bar-label">DIST. ATH</div><div class="bar-track"><div class="bar-fill" style="width:92%"></div></div><div class="bar-score">92</div></div>
+      </div>
+
+      <div class="metrics-row">
+        <div class="metric">
+          <div class="metric-val neg">-87%</div>
+          <div class="metric-label">vs ATH</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val" style="color:var(--blue)">52</div>
+          <div class="metric-label">RSI</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val" style="color:var(--green)">🟢 POSITIF <span style="color:var(--green)">↑</span></div>
+          <div class="metric-label">SENTIMENT 7J</div>
+        </div>
+      </div>
+
+      <div class="community-bar">
+        <span class="comm-label">COMM. Δ7J</span>
+        <div class="comm-track"><div class="comm-fill" style="width:58%"></div></div>
+        <span class="comm-val">+58%</span>
+        <span class="comm-label" style="margin-left:12px">GITHUB</span>
+        <div class="comm-track"><div class="comm-fill" style="width:75%;background:var(--purple)"></div></div>
+        <span class="comm-val">75</span>
+      </div>
+
+      <div class="tags"><span class="tag tag-bull">DEEP VALUE</span><span class="tag tag-rare">OFFRE LIMITÉE</span><span class="tag tag-social">SENTIMENT +</span></div>
+    </div><div class="card ">
+      <div class="alert-badge">🚨 SIGNAL ACCÉLÉRATION</div>
+      <div class="card-rank">#5 — INTÉRESSANT</div>
+      <div class="card-header">
+        <div class="coin-info">
+          <div class="coin-icon">TRU</div>
+          <div>
+            <div class="coin-name">TRUMP</div>
+            <div class="coin-symbol">TRUMP · #64</div>
+          </div>
+        </div>
+        <div class="coin-price">
+          <div class="price-val">$3.3570</div>
+          <div class="price-change pos">+0.58%</div>
+        </div>
+      </div>
+
+      <div class="total-score"><div class="score-num">75</div><div class="score-max">/ 100</div></div>
+
+      <div class="score-bars">
+        <div class="bar-row bar-growth"><div class="bar-label">CROISSANCE</div><div class="bar-track"><div class="bar-fill" style="width:94%"></div></div><div class="bar-score">94</div></div>
+        <div class="bar-row bar-community"><div class="bar-label">COMM. Δ</div><div class="bar-track"><div class="bar-fill" style="width:39%"></div></div><div class="bar-score">39</div></div>
+        <div class="bar-row bar-sentiment"><div class="bar-label">SENTIMENT</div><div class="bar-track"><div class="bar-fill" style="width:81%"></div></div><div class="bar-score">81</div></div>
+        <div class="bar-row bar-ath"><div class="bar-label">DIST. ATH</div><div class="bar-track"><div class="bar-fill" style="width:96%"></div></div><div class="bar-score">96</div></div>
+      </div>
+
+      <div class="metrics-row">
+        <div class="metric">
+          <div class="metric-val neg">-81%</div>
+          <div class="metric-label">vs ATH</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val" style="color:var(--blue)">54</div>
+          <div class="metric-label">RSI</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val" style="color:var(--green)">🟢 POSITIF <span style="color:var(--green)">↑</span></div>
+          <div class="metric-label">SENTIMENT 7J</div>
+        </div>
+      </div>
+
+      <div class="community-bar">
+        <span class="comm-label">COMM. Δ7J</span>
+        <div class="comm-track"><div class="comm-fill" style="width:68%"></div></div>
+        <span class="comm-val">+68%</span>
+        <span class="comm-label" style="margin-left:12px">GITHUB</span>
+        <div class="comm-track"><div class="comm-fill" style="width:5%;background:var(--purple)"></div></div>
+        <span class="comm-val">5</span>
+      </div>
+
+      <div class="tags"><span class="tag tag-bull">DEEP VALUE</span><span class="tag tag-rare">OFFRE LIMITÉE</span></div>
+    </div></div>
+
+  <!-- TABLE -->
+  <div class="section-label">CLASSEMENT COMPLET — 48 ALTCOINS <span class="badge">20 ALERTES</span></div>
+
+  <div class="table-filters">
+    <button class="filter-btn" onclick="filterTable('all')" id="f-all">TOUS</button>
+    <button class="filter-btn alert-filter active" onclick="filterTable('alert')" id="f-alert">🚨 ALERTES SEULEMENT</button>
+    <button class="filter-btn" onclick="filterTable('sentiment+')" id="f-sent">SENTIMENT +</button>
+    <button class="filter-btn" onclick="filterTable('community+')" id="f-comm">COMM. EN HAUSSE</button>
+  </div>
+
+  <div class="full-table-wrap">
+    <table id="mainTable">
+      <thead>
+        <tr>
+          <th data-key="rank">RANG</th>
+          <th>ACTIF</th>
+          <th data-key="price">PRIX</th>
+          <th data-key="c24">24H</th>
+          <th data-key="mc">CAP</th>
+          <th data-key="ath_pct">VS ATH</th>
+          <th data-key="growthScore">CROISSANCE</th>
+          <th data-key="comm_grow">COMM. Δ7J</th>
+          <th data-key="sentiment">SENTIMENT</th>
+          <th data-key="tech">RSI</th>
+          <th data-key="total" class="sort-active sort-desc">SCORE</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"><tr class="tr-alert">
+      <td class="td-rank td-top"><span class="alert-mini">🚨</span>★ 83</td>
+      <td><div class="td-coin"><div class="td-icon">ET</div><div><div class="td-name">ether.fi</div><div class="td-sym">ETHFI</div></div></div></td>
+      <td>$0.59830</td>
+      <td><span class="pos">+9.37%</span></td>
+      <td>$472M</td>
+      <td><span class="pos">-85%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:100%;background:var(--green)"></div></div><span style="font-size:11px">100</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:78%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+78%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--green);font-size:11px">🟢 POSITIF</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:64.8%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">65</span></div></td>
+      <td><span class="score-badge">84</span></td>
+    </tr><tr class="tr-alert">
+      <td class="td-rank td-top"><span class="alert-mini">🚨</span>★ 84</td>
+      <td><div class="td-coin"><div class="td-icon">VI</div><div><div class="td-name">Virtuals Protocol</div><div class="td-sym">VIRTUAL</div></div></div></td>
+      <td>$0.69700</td>
+      <td><span class="neg">-3.66%</span></td>
+      <td>$458M</td>
+      <td><span class="pos">-78%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:91%;background:var(--green)"></div></div><span style="font-size:11px">91</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:72%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+72%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--green);font-size:11px">🟢 POSITIF</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:56.6%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">57</span></div></td>
+      <td><span class="score-badge">80</span></td>
+    </tr><tr class="tr-alert">
+      <td class="td-rank td-top"><span class="alert-mini">🚨</span>★ 82</td>
+      <td><div class="td-coin"><div class="td-icon">RI</div><div><div class="td-name">River</div><div class="td-sym">RIVER</div></div></div></td>
+      <td>$24.2000</td>
+      <td><span class="pos">+27.72%</span></td>
+      <td>$474M</td>
+      <td><span class="">-42%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:100%;background:var(--green)"></div></div><span style="font-size:11px">100</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:95%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+95%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--green);font-size:11px">🟢 POSITIF</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:78.0%;background:var(--red)"></div></div><span style="font-size:11px;color:var(--red)">78</span></div></td>
+      <td><span class="score-badge">78</span></td>
+    </tr><tr class="tr-alert">
+      <td class="td-rank td-top"><span class="alert-mini">🚨</span>★ 14</td>
+      <td><div class="td-coin"><div class="td-icon">LI</div><div><div class="td-name">Chainlink</div><div class="td-sym">LINK</div></div></div></td>
+      <td>$9.1400</td>
+      <td><span class="pos">+0.36%</span></td>
+      <td>$6.47B</td>
+      <td><span class="pos">-87%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:74%;background:var(--green)"></div></div><span style="font-size:11px">74</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:58%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+58%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--green);font-size:11px">🟢 POSITIF</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:51.8%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">52</span></div></td>
+      <td><span class="score-badge">77</span></td>
+    </tr><tr class="tr-alert">
+      <td class="td-rank td-top"><span class="alert-mini">🚨</span>★ 64</td>
+      <td><div class="td-coin"><div class="td-icon">TR</div><div><div class="td-name">TRUMP</div><div class="td-sym">TRUMP</div></div></div></td>
+      <td>$3.3570</td>
+      <td><span class="pos">+0.58%</span></td>
+      <td>$781M</td>
+      <td><span class="pos">-81%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:94%;background:var(--green)"></div></div><span style="font-size:11px">94</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:68%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+68%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--green);font-size:11px">🟢 POSITIF</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:54.1%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">54</span></div></td>
+      <td><span class="score-badge">75</span></td>
+    </tr><tr class="tr-alert">
+      <td class="td-rank "><span class="alert-mini">🚨</span>75</td>
+      <td><div class="td-coin"><div class="td-icon">JU</div><div><div class="td-name">Jupiter</div><div class="td-sym">JUP</div></div></div></td>
+      <td>$0.16080</td>
+      <td><span class="pos">+0.46%</span></td>
+      <td>$562M</td>
+      <td><span class="pos">-81%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:89%;background:var(--green)"></div></div><span style="font-size:11px">89</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:48%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+48%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:53.0%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">53</span></div></td>
+      <td><span class="score-badge">75</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">59</td>
+      <td><div class="td-coin"><div class="td-icon">RE</div><div><div class="td-name">Render</div><div class="td-sym">RENDER</div></div></div></td>
+      <td>$1.7000</td>
+      <td><span class="neg">-1.86%</span></td>
+      <td>$882M</td>
+      <td><span class="pos">-88%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:86%;background:var(--green)"></div></div><span style="font-size:11px">86</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:42%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+42%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:51.7%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">52</span></div></td>
+      <td><span class="score-badge">73</span></td>
+    </tr><tr class="tr-alert">
+      <td class="td-rank "><span class="alert-mini">🚨</span>7</td>
+      <td><div class="td-coin"><div class="td-icon">SO</div><div><div class="td-name">Solana</div><div class="td-sym">SOL</div></div></div></td>
+      <td>$90.1600</td>
+      <td><span class="pos">+1.25%</span></td>
+      <td>$51.54B</td>
+      <td><span class="pos">-72%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:45%;background:var(--green)"></div></div><span style="font-size:11px">45</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:68%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+68%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--green);font-size:11px">🟢 POSITIF</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:52.7%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">53</span></div></td>
+      <td><span class="score-badge">73</span></td>
+    </tr><tr class="tr-alert">
+      <td class="td-rank "><span class="alert-mini">🚨</span>58</td>
+      <td><div class="td-coin"><div class="td-icon">AT</div><div><div class="td-name">Cosmos</div><div class="td-sym">ATOM</div></div></div></td>
+      <td>$1.8530</td>
+      <td><span class="pos">+1.94%</span></td>
+      <td>$924M</td>
+      <td><span class="pos">-93%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:79%;background:var(--green)"></div></div><span style="font-size:11px">79</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:38%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+38%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:52.6%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">53</span></div></td>
+      <td><span class="score-badge">72</span></td>
+    </tr><tr class="tr-alert">
+      <td class="td-rank "><span class="alert-mini">🚨</span>66</td>
+      <td><div class="td-coin"><div class="td-icon">MO</div><div><div class="td-name">Morpho</div><div class="td-sym">MORPHO</div></div></div></td>
+      <td>$1.7730</td>
+      <td><span class="pos">+0.98%</span></td>
+      <td>$716M</td>
+      <td><span class="">-60%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:79%;background:var(--green)"></div></div><span style="font-size:11px">79</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:55%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+55%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:52.6%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">53</span></div></td>
+      <td><span class="score-badge">72</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">96</td>
+      <td><div class="td-coin"><div class="td-icon">GN</div><div><div class="td-name">Gnosis</div><div class="td-sym">GNO</div></div></div></td>
+      <td>$131.2000</td>
+      <td><span class="neg">-0.36%</span></td>
+      <td>$346M</td>
+      <td><span class="pos">-85%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:91%;background:var(--green)"></div></div><span style="font-size:11px">91</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:25%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+25%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:51.0%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">51</span></div></td>
+      <td><span class="score-badge">72</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">77</td>
+      <td><div class="td-coin"><div class="td-icon">DE</div><div><div class="td-name">DeXe</div><div class="td-sym">DEXE</div></div></div></td>
+      <td>$6.2710</td>
+      <td><span class="pos">+1.16%</span></td>
+      <td>$525M</td>
+      <td><span class="pos">-72%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:89%;background:var(--green)"></div></div><span style="font-size:11px">89</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:45%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+45%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:54.2%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">54</span></div></td>
+      <td><span class="score-badge">72</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">71</td>
+      <td><div class="td-coin"><div class="td-icon">PU</div><div><div class="td-name">Pump.fun</div><div class="td-sym">PUMP</div></div></div></td>
+      <td>$0.00188000</td>
+      <td><span class="neg">-0.77%</span></td>
+      <td>$624M</td>
+      <td><span class="pos">-75%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:64%;background:var(--green)"></div></div><span style="font-size:11px">64</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:88%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+88%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--green);font-size:11px">🟢 POSITIF</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:48.3%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">48</span></div></td>
+      <td><span class="score-badge">71</span></td>
+    </tr><tr class="tr-alert">
+      <td class="td-rank "><span class="alert-mini">🚨</span>33</td>
+      <td><div class="td-coin"><div class="td-icon">DO</div><div><div class="td-name">Polkadot</div><div class="td-sym">DOT</div></div></div></td>
+      <td>$1.4980</td>
+      <td><span class="neg">-1.91%</span></td>
+      <td>$2.51B</td>
+      <td><span class="pos">-95%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:80%;background:var(--green)"></div></div><span style="font-size:11px">80</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:72%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+72%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--green);font-size:11px">🟢 POSITIF</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:47.4%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">47</span></div></td>
+      <td><span class="score-badge">71</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">69</td>
+      <td><div class="td-coin"><div class="td-icon">XD</div><div><div class="td-name">XDC Network</div><div class="td-sym">XDC</div></div></div></td>
+      <td>$0.03230</td>
+      <td><span class="pos">+0.66%</span></td>
+      <td>$645M</td>
+      <td><span class="pos">-94%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:93%;background:var(--green)"></div></div><span style="font-size:11px">93</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:40%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+40%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:52.3%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">52</span></div></td>
+      <td><span class="score-badge">70</span></td>
+    </tr><tr class="tr-alert">
+      <td class="td-rank "><span class="alert-mini">🚨</span>86</td>
+      <td><div class="td-coin"><div class="td-icon">PE</div><div><div class="td-name">Pudgy Penguins</div><div class="td-sym">PENGU</div></div></div></td>
+      <td>$0.00710000</td>
+      <td><span class="neg">-2.54%</span></td>
+      <td>$446M</td>
+      <td><span class="pos">-72%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:77%;background:var(--green)"></div></div><span style="font-size:11px">77</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:62%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+62%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--green);font-size:11px">🟢 POSITIF</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:54.2%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">54</span></div></td>
+      <td><span class="score-badge">69</span></td>
+    </tr><tr class="tr-alert">
+      <td class="td-rank "><span class="alert-mini">🚨</span>71</td>
+      <td><div class="td-coin"><div class="td-icon">IN</div><div><div class="td-name">Injective</div><div class="td-sym">INJ</div></div></div></td>
+      <td>$3.6200</td>
+      <td><span class="pos">+0.80%</span></td>
+      <td>$530M</td>
+      <td><span class="pos">-95%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:98%;background:var(--green)"></div></div><span style="font-size:11px">98</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:52%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+52%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:54.3%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">54</span></div></td>
+      <td><span class="score-badge">69</span></td>
+    </tr><tr class="tr-alert">
+      <td class="td-rank "><span class="alert-mini">🚨</span>80</td>
+      <td><div class="td-coin"><div class="td-icon">FE</div><div><div class="td-name">Artificial Super</div><div class="td-sym">FET</div></div></div></td>
+      <td>$0.22530</td>
+      <td><span class="neg">-1.29%</span></td>
+      <td>$509M</td>
+      <td><span class="pos">-97%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:94%;background:var(--green)"></div></div><span style="font-size:11px">94</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:55%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+55%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--green);font-size:11px">🟢 POSITIF</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:52.0%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">52</span></div></td>
+      <td><span class="score-badge">69</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">96</td>
+      <td><div class="td-coin"><div class="td-icon">AN</div><div><div class="td-name">ANKR</div><div class="td-sym">ANKR</div></div></div></td>
+      <td>$0.01100</td>
+      <td><span class="neg">-0.50%</span></td>
+      <td>$105M</td>
+      <td><span class="pos">-98%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:99%;background:var(--green)"></div></div><span style="font-size:11px">99</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:62%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+62%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--green);font-size:11px">🟢 POSITIF</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:52.2%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">52</span></div></td>
+      <td><span class="score-badge">68</span></td>
+    </tr><tr class="tr-alert">
+      <td class="td-rank "><span class="alert-mini">🚨</span>72</td>
+      <td><div class="td-coin"><div class="td-icon">OP</div><div><div class="td-name">Optimism</div><div class="td-sym">OP</div></div></div></td>
+      <td>$0.29000</td>
+      <td><span class="pos">+0.60%</span></td>
+      <td>$510M</td>
+      <td><span class="pos">-97%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:97%;background:var(--green)"></div></div><span style="font-size:11px">97</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:38%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+38%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:53.3%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">53</span></div></td>
+      <td><span class="score-badge">67</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">2</td>
+      <td><div class="td-coin"><div class="td-icon">ET</div><div><div class="td-name">Ethereum</div><div class="td-sym">ETH</div></div></div></td>
+      <td>$2,156</td>
+      <td><span class="pos">+0.39%</span></td>
+      <td>$260.30B</td>
+      <td><span class="">-63%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:50%;background:var(--green)"></div></div><span style="font-size:11px">50</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:45%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+45%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--text-dim)">→</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:54.3%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">54</span></div></td>
+      <td><span class="score-badge">66</span></td>
+    </tr><tr class="tr-alert">
+      <td class="td-rank "><span class="alert-mini">🚨</span>78</td>
+      <td><div class="td-coin"><div class="td-icon">DY</div><div><div class="td-name">dYdX</div><div class="td-sym">DYDX</div></div></div></td>
+      <td>$0.34000</td>
+      <td><span class="pos">+0.70%</span></td>
+      <td>$390M</td>
+      <td><span class="pos">-96%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:100%;background:var(--green)"></div></div><span style="font-size:11px">100</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:40%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+40%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:53.9%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">54</span></div></td>
+      <td><span class="score-badge">66</span></td>
+    </tr><tr class="tr-alert">
+      <td class="td-rank "><span class="alert-mini">🚨</span>81</td>
+      <td><div class="td-coin"><div class="td-icon">IM</div><div><div class="td-name">Immutable</div><div class="td-sym">IMX</div></div></div></td>
+      <td>$0.23000</td>
+      <td><span class="pos">+0.50%</span></td>
+      <td>$340M</td>
+      <td><span class="pos">-97%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:100%;background:var(--green)"></div></div><span style="font-size:11px">100</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:38%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+38%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:53.0%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">53</span></div></td>
+      <td><span class="score-badge">66</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">55</td>
+      <td><div class="td-coin"><div class="td-icon">KA</div><div><div class="td-name">Kaspa</div><div class="td-sym">KAS</div></div></div></td>
+      <td>$0.03675</td>
+      <td><span class="neg">-2.81%</span></td>
+      <td>$1.00B</td>
+      <td><span class="pos">-82%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:62%;background:var(--green)"></div></div><span style="font-size:11px">62</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:62%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+62%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:43.2%;background:var(--amber)"></div></div><span style="font-size:11px;color:var(--amber)">43</span></div></td>
+      <td><span class="score-badge">65</span></td>
+    </tr><tr class="tr-alert">
+      <td class="td-rank "><span class="alert-mini">🚨</span>61</td>
+      <td><div class="td-coin"><div class="td-icon">AP</div><div><div class="td-name">Aptos</div><div class="td-sym">APT</div></div></div></td>
+      <td>$1.0210</td>
+      <td><span class="pos">+2.08%</span></td>
+      <td>$810M</td>
+      <td><span class="pos">-95%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:93%;background:var(--green)"></div></div><span style="font-size:11px">93</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:45%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+45%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:53.8%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">54</span></div></td>
+      <td><span class="score-badge">65</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">85</td>
+      <td><div class="td-coin"><div class="td-icon">CA</div><div><div class="td-name">PancakeSwap</div><div class="td-sym">CAKE</div></div></div></td>
+      <td>$1.3880</td>
+      <td><span class="neg">-2.52%</span></td>
+      <td>$457M</td>
+      <td><span class="pos">-92%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:92%;background:var(--green)"></div></div><span style="font-size:11px">92</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:20%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+20%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--text-dim);font-size:11px">🟡 NEUTRE-</span> <span style="color:var(--text-dim)">→</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:49.4%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">49</span></div></td>
+      <td><span class="score-badge">65</span></td>
+    </tr><tr class="tr-alert">
+      <td class="td-rank "><span class="alert-mini">🚨</span>87</td>
+      <td><div class="td-coin"><div class="td-icon">ST</div><div><div class="td-name">Stacks</div><div class="td-sym">STX</div></div></div></td>
+      <td>$0.24580</td>
+      <td><span class="neg">-0.98%</span></td>
+      <td>$446M</td>
+      <td><span class="pos">-95%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:95%;background:var(--green)"></div></div><span style="font-size:11px">95</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:38%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+38%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:52.5%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">52</span></div></td>
+      <td><span class="score-badge">65</span></td>
+    </tr><tr class="tr-alert">
+      <td class="td-rank "><span class="alert-mini">🚨</span>75</td>
+      <td><div class="td-coin"><div class="td-icon">RU</div><div><div class="td-name">Thorchain</div><div class="td-sym">RUNE</div></div></div></td>
+      <td>$0.67000</td>
+      <td><span class="pos">+0.70%</span></td>
+      <td>$450M</td>
+      <td><span class="pos">-95%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:98%;background:var(--green)"></div></div><span style="font-size:11px">98</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:42%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+42%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:53.8%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">54</span></div></td>
+      <td><span class="score-badge">65</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">80</td>
+      <td><div class="td-coin"><div class="td-icon">HN</div><div><div class="td-name">Helium</div><div class="td-sym">HNT</div></div></div></td>
+      <td>$1.8500</td>
+      <td><span class="pos">+0.60%</span></td>
+      <td>$360M</td>
+      <td><span class="pos">-97%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:100%;background:var(--green)"></div></div><span style="font-size:11px">100</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:45%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+45%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:53.4%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">53</span></div></td>
+      <td><span class="score-badge">65</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">74</td>
+      <td><div class="td-coin"><div class="td-icon">NE</div><div><div class="td-name">Nexo</div><div class="td-sym">NEXO</div></div></div></td>
+      <td>$0.89980</td>
+      <td><span class="pos">+0.01%</span></td>
+      <td>$581M</td>
+      <td><span class="pos">-76%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:84%;background:var(--green)"></div></div><span style="font-size:11px">84</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:25%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+25%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:51.2%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">51</span></div></td>
+      <td><span class="score-badge">64</span></td>
+    </tr><tr class="tr-alert">
+      <td class="td-rank "><span class="alert-mini">🚨</span>98</td>
+      <td><div class="td-coin"><div class="td-icon">CF</div><div><div class="td-name">Conflux</div><div class="td-sym">CFX</div></div></div></td>
+      <td>$0.06510</td>
+      <td><span class="pos">+2.27%</span></td>
+      <td>$338M</td>
+      <td><span class="pos">-97%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:100%;background:var(--green)"></div></div><span style="font-size:11px">100</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:40%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+40%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:53.8%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">54</span></div></td>
+      <td><span class="score-badge">64</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">62</td>
+      <td><div class="td-coin"><div class="td-icon">AL</div><div><div class="td-name">Algorand</div><div class="td-sym">ALGO</div></div></div></td>
+      <td>$0.08940</td>
+      <td><span class="neg">-0.99%</span></td>
+      <td>$795M</td>
+      <td><span class="pos">-97%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:94%;background:var(--green)"></div></div><span style="font-size:11px">94</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:35%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+35%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:51.2%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">51</span></div></td>
+      <td><span class="score-badge">63</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">67</td>
+      <td><div class="td-coin"><div class="td-icon">FL</div><div><div class="td-name">Flare</div><div class="td-sym">FLR</div></div></div></td>
+      <td>$0.00832000</td>
+      <td><span class="neg">-0.58%</span></td>
+      <td>$709M</td>
+      <td><span class="pos">-93%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:76%;background:var(--green)"></div></div><span style="font-size:11px">76</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:32%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+32%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:51.4%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">51</span></div></td>
+      <td><span class="score-badge">63</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">77</td>
+      <td><div class="td-coin"><div class="td-icon">PY</div><div><div class="td-name">Pyth Network</div><div class="td-sym">PYTH</div></div></div></td>
+      <td>$0.07000</td>
+      <td><span class="pos">+0.50%</span></td>
+      <td>$410M</td>
+      <td><span class="pos">-95%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:98%;background:var(--green)"></div></div><span style="font-size:11px">98</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:38%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+38%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:52.9%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">53</span></div></td>
+      <td><span class="score-badge">63</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">60</td>
+      <td><div class="td-coin"><div class="td-icon">EN</div><div><div class="td-name">Ethena</div><div class="td-sym">ENA</div></div></div></td>
+      <td>$0.10180</td>
+      <td><span class="neg">-2.97%</span></td>
+      <td>$865M</td>
+      <td><span class="pos">-93%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:87%;background:var(--green)"></div></div><span style="font-size:11px">87</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:28%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+28%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--text-dim);font-size:11px">🟡 NEUTRE-</span> <span style="color:var(--text-dim)">→</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:46.7%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">47</span></div></td>
+      <td><span class="score-badge">62</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">95</td>
+      <td><div class="td-coin"><div class="td-icon">CH</div><div><div class="td-name">Chiliz</div><div class="td-sym">CHZ</div></div></div></td>
+      <td>$0.03648</td>
+      <td><span class="pos">+1.76%</span></td>
+      <td>$377M</td>
+      <td><span class="pos">-97%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:100%;background:var(--green)"></div></div><span style="font-size:11px">100</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:35%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+35%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--green)">↑</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:52.8%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">53</span></div></td>
+      <td><span class="score-badge">62</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">70</td>
+      <td><div class="td-coin"><div class="td-icon">ZR</div><div><div class="td-name">LayerZero</div><div class="td-sym">ZRO</div></div></div></td>
+      <td>$2.0370</td>
+      <td><span class="neg">-0.81%</span></td>
+      <td>$625M</td>
+      <td><span class="pos">-73%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:81%;background:var(--green)"></div></div><span style="font-size:11px">81</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:22%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+22%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--text-dim);font-size:11px">🟡 NEUTRE-</span> <span style="color:var(--text-dim)">→</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:51.0%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">51</span></div></td>
+      <td><span class="score-badge">61</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">73</td>
+      <td><div class="td-coin"><div class="td-icon">AR</div><div><div class="td-name">Arbitrum</div><div class="td-sym">ARB</div></div></div></td>
+      <td>$0.09985</td>
+      <td><span class="neg">-0.92%</span></td>
+      <td>$603M</td>
+      <td><span class="pos">-97%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:94%;background:var(--green)"></div></div><span style="font-size:11px">94</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:30%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+30%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--text-dim)">→</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:50.4%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">50</span></div></td>
+      <td><span class="score-badge">61</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">73</td>
+      <td><div class="td-coin"><div class="td-icon">GR</div><div><div class="td-name">The Graph</div><div class="td-sym">GRT</div></div></div></td>
+      <td>$0.06000</td>
+      <td><span class="pos">+0.50%</span></td>
+      <td>$490M</td>
+      <td><span class="pos">-97%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:100%;background:var(--green)"></div></div><span style="font-size:11px">100</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:30%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+30%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--text-dim)">→</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:52.8%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">53</span></div></td>
+      <td><span class="score-badge">61</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">68</td>
+      <td><div class="td-coin"><div class="td-icon">FI</div><div><div class="td-name">Filecoin</div><div class="td-sym">FIL</div></div></div></td>
+      <td>$0.90570</td>
+      <td><span class="pos">+0.96%</span></td>
+      <td>$691M</td>
+      <td><span class="pos">-98%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:97%;background:var(--green)"></div></div><span style="font-size:11px">97</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:30%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+30%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--text-dim)">→</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:52.0%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">52</span></div></td>
+      <td><span class="score-badge">60</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">89</td>
+      <td><div class="td-coin"><div class="td-icon">SE</div><div><div class="td-name">Sei</div><div class="td-sym">SEI</div></div></div></td>
+      <td>$0.06286</td>
+      <td><span class="neg">-1.84%</span></td>
+      <td>$431M</td>
+      <td><span class="pos">-96%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:99%;background:var(--green)"></div></div><span style="font-size:11px">99</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:28%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+28%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--text-dim)">→</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:50.4%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">50</span></div></td>
+      <td><span class="score-badge">59</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">91</td>
+      <td><div class="td-coin"><div class="td-icon">DC</div><div><div class="td-name">Decred</div><div class="td-sym">DCR</div></div></div></td>
+      <td>$24.6100</td>
+      <td><span class="neg">-5.63%</span></td>
+      <td>$427M</td>
+      <td><span class="pos">-92%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:92%;background:var(--green)"></div></div><span style="font-size:11px">92</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:12%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+12%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--text-dim);font-size:11px">🟡 NEUTRE-</span> <span style="color:var(--red)">↓</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:43.4%;background:var(--amber)"></div></div><span style="font-size:11px;color:var(--amber)">43</span></div></td>
+      <td><span class="score-badge">59</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">72</td>
+      <td><div class="td-coin"><div class="td-icon">VE</div><div><div class="td-name">VeChain</div><div class="td-sym">VET</div></div></div></td>
+      <td>$0.00722000</td>
+      <td><span class="neg">-1.24%</span></td>
+      <td>$621M</td>
+      <td><span class="pos">-95%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:90%;background:var(--green)"></div></div><span style="font-size:11px">90</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:28%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+28%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--text-dim)">→</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:50.6%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">51</span></div></td>
+      <td><span class="score-badge">55</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">63</td>
+      <td><div class="td-coin"><div class="td-icon">GT</div><div><div class="td-name">GateToken</div><div class="td-sym">GT</div></div></div></td>
+      <td>$6.8750</td>
+      <td><span class="pos">+0.80%</span></td>
+      <td>$792M</td>
+      <td><span class="">-55%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:79%;background:var(--green)"></div></div><span style="font-size:11px">79</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:20%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+20%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--text-dim);font-size:11px">🟡 NEUTRE-</span> <span style="color:var(--text-dim)">→</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:51.8%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">52</span></div></td>
+      <td><span class="score-badge">54</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">97</td>
+      <td><div class="td-coin"><div class="td-icon">CR</div><div><div class="td-name">Curve DAO</div><div class="td-sym">CRV</div></div></div></td>
+      <td>$0.23360</td>
+      <td><span class="neg">-1.38%</span></td>
+      <td>$345M</td>
+      <td><span class="pos">-98%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:85%;background:var(--green)"></div></div><span style="font-size:11px">85</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:18%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+18%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--text-dim);font-size:11px">🟡 NEUTRE-</span> <span style="color:var(--text-dim)">→</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:50.6%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">51</span></div></td>
+      <td><span class="score-badge">54</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">79</td>
+      <td><div class="td-coin"><div class="td-icon">JS</div><div><div class="td-name">JUST</div><div class="td-sym">JST</div></div></div></td>
+      <td>$0.05810</td>
+      <td><span class="neg">-0.77%</span></td>
+      <td>$512M</td>
+      <td><span class="pos">-82%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:72%;background:var(--green)"></div></div><span style="font-size:11px">72</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:15%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+15%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--text-dim);font-size:11px">🟡 NEUTRE-</span> <span style="color:var(--text-dim)">→</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:51.0%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">51</span></div></td>
+      <td><span class="score-badge">54</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">88</td>
+      <td><div class="td-coin"><div class="td-icon">XT</div><div><div class="td-name">Tezos</div><div class="td-sym">XTZ</div></div></div></td>
+      <td>$0.39990</td>
+      <td><span class="pos">+1.69%</span></td>
+      <td>$432M</td>
+      <td><span class="pos">-95%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:84%;background:var(--green)"></div></div><span style="font-size:11px">84</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:22%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+22%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--amber);font-size:11px">🟡 NEUTRE+</span> <span style="color:var(--text-dim)">→</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:52.2%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">52</span></div></td>
+      <td><span class="score-badge">53</span></td>
+    </tr><tr class="">
+      <td class="td-rank ">92</td>
+      <td><div class="td-coin"><div class="td-icon">DA</div><div><div class="td-name">Dash</div><div class="td-sym">DASH</div></div></div></td>
+      <td>$32.2900</td>
+      <td><span class="pos">+1.28%</span></td>
+      <td>$408M</td>
+      <td><span class="pos">-97%</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="mini-bar"><div class="mini-fill" style="width:100%;background:var(--green)"></div></div><span style="font-size:11px">100</span></div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="mini-bar"><div class="mini-fill" style="width:15%;background:var(--blue)"></div></div>
+          <span style="font-size:11px">+15%</span>
+        </div>
+      </td>
+      <td><span style="color:var(--text-dim);font-size:11px">🟡 NEUTRE-</span> <span style="color:var(--text-dim)">→</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:51.7%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">52</span></div></td>
+      <td><span class="score-badge">53</span></td>
+    </tr></tbody>
+    </table>
+  </div>
+
+</div>
+</main>
+
+<script>
+const COINS = [{"name": "ether.fi", "sym": "ETHFI", "price": 0.5983, "c24": 9.37, "c7": 18.5, "mc": 0.472, "rank": 83, "ath_pct": -85, "max_s": 1000, "scores": {"ath": 94, "growth": 100, "community": 63, "sentiment": 86, "tech": 62, "total": 84}, "rsi": 64.8, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"], ["tag-social", "COMM. +RAPIDE"]], "accel": true, "accel_count": 5, "sent_raw": 0.6, "sent_trend": 1, "news_vol": 72, "github": 65, "comm_grow": 78}, {"name": "Virtuals Protocol", "sym": "VIRTUAL", "price": 0.697, "c24": -3.66, "c7": 8.2, "mc": 0.458, "rank": 84, "ath_pct": -78, "max_s": 1000, "scores": {"ath": 95, "growth": 91, "community": 60, "sentiment": 82, "tech": 62, "total": 80}, "rsi": 56.6, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"], ["tag-social", "COMM. +RAPIDE"]], "accel": true, "accel_count": 3, "sent_raw": 0.5, "sent_trend": 1, "news_vol": 65, "github": 58, "comm_grow": 72}, {"name": "River", "sym": "RIVER", "price": 24.2, "c24": 27.72, "c7": 35.0, "mc": 0.474, "rank": 82, "ath_pct": -42, "max_s": 100, "scores": {"ath": 70, "growth": 100, "community": 50, "sentiment": 92, "tech": 55, "total": 78}, "rsi": 78.0, "tags": [["tag-rare", "OFFRE LIMIT\u00c9E"], ["tag-social", "COMM. +RAPIDE"], ["tag-bull", "MOMENTUM 7J"]], "accel": true, "accel_count": 4, "sent_raw": 0.7, "sent_trend": 1, "news_vol": 92, "github": 25, "comm_grow": 95}, {"name": "Chainlink", "sym": "LINK", "price": 9.14, "c24": 0.36, "c7": 2.3, "mc": 6.472, "rank": 14, "ath_pct": -87, "max_s": 1000, "scores": {"ath": 92, "growth": 74, "community": 67, "sentiment": 84, "tech": 65, "total": 77}, "rsi": 51.8, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"], ["tag-social", "SENTIMENT +"]], "accel": true, "accel_count": 3, "sent_raw": 0.5, "sent_trend": 1, "news_vol": 78, "github": 75, "comm_grow": 58}, {"name": "TRUMP", "sym": "TRUMP", "price": 3.357, "c24": 0.58, "c7": 5.1, "mc": 0.781, "rank": 64, "ath_pct": -81, "max_s": 1000, "scores": {"ath": 96, "growth": 94, "community": 39, "sentiment": 81, "tech": 77, "total": 75}, "rsi": 54.1, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 3, "sent_raw": 0.4, "sent_trend": 1, "news_vol": 75, "github": 5, "comm_grow": 68}, {"name": "Jupiter", "sym": "JUP", "price": 0.1608, "c24": 0.46, "c7": 3.8, "mc": 0.562, "rank": 75, "ath_pct": -81, "max_s": 10000, "scores": {"ath": 96, "growth": 89, "community": 53, "sentiment": 73, "tech": 77, "total": 75}, "rsi": 53.0, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 3, "sent_raw": 0.3, "sent_trend": 1, "news_vol": 42, "github": 62, "comm_grow": 48}, {"name": "Render", "sym": "RENDER", "price": 1.7, "c24": -1.86, "c7": 2.1, "mc": 0.882, "rank": 59, "ath_pct": -88, "max_s": 536, "scores": {"ath": 92, "growth": 86, "community": 49, "sentiment": 74, "tech": 60, "total": 73}, "rsi": 51.7, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 1, "sent_raw": 0.3, "sent_trend": 1, "news_vol": 50, "github": 60, "comm_grow": 42}, {"name": "Solana", "sym": "SOL", "price": 90.16, "c24": 1.25, "c7": 3.4, "mc": 51.54, "rank": 7, "ath_pct": -72, "max_s": 0, "scores": {"ath": 91, "growth": 45, "community": 79, "sentiment": 90, "tech": 77, "total": 73}, "rsi": 52.7, "tags": [["tag-bull", "DEEP VALUE"], ["tag-social", "SENTIMENT +"]], "accel": true, "accel_count": 4, "sent_raw": 0.6, "sent_trend": 1, "news_vol": 95, "github": 88, "comm_grow": 68}, {"name": "Cosmos", "sym": "ATOM", "price": 1.853, "c24": 1.94, "c7": 3.2, "mc": 0.924, "rank": 58, "ath_pct": -93, "max_s": 0, "scores": {"ath": 90, "growth": 79, "community": 57, "sentiment": 72, "tech": 65, "total": 72}, "rsi": 52.6, "tags": [["tag-tech", "DEEP OVERSOLD"]], "accel": true, "accel_count": 3, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 55, "github": 72, "comm_grow": 38}, {"name": "Morpho", "sym": "MORPHO", "price": 1.773, "c24": 0.98, "c7": 3.2, "mc": 0.716, "rank": 66, "ath_pct": -60, "max_s": 1000, "scores": {"ath": 84, "growth": 79, "community": 58, "sentiment": 72, "tech": 77, "total": 72}, "rsi": 52.6, "tags": [["tag-bull", "REBOND POTENTIEL"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 4, "sent_raw": 0.3, "sent_trend": 1, "news_vol": 35, "github": 82, "comm_grow": 55}, {"name": "Gnosis", "sym": "GNO", "price": 131.2, "c24": -0.36, "c7": 1.2, "mc": 0.346, "rank": 96, "ath_pct": -85, "max_s": 3, "scores": {"ath": 94, "growth": 91, "community": 46, "sentiment": 68, "tech": 60, "total": 72}, "rsi": 51.0, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 2, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 28, "github": 72, "comm_grow": 25}, {"name": "DeXe", "sym": "DEXE", "price": 6.271, "c24": 1.16, "c7": 5.2, "mc": 0.525, "rank": 77, "ath_pct": -72, "max_s": 99, "scores": {"ath": 91, "growth": 89, "community": 45, "sentiment": 72, "tech": 77, "total": 72}, "rsi": 54.2, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 2, "sent_raw": 0.3, "sent_trend": 1, "news_vol": 38, "github": 55, "comm_grow": 45}, {"name": "Pump.fun", "sym": "PUMP", "price": 0.00188, "c24": -0.77, "c7": -2.1, "mc": 0.624, "rank": 71, "ath_pct": -75, "max_s": 0, "scores": {"ath": 93, "growth": 64, "community": 54, "sentiment": 85, "tech": 72, "total": 71}, "rsi": 48.3, "tags": [["tag-bull", "DEEP VALUE"], ["tag-social", "COMM. +RAPIDE"], ["tag-social", "SENTIMENT +"]], "accel": false, "accel_count": 2, "sent_raw": 0.5, "sent_trend": 1, "news_vol": 85, "github": 15, "comm_grow": 88}, {"name": "Polkadot", "sym": "DOT", "price": 1.498, "c24": -1.91, "c7": -3.2, "mc": 2.511, "rank": 33, "ath_pct": -95, "max_s": 1000, "scores": {"ath": 20, "growth": 80, "community": 74, "sentiment": 89, "tech": 60, "total": 71}, "rsi": 47.4, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"], ["tag-social", "COMM. +RAPIDE"]], "accel": true, "accel_count": 3, "sent_raw": 0.6, "sent_trend": 1, "news_vol": 88, "github": 82, "comm_grow": 72}, {"name": "XDC Network", "sym": "XDC", "price": 0.0323, "c24": 0.66, "c7": 2.9, "mc": 0.645, "rank": 69, "ath_pct": -94, "max_s": 37700, "scores": {"ath": 89, "growth": 93, "community": 39, "sentiment": 68, "tech": 65, "total": 70}, "rsi": 52.3, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 1, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 32, "github": 42, "comm_grow": 40}, {"name": "Pudgy Penguins", "sym": "PENGU", "price": 0.0071, "c24": -2.54, "c7": 5.2, "mc": 0.446, "rank": 86, "ath_pct": -72, "max_s": 0, "scores": {"ath": 91, "growth": 77, "community": 41, "sentiment": 78, "tech": 72, "total": 69}, "rsi": 54.2, "tags": [["tag-bull", "DEEP VALUE"]], "accel": true, "accel_count": 3, "sent_raw": 0.4, "sent_trend": 1, "news_vol": 55, "github": 20, "comm_grow": 62}, {"name": "Injective", "sym": "INJ", "price": 3.62, "c24": 0.8, "c7": 5.4, "mc": 0.53, "rank": 71, "ath_pct": -95, "max_s": 100, "scores": {"ath": 20, "growth": 98, "community": 60, "sentiment": 74, "tech": 65, "total": 69}, "rsi": 54.3, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 4, "sent_raw": 0.3, "sent_trend": 1, "news_vol": 48, "github": 75, "comm_grow": 52}, {"name": "Artificial Super", "sym": "FET", "price": 0.2253, "c24": -1.29, "c7": 2.5, "mc": 0.509, "rank": 80, "ath_pct": -97, "max_s": 2630, "scores": {"ath": 20, "growth": 94, "community": 61, "sentiment": 79, "tech": 60, "total": 69}, "rsi": 52.0, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 3, "sent_raw": 0.4, "sent_trend": 1, "news_vol": 62, "github": 72, "comm_grow": 55}, {"name": "ANKR", "sym": "ANKR", "price": 0.011, "c24": -0.5, "c7": 2.8, "mc": 0.105, "rank": 96, "ath_pct": -98, "max_s": 10000, "scores": {"ath": 20, "growth": 99, "community": 54, "sentiment": 78, "tech": 60, "total": 68}, "rsi": 52.2, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 2, "sent_raw": 0.4, "sent_trend": 1, "news_vol": 55, "github": 55, "comm_grow": 62}, {"name": "Optimism", "sym": "OP", "price": 0.29, "c24": 0.6, "c7": 4.1, "mc": 0.51, "rank": 72, "ath_pct": -97, "max_s": 4294, "scores": {"ath": 20, "growth": 97, "community": 58, "sentiment": 70, "tech": 65, "total": 67}, "rsi": 53.3, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 3, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 45, "github": 78, "comm_grow": 38}, {"name": "Ethereum", "sym": "ETH", "price": 2156, "c24": 0.39, "c7": 5.4, "mc": 260.3, "rank": 2, "ath_pct": -63, "max_s": 0, "scores": {"ath": 86, "growth": 50, "community": 72, "sentiment": 65, "tech": 77, "total": 66}, "rsi": 54.3, "tags": [["tag-bull", "REBOND POTENTIEL"]], "accel": false, "accel_count": 2, "sent_raw": 0.3, "sent_trend": 0, "news_vol": 90, "github": 90, "comm_grow": 45}, {"name": "dYdX", "sym": "DYDX", "price": 0.34, "c24": 0.7, "c7": 4.9, "mc": 0.39, "rank": 78, "ath_pct": -96, "max_s": 1000, "scores": {"ath": 20, "growth": 100, "community": 52, "sentiment": 69, "tech": 65, "total": 66}, "rsi": 53.9, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 3, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 38, "github": 68, "comm_grow": 40}, {"name": "Immutable", "sym": "IMX", "price": 0.23, "c24": 0.5, "c7": 3.7, "mc": 0.34, "rank": 81, "ath_pct": -97, "max_s": 2000, "scores": {"ath": 20, "growth": 100, "community": 51, "sentiment": 70, "tech": 65, "total": 66}, "rsi": 53.0, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 3, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 42, "github": 65, "comm_grow": 38}, {"name": "Kaspa", "sym": "KAS", "price": 0.03675, "c24": -2.81, "c7": -8.5, "mc": 1.003, "rank": 55, "ath_pct": -82, "max_s": 0, "scores": {"ath": 95, "growth": 62, "community": 52, "sentiment": 67, "tech": 72, "total": 65}, "rsi": 43.2, "tags": [["tag-bull", "DEEP VALUE"]], "accel": false, "accel_count": 2, "sent_raw": 0.1, "sent_trend": 1, "news_vol": 45, "github": 55, "comm_grow": 62}, {"name": "Aptos", "sym": "APT", "price": 1.021, "c24": 2.08, "c7": 4.8, "mc": 0.81, "rank": 61, "ath_pct": -95, "max_s": 1000, "scores": {"ath": 20, "growth": 93, "community": 56, "sentiment": 71, "tech": 65, "total": 65}, "rsi": 53.8, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 4, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 48, "github": 78, "comm_grow": 45}, {"name": "PancakeSwap", "sym": "CAKE", "price": 1.388, "c24": -2.52, "c7": -0.8, "mc": 0.457, "rank": 85, "ath_pct": -92, "max_s": 750, "scores": {"ath": 90, "growth": 92, "community": 40, "sentiment": 48, "tech": 60, "total": 65}, "rsi": 49.4, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 0, "sent_raw": 0.0, "sent_trend": 0, "news_vol": 35, "github": 55, "comm_grow": 20}, {"name": "Stacks", "sym": "STX", "price": 0.2458, "c24": -0.98, "c7": 3.1, "mc": 0.446, "rank": 87, "ath_pct": -95, "max_s": 1818, "scores": {"ath": 20, "growth": 95, "community": 53, "sentiment": 70, "tech": 60, "total": 65}, "rsi": 52.5, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 3, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 40, "github": 68, "comm_grow": 38}, {"name": "Thorchain", "sym": "RUNE", "price": 0.67, "c24": 0.7, "c7": 4.8, "mc": 0.45, "rank": 75, "ath_pct": -95, "max_s": 500, "scores": {"ath": 20, "growth": 98, "community": 51, "sentiment": 69, "tech": 65, "total": 65}, "rsi": 53.8, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 3, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 35, "github": 65, "comm_grow": 42}, {"name": "Helium", "sym": "HNT", "price": 1.85, "c24": 0.6, "c7": 4.3, "mc": 0.36, "rank": 80, "ath_pct": -97, "max_s": 223, "scores": {"ath": 20, "growth": 100, "community": 48, "sentiment": 72, "tech": 65, "total": 65}, "rsi": 53.4, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 2, "sent_raw": 0.3, "sent_trend": 1, "news_vol": 35, "github": 58, "comm_grow": 45}, {"name": "Nexo", "sym": "NEXO", "price": 0.8998, "c24": 0.01, "c7": 1.5, "mc": 0.581, "rank": 74, "ath_pct": -76, "max_s": 1000, "scores": {"ath": 94, "growth": 84, "community": 28, "sentiment": 67, "tech": 77, "total": 64}, "rsi": 51.2, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 1, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 22, "github": 35, "comm_grow": 25}, {"name": "Conflux", "sym": "CFX", "price": 0.0651, "c24": 2.27, "c7": 4.8, "mc": 0.338, "rank": 98, "ath_pct": -97, "max_s": 5000, "scores": {"ath": 20, "growth": 100, "community": 45, "sentiment": 68, "tech": 65, "total": 64}, "rsi": 53.8, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": true, "accel_count": 3, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 32, "github": 55, "comm_grow": 40}, {"name": "Algorand", "sym": "ALGO", "price": 0.0894, "c24": -0.99, "c7": 1.5, "mc": 0.795, "rank": 62, "ath_pct": -97, "max_s": 10000, "scores": {"ath": 20, "growth": 94, "community": 50, "sentiment": 67, "tech": 60, "total": 63}, "rsi": 51.2, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 2, "sent_raw": 0.1, "sent_trend": 1, "news_vol": 42, "github": 65, "comm_grow": 35}, {"name": "Flare", "sym": "FLR", "price": 0.00832, "c24": -0.58, "c7": 1.8, "mc": 0.709, "rank": 67, "ath_pct": -93, "max_s": 0, "scores": {"ath": 90, "growth": 76, "community": 36, "sentiment": 65, "tech": 60, "total": 63}, "rsi": 51.4, "tags": [["tag-tech", "DEEP OVERSOLD"]], "accel": false, "accel_count": 1, "sent_raw": 0.1, "sent_trend": 1, "news_vol": 30, "github": 45, "comm_grow": 32}, {"name": "Pyth Network", "sym": "PYTH", "price": 0.07, "c24": 0.5, "c7": 3.6, "mc": 0.41, "rank": 77, "ath_pct": -95, "max_s": 10000, "scores": {"ath": 20, "growth": 98, "community": 45, "sentiment": 68, "tech": 65, "total": 63}, "rsi": 52.9, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 2, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 32, "github": 60, "comm_grow": 38}, {"name": "Ethena", "sym": "ENA", "price": 0.1018, "c24": -2.97, "c7": -4.1, "mc": 0.865, "rank": 60, "ath_pct": -93, "max_s": 15000, "scores": {"ath": 90, "growth": 87, "community": 37, "sentiment": 45, "tech": 60, "total": 62}, "rsi": 46.7, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 0, "sent_raw": -0.1, "sent_trend": 0, "news_vol": 38, "github": 48, "comm_grow": 28}, {"name": "Chiliz", "sym": "CHZ", "price": 0.03648, "c24": 1.76, "c7": 3.5, "mc": 0.377, "rank": 95, "ath_pct": -97, "max_s": 8888, "scores": {"ath": 20, "growth": 100, "community": 40, "sentiment": 69, "tech": 65, "total": 62}, "rsi": 52.8, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 2, "sent_raw": 0.2, "sent_trend": 1, "news_vol": 38, "github": 42, "comm_grow": 35}, {"name": "LayerZero", "sym": "ZRO", "price": 2.037, "c24": -0.81, "c7": 1.2, "mc": 0.625, "rank": 70, "ath_pct": -73, "max_s": 1000, "scores": {"ath": 92, "growth": 81, "community": 36, "sentiment": 47, "tech": 72, "total": 61}, "rsi": 51.0, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 0, "sent_raw": 0.0, "sent_trend": 0, "news_vol": 28, "github": 55, "comm_grow": 22}, {"name": "Arbitrum", "sym": "ARB", "price": 0.09985, "c24": -0.92, "c7": 0.5, "mc": 0.603, "rank": 73, "ath_pct": -97, "max_s": 10000, "scores": {"ath": 20, "growth": 94, "community": 54, "sentiment": 53, "tech": 60, "total": 61}, "rsi": 50.4, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 1, "sent_raw": 0.1, "sent_trend": 0, "news_vol": 48, "github": 75, "comm_grow": 30}, {"name": "The Graph", "sym": "GRT", "price": 0.06, "c24": 0.5, "c7": 3.5, "mc": 0.49, "rank": 73, "ath_pct": -97, "max_s": 10000, "scores": {"ath": 20, "growth": 100, "community": 50, "sentiment": 51, "tech": 65, "total": 61}, "rsi": 52.8, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 2, "sent_raw": 0.1, "sent_trend": 0, "news_vol": 38, "github": 70, "comm_grow": 30}, {"name": "Filecoin", "sym": "FIL", "price": 0.9057, "c24": 0.96, "c7": 2.5, "mc": 0.691, "rank": 68, "ath_pct": -98, "max_s": 2000, "scores": {"ath": 20, "growth": 97, "community": 50, "sentiment": 52, "tech": 65, "total": 60}, "rsi": 52.0, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 1, "sent_raw": 0.1, "sent_trend": 0, "news_vol": 45, "github": 68, "comm_grow": 30}, {"name": "Sei", "sym": "SEI", "price": 0.06286, "c24": -1.84, "c7": 0.5, "mc": 0.431, "rank": 89, "ath_pct": -96, "max_s": 10000, "scores": {"ath": 20, "growth": 99, "community": 44, "sentiment": 51, "tech": 60, "total": 59}, "rsi": 50.4, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 1, "sent_raw": 0.1, "sent_trend": 0, "news_vol": 35, "github": 65, "comm_grow": 28}, {"name": "Decred", "sym": "DCR", "price": 24.61, "c24": -5.63, "c7": -8.2, "mc": 0.427, "rank": 91, "ath_pct": -92, "max_s": 21, "scores": {"ath": 90, "growth": 92, "community": 38, "sentiment": 27, "tech": 60, "total": 59}, "rsi": 43.4, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 1, "sent_raw": -0.1, "sent_trend": -1, "news_vol": 18, "github": 72, "comm_grow": 12}, {"name": "VeChain", "sym": "VET", "price": 0.00722, "c24": -1.24, "c7": 0.8, "mc": 0.621, "rank": 72, "ath_pct": -95, "max_s": 86712, "scores": {"ath": 20, "growth": 90, "community": 41, "sentiment": 51, "tech": 60, "total": 55}, "rsi": 50.6, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 0, "sent_raw": 0.1, "sent_trend": 0, "news_vol": 35, "github": 50, "comm_grow": 28}, {"name": "GateToken", "sym": "GT", "price": 6.875, "c24": 0.8, "c7": 2.3, "mc": 0.792, "rank": 63, "ath_pct": -55, "max_s": 300, "scores": {"ath": 80, "growth": 79, "community": 24, "sentiment": 46, "tech": 77, "total": 54}, "rsi": 51.8, "tags": [["tag-bull", "REBOND POTENTIEL"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 0, "sent_raw": 0.0, "sent_trend": 0, "news_vol": 25, "github": 30, "comm_grow": 20}, {"name": "Curve DAO", "sym": "CRV", "price": 0.2336, "c24": -1.38, "c7": 0.8, "mc": 0.345, "rank": 97, "ath_pct": -98, "max_s": 0, "scores": {"ath": 20, "growth": 85, "community": 45, "sentiment": 48, "tech": 60, "total": 54}, "rsi": 50.6, "tags": [["tag-tech", "DEEP OVERSOLD"]], "accel": false, "accel_count": 1, "sent_raw": 0.0, "sent_trend": 0, "news_vol": 40, "github": 68, "comm_grow": 18}, {"name": "JUST", "sym": "JST", "price": 0.0581, "c24": -0.77, "c7": 1.2, "mc": 0.512, "rank": 79, "ath_pct": -82, "max_s": 0, "scores": {"ath": 95, "growth": 72, "community": 22, "sentiment": 46, "tech": 72, "total": 54}, "rsi": 51.0, "tags": [["tag-bull", "DEEP VALUE"]], "accel": false, "accel_count": 0, "sent_raw": 0.0, "sent_trend": 0, "news_vol": 20, "github": 30, "comm_grow": 15}, {"name": "Tezos", "sym": "XTZ", "price": 0.3999, "c24": 1.69, "c7": 2.8, "mc": 0.432, "rank": 88, "ath_pct": -95, "max_s": 0, "scores": {"ath": 20, "growth": 84, "community": 41, "sentiment": 50, "tech": 65, "total": 53}, "rsi": 52.2, "tags": [["tag-tech", "DEEP OVERSOLD"]], "accel": false, "accel_count": 0, "sent_raw": 0.1, "sent_trend": 0, "news_vol": 30, "github": 60, "comm_grow": 22}, {"name": "Dash", "sym": "DASH", "price": 32.29, "c24": 1.28, "c7": 2.1, "mc": 0.408, "rank": 92, "ath_pct": -97, "max_s": 19, "scores": {"ath": 20, "growth": 100, "community": 29, "sentiment": 46, "tech": 65, "total": 53}, "rsi": 51.7, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"]], "accel": false, "accel_count": 0, "sent_raw": 0.0, "sent_trend": 0, "news_vol": 22, "github": 45, "comm_grow": 15}];
+let weights = {growth:30, community:30, sentiment:25, ath:15};
+let sortKey = 'total', sortDir = -1;
+let activeFilter = 'alert';
+
+function rsiColor(r){
+  if(r<30) return 'var(--green)';if(r<45) return 'var(--amber)';if(r<70) return 'var(--blue)';return 'var(--red)';
+}
+function fmtP(n){
+  if(!n) return '—';
+  if(n>=1000) return '$'+n.toLocaleString('fr-FR',{maximumFractionDigits:0});
+  if(n>=1) return '$'+n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:4});
+  return '$'+n.toLocaleString('fr-FR',{minimumFractionDigits:4,maximumFractionDigits:8});
+}
+function fmtM(m){
+  if(m>=1000) return '$'+(m/1000).toFixed(1)+'T';
+  if(m>=1) return '$'+m.toFixed(2)+'B';
+  return '$'+(m*1000).toFixed(0)+'M';
+}
+function sentBadge(s){
+  if(s>0.3) return ['🟢','POSITIF','var(--green)'];
+  if(s>0) return ['🟡','NEUTRE+','var(--amber)'];
+  if(s>-0.3) return ['🟡','NEUTRE-','var(--text-dim)'];
+  return ['🔴','NÉGATIF','var(--red)'];
+}
+function trendArrow(t){
+  return t===1?['↑','var(--green)']:t===-1?['↓','var(--red)']:['→','var(--text-dim)'];
+}
+
+function recompute(){
+  const g=+document.getElementById('sliderGrowth').value;
+  const c=+document.getElementById('sliderCommunity').value;
+  const s=+document.getElementById('sliderSentiment').value;
+  const a=+document.getElementById('sliderAth').value;
+  const tot=g+c+s+a||1;
+  weights={growth:Math.round(g/tot*100),community:Math.round(c/tot*100),sentiment:Math.round(s/tot*100),ath:Math.round(a/tot*100)};
+  document.getElementById('wGrowth').textContent=weights.growth+'%';
+  document.getElementById('wCommunity').textContent=weights.community+'%';
+  document.getElementById('wSentiment').textContent=weights.sentiment+'%';
+  document.getElementById('wAth').textContent=weights.ath+'%';
+
+  const recomputed = COINS.map(c=>({
+    ...c,
+    total: Math.round((c.scores.growth*weights.growth+c.scores.community*weights.community+c.scores.sentiment*weights.sentiment+c.scores.ath*weights.ath)/100)
+  })).sort((a,b)=>b.total-a.total);
+
+  renderTop5(recomputed);
+  renderTable(recomputed);
+}
+
+function renderTop5(coins){
+  const top5=coins.slice(0,5);
+  const labels=['#1 — MEILLEURE PÉPITE','#2 — FORTE CONVICTION','#3 — À SURVEILLER','#4 — POTENTIEL','#5 — INTÉRESSANT'];
+  const rks=['rank-1','rank-2','rank-3','',''];
+  document.getElementById('top5Grid').innerHTML=top5.map((c,i)=>{
+    const s=c.scores,tot=c.total,rc=rsiColor(c.rsi);
+    const [si,sl,sc]=sentBadge(c.sent_raw);
+    const [ta,tc]=trendArrow(c.sent_trend);
+    const tags=c.tags.map(t=>`<span class="tag ${t[0]}">${t[1]}</span>`).join('');
+    const alert_html=c.accel?'<div class="alert-badge">🚨 SIGNAL ACCÉLÉRATION</div>':'';
+    return `<div class="card ${rks[i]}">
+      ${alert_html}
+      <div class="card-rank">${labels[i]}</div>
+      <div class="card-header">
+        <div class="coin-info">
+          <div class="coin-icon">${c.sym.substring(0,3)}</div>
+          <div><div class="coin-name">${c.name}</div><div class="coin-symbol">${c.sym} · #${c.rank}</div></div>
+        </div>
+        <div class="coin-price">
+          <div class="price-val">${fmtP(c.price)}</div>
+          <div class="price-change ${c.c24>=0?'pos':'neg'}">${c.c24>=0?'+':''}${c.c24.toFixed(2)}%</div>
+        </div>
+      </div>
+      <div class="total-score"><div class="score-num">${tot}</div><div class="score-max">/ 100</div></div>
+      <div class="score-bars">
+        <div class="bar-row bar-growth"><div class="bar-label">CROISSANCE</div><div class="bar-track"><div class="bar-fill" style="width:${s.growth}%"></div></div><div class="bar-score">${s.growth}</div></div>
+        <div class="bar-row bar-community"><div class="bar-label">COMM. Δ</div><div class="bar-track"><div class="bar-fill" style="width:${s.community}%"></div></div><div class="bar-score">${s.community}</div></div>
+        <div class="bar-row bar-sentiment"><div class="bar-label">SENTIMENT</div><div class="bar-track"><div class="bar-fill" style="width:${s.sentiment}%"></div></div><div class="bar-score">${s.sentiment}</div></div>
+        <div class="bar-row bar-ath"><div class="bar-label">DIST. ATH</div><div class="bar-track"><div class="bar-fill" style="width:${s.ath}%"></div></div><div class="bar-score">${s.ath}</div></div>
+      </div>
+      <div class="metrics-row">
+        <div class="metric"><div class="metric-val ${c.ath_pct<0?'neg':'pos'}">${c.ath_pct.toFixed(0)}%</div><div class="metric-label">vs ATH</div></div>
+        <div class="metric"><div class="metric-val" style="color:${rc}">${c.rsi.toFixed(0)}</div><div class="metric-label">RSI</div></div>
+        <div class="metric"><div class="metric-val" style="color:${sc}">${si} ${sl} <span style="color:${tc}">${ta}</span></div><div class="metric-label">SENTIMENT 7J</div></div>
+      </div>
+      <div class="community-bar">
+        <span class="comm-label">COMM Δ</span>
+        <div class="comm-track"><div class="comm-fill" style="width:${c.comm_grow}%"></div></div>
+        <span class="comm-val">+${c.comm_grow}%</span>
+        <span class="comm-label" style="margin-left:10px">GIT</span>
+        <div class="comm-track"><div class="comm-fill" style="width:${c.github}%;background:var(--purple)"></div></div>
+        <span class="comm-val" style="color:var(--purple)">${c.github}</span>
+      </div>
+      <div class="tags">${tags}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderTable(coins){
+  const top5syms=coins.slice(0,5).map(c=>c.sym);
+  let filtered=coins;
+  if(activeFilter==='alert') filtered=coins.filter(c=>c.accel);
+  else if(activeFilter==='sentiment+') filtered=coins.filter(c=>c.sent_raw>0.2);
+  else if(activeFilter==='community+') filtered=coins.filter(c=>c.comm_grow>50);
+
+  if(!filtered.length){
+    document.getElementById('tableBody').innerHTML=`<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--text-dim);font-size:12px">Aucun résultat pour ce filtre</td></tr>`;
+    return;
+  }
+
+  document.getElementById('tableBody').innerHTML=filtered.map(c=>{
+    const isTop=top5syms.includes(c.sym);
+    const s=c.scores,tot=c.total,rc=rsiColor(c.rsi);
+    const [si,sl,sc]=sentBadge(c.sent_raw);
+    const [ta,tc]=trendArrow(c.sent_trend);
+    const alert_cell=c.accel?'<span class="alert-mini">🚨</span>':'';
+    return `<tr class="${c.accel?'tr-alert':''}">
+      <td class="td-rank ${isTop?'td-top':''}">${alert_cell}${isTop?'★ ':''}${c.rank}</td>
+      <td><div class="td-coin"><div class="td-icon">${c.sym.substring(0,2)}</div><div><div class="td-name">${c.name}</div><div class="td-sym">${c.sym}</div></div></div></td>
+      <td>${fmtP(c.price)}</td>
+      <td><span class="${c.c24>=0?'pos':'neg'}">${c.c24>=0?'+':''}${c.c24.toFixed(2)}%</span></td>
+      <td>${fmtM(c.mc)}</td>
+      <td><span class="${Math.abs(c.ath_pct)>70?'pos':''}">${c.ath_pct.toFixed(0)}%</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-bar"><div class="mini-fill" style="width:${s.growth}%;background:var(--green)"></div></div><span style="font-size:11px">${s.growth}</span></div></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="mini-bar"><div class="mini-fill" style="width:${c.comm_grow}%;background:var(--blue)"></div></div><span style="font-size:11px;color:var(--blue)">+${c.comm_grow}%</span></div></td>
+      <td><span style="color:${sc};font-size:10px">${si} ${sl}</span> <span style="color:${tc};font-size:10px">${ta}</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="rsi-gauge"><div class="rsi-fill" style="width:${c.rsi}%;background:${rc}"></div></div><span style="font-size:10px;color:${rc}">${c.rsi.toFixed(0)}</span></div></td>
+      <td><span class="score-badge">${tot}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterTable(f){
+  activeFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('f-'+f.replace('+',''))?.classList.add('active');
+  const recomputed=COINS.map(c=>({...c,total:Math.round((c.scores.growth*weights.growth+c.scores.community*weights.community+c.scores.sentiment*weights.sentiment+c.scores.ath*weights.ath)/100)})).sort((a,b)=>b.total-a.total);
+  renderTable(recomputed);
+}
+
+// Sorting
+document.querySelectorAll('th[data-key]').forEach(th=>{
+  th.addEventListener('click',()=>{
+    const key=th.dataset.key;
+    document.querySelectorAll('th').forEach(t=>t.classList.remove('sort-active','sort-asc','sort-desc'));
+    if(sortKey===key) sortDir*=-1; else{sortKey=key;sortDir=-1;}
+    th.classList.add('sort-active',sortDir===-1?'sort-desc':'sort-asc');
+    const keyMap={rank:'rank',price:'price',c24:'c24',mc:'mc',ath_pct:'ath_pct',growthScore:'scores.growth',comm_grow:'comm_grow',sentiment:'scores.sentiment',tech:'scores.tech',total:'total'};
+    const getV=(c,k)=>{
+      if(k==='scores.growth') return c.scores.growth;
+      if(k==='scores.community') return c.scores.community;
+      if(k==='scores.sentiment') return c.scores.sentiment;
+      if(k==='scores.tech') return c.scores.tech;
+      if(k==='ath_pct') return Math.abs(c.ath_pct);
+      return c[k];
+    };
+    const sorted=[...COINS].map(c=>({...c,total:Math.round((c.scores.growth*weights.growth+c.scores.community*weights.community+c.scores.sentiment*weights.sentiment+c.scores.ath*weights.ath)/100)})).sort((a,b)=>sortDir*(getV(b,keyMap[key]||key)-getV(a,keyMap[key]||key)));
+    renderTable(sorted);
+  });
+});
+
+// Init with alert filter
+filterTable('alert');
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
