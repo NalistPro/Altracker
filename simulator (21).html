@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Simulateur — Altcoin Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=IBM+Plex+Mono:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/1.2.1/chartjs-plugin-zoom.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#f5c518;--green:#00ff9d;--red:#ff3b5c;
+  --blue:#00c8ff;--orange:#ff6b35;--amber:#ff8c00;--purple:#bd93f9;
+  --bg:#060810;--bg2:#0c1020;--bg3:#111827;
+  --border:rgba(245,197,24,0.15);--bright:rgba(245,197,24,0.5);
+  --text:#e0e8f0;--dim:#6b7a8d
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:"IBM Plex Mono",monospace}
+body{display:flex;flex-direction:column}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(245,197,24,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(245,197,24,.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+
+/* HEADER */
+#hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-bottom:1px solid var(--border);background:rgba(6,8,16,.97);flex-shrink:0;z-index:10;gap:12px;flex-wrap:wrap}
+.logo{font-family:"Orbitron",sans-serif;font-size:13px;color:var(--orange);letter-spacing:3px;font-weight:900}
+.logo span{color:var(--dim);font-weight:400}
+.disc{font-size:9px;color:var(--orange);letter-spacing:1px;border:1px solid rgba(255,107,53,.3);padding:3px 9px;background:rgba(255,107,53,.05)}
+.back{color:var(--dim);font-size:10px;letter-spacing:2px;text-decoration:none;border:1px solid var(--border);padding:5px 12px;transition:.2s}
+.back:hover{color:var(--text);border-color:var(--bright)}
+
+/* TABS */
+#tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--bg2)}
+.tab{padding:10px 20px;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:2px;cursor:pointer;border:none;background:transparent;color:var(--dim);border-bottom:2px solid transparent;text-transform:uppercase;transition:.2s}
+.tab:hover{color:var(--text)}
+.tab.on{color:var(--orange);border-bottom-color:var(--orange)}
+
+/* PANELS */
+.panel{display:none;flex:1;overflow:hidden}
+.panel.on{display:flex;flex-direction:column}
+
+/* ── SIMULATEUR PANEL ── */
+#simPanel{flex-direction:row!important}
+#left{width:260px;flex-shrink:0;border-right:1px solid var(--border);padding:14px;display:flex;flex-direction:column;gap:11px;background:var(--bg2);overflow-y:auto}
+#left::-webkit-scrollbar{width:2px}
+#left::-webkit-scrollbar-thumb{background:var(--border)}
+#right{flex:1;padding:14px;display:flex;flex-direction:column;gap:8px;overflow:hidden;min-width:0}
+.lbl{font-size:9px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;margin-bottom:4px;display:block}
+#amount{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:"IBM Plex Mono",monospace;font-size:15px;padding:8px 10px;outline:none;min-width:0}
+#amount:focus{border-color:var(--bright)}
+#coinGrid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.cbtn{background:var(--bg3);border:1px solid var(--border);color:var(--dim);font-family:"IBM Plex Mono",monospace;font-size:9px;padding:6px 4px;cursor:pointer;text-align:center;letter-spacing:1px;text-transform:uppercase;line-height:1.5;transition:.15s}
+.cbtn:hover,.cbtn.on{border-color:var(--orange);color:var(--orange);background:rgba(255,107,53,.08)}
+#riskGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.rbtn{padding:8px 3px;border:1px solid var(--border);background:transparent;color:var(--dim);font-family:"IBM Plex Mono",monospace;font-size:9px;cursor:pointer;text-align:center;text-transform:uppercase;transition:.15s}
+.rbtn.rc.on{border-color:var(--green);color:var(--green);background:rgba(0,255,157,.06)}
+.rbtn.rm.on{border-color:var(--amber);color:var(--amber);background:rgba(255,140,0,.06)}
+.rbtn.ra.on{border-color:var(--red);color:var(--red);background:rgba(255,59,92,.06)}
+#res{background:var(--bg3);border:1px solid var(--border);padding:9px;font-size:11px;flex-shrink:0}
+.rrow{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.rrow:last-child{border-bottom:none}
+.rlbl{font-size:9px;letter-spacing:1px;color:var(--dim);text-transform:uppercase}
+.rval{font-family:"Share Tech Mono",monospace;font-size:11px;text-align:right}
+
+/* TRAILING STATUS */
+#trailBox{background:rgba(245,197,24,.04);border:1px solid rgba(245,197,24,.2);padding:8px;font-size:10px;display:none}
+#trailBox.on{display:block}
+.trail-row{display:flex;justify-content:space-between;padding:2px 0;font-size:10px}
+
+/* BUY BUTTON */
+#buyBtn{width:100%;background:var(--orange);border:none;color:var(--bg);font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:2px;padding:11px;cursor:pointer;font-weight:600;text-transform:uppercase;transition:.2s;flex-shrink:0}
+#buyBtn:hover{opacity:.85}
+#buyBtn:disabled{opacity:.4;cursor:not-allowed}
+
+/* POSITION ACTIVE */
+#posBox{background:rgba(0,255,157,.04);border:1px solid rgba(0,255,157,.3);padding:9px;font-size:10px;display:none}
+#posBox.on{display:block}
+.pos-title{font-family:"Orbitron",sans-serif;font-size:10px;color:var(--green);letter-spacing:2px;margin-bottom:6px}
+.pos-row{display:flex;justify-content:space-between;padding:2px 0;font-size:10px}
+#sellBtn{width:100%;background:var(--red);border:none;color:#fff;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:2px;padding:8px;cursor:pointer;font-weight:600;text-transform:uppercase;margin-top:8px;transition:.2s}
+#sellBtn:hover{opacity:.85}
+
+/* CHART */
+.clbl{font-size:9px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;flex-shrink:0}
+#leg{display:flex;gap:12px;flex-wrap:wrap;flex-shrink:0}
+.li{display:flex;align-items:center;gap:5px;font-size:9px;color:var(--dim)}
+.ld{width:18px;height:2px}
+.lz{width:14px;height:10px;opacity:.3;border:1px solid}
+#chartBox{flex:1;position:relative;min-height:120px}
+#chartBox canvas{position:absolute;top:0;left:0;width:100%!important;height:100%!important}
+#pnl{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;flex-shrink:0}
+.pcell{background:var(--bg3);border:1px solid var(--border);padding:7px;text-align:center}
+.pval{font-family:"Orbitron",sans-serif;font-size:12px;font-weight:700;margin-bottom:2px}
+.plbl{font-size:8px;color:var(--dim);letter-spacing:1px;text-transform:uppercase}
+
+/* ── HISTORIQUE PANEL ── */
+#histPanel{flex-direction:column;padding:16px;overflow:hidden}
+#histPanel .htop{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-shrink:0}
+#histPanel h2{font-family:"Orbitron",sans-serif;font-size:13px;color:var(--gold);letter-spacing:2px}
+.btn-clear{background:transparent;border:1px solid rgba(255,59,92,.4);color:var(--red);font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:2px;padding:5px 10px;cursor:pointer;text-transform:uppercase}
+.btn-clear:hover{background:rgba(255,59,92,.08)}
+#histStats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;flex-shrink:0}
+.hstat{background:var(--bg2);border:1px solid var(--border);padding:10px;text-align:center}
+.hstat-val{font-family:"Orbitron",sans-serif;font-size:16px;font-weight:700;margin-bottom:2px}
+.hstat-lbl{font-size:9px;color:var(--dim);letter-spacing:1px;text-transform:uppercase}
+#histTable{flex:1;overflow-y:auto}
+#histTable::-webkit-scrollbar{width:3px}
+#histTable::-webkit-scrollbar-thumb{background:var(--border)}
+table{width:100%;border-collapse:collapse;font-size:11px}
+thead tr{border-bottom:1px solid var(--border)}
+th{padding:8px 10px;font-size:9px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;text-align:left;font-weight:400;background:rgba(255,255,255,.02)}
+tbody tr{border-bottom:1px solid rgba(255,255,255,.03)}
+tbody tr:hover{background:rgba(245,197,24,.02)}
+td{padding:8px 10px;vertical-align:middle}
+.tag-win{color:var(--green);font-weight:600}
+.tag-loss{color:var(--red);font-weight:600}
+.tag-open{color:var(--amber);font-weight:600}
+#emptyHist{text-align:center;padding:40px;color:var(--dim);font-size:12px;letter-spacing:1px}
+
+/* MOBILE */
+@media(max-width:700px){
+  html,body{overflow:auto}
+  #simPanel{flex-direction:column!important}
+  #left{width:100%;border-right:none;border-bottom:1px solid var(--border)}
+  #chartBox{height:180px}
+}
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <div class="logo">ALTCOIN <span>/</span> TRACKER <span style="font-size:11px">— SIMULATEUR</span></div>
+  <div class="disc" id="disc">⚠ Prix du 25/03/2026 · Simulation éducative · 0.1% frais Binance inclus</div>
+  <a href="index.html" id="simBackBtn" class="back">← DASHBOARD</a>
+</div>
+
+<!-- TABS -->
+<div id="tabs">
+  <button class="tab on" onclick="showTab('sim',this)">📊 SIMULATEUR</button>
+  <button class="tab"    onclick="showTab('hist',this)">📋 HISTORIQUE</button>
+</div>
+
+<!-- ── SIMULATEUR ── -->
+<div class="panel on" id="simPanel">
+
+  <!-- GAUCHE -->
+  <div id="left">
+    <div>
+      <label class="lbl" for="amount">CAPITAL DISPONIBLE ($)</label>
+      <input id="amount" type="number" value="1000" min="1" oninput="update()">
+    </div>
+    <div>
+      <label class="lbl">COIN (TOP 10)</label>
+      <div id="coinGrid"></div>
+    </div>
+    <div>
+      <label class="lbl">PROFIL DE RISQUE</label>
+      <div id="riskGrid">
+        <button class="rbtn rc on" onclick="setRisk('c',this)">🛡 Cons.</button>
+        <button class="rbtn rm"    onclick="setRisk('m',this)">⚖ Mod.</button>
+        <button class="rbtn ra"    onclick="setRisk('a',this)">🚀 Agg.</button>
+      </div>
+    </div>
+    <div id="res"></div>
+    <!-- POSITION ACTIVE -->
+    <div id="posBox">
+      <div class="pos-title">⚡ POSITION OUVERTE</div>
+      <div id="posDetails"></div>
+      <button id="sellBtn" onclick="manualSell()">CLÔTURER MANUELLEMENT</button>
+    </div>
+    <!-- TRAILING STATUS -->
+    <div id="trailBox">
+      <div style="font-size:9px;letter-spacing:2px;color:var(--gold);margin-bottom:4px">🔄 TRAILING STOP ACTIF</div>
+      <div id="trailDetails"></div>
+    </div>
+    <button id="buyBtn" onclick="executeBuy()">SIMULER L'ACHAT — MARKET ORDER</button>
+  </div>
+
+  <!-- DROITE -->
+  <div id="right">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <div class="clbl" id="simChartLbl">HISTORIQUE 30J — AUJ. — PROJECTION J+60</div>
+      <button onclick="if(chart)chart.resetZoom()" style="background:transparent;border:1px solid var(--border);color:var(--dim);font-family:'IBM Plex Mono',monospace;font-size:9px;padding:3px 10px;cursor:pointer;letter-spacing:1px;transition:.2s" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--dim)'">↺ RESET ZOOM</button>
+    </div>
+    <div id="leg">
+      <div class="li"><div class="ld" style="background:#00c8ff"></div>Historique</div>
+      <div class="li"><div class="ld" style="background:#f5c518;border-top:2px dashed #f5c518;height:0"></div>Projection</div>
+      <div class="li"><div class="lz" style="background:rgba(0,255,157,.15);border-color:var(--green)"></div>Zone target</div>
+      <div class="li"><div class="lz" style="background:rgba(255,59,92,.15);border-color:var(--red)"></div>Zone stop</div>
+      <div class="li"><div class="ld" style="background:rgba(255,107,53,.8)"></div>Entrée</div>
+    </div>
+    <div id="chartBox"><canvas id="cv"></canvas></div>
+    <div id="pnl">
+      <div class="pcell"><div class="pval" style="color:var(--dim)" id="p1">—</div><div class="plbl">Gain potentiel</div></div>
+      <div class="pcell"><div class="pval" style="color:var(--dim)" id="p2">—</div><div class="plbl">Perte max</div></div>
+      <div class="pcell"><div class="pval" style="color:var(--dim)" id="p3">—</div><div class="plbl">Entrée → Sortie</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── HISTORIQUE ── -->
+<div class="panel" id="histPanel">
+  <div class="htop">
+    <h2>📋 HISTORIQUE DES POSITIONS</h2>
+    <button class="btn-clear" onclick="clearHist()">EFFACER TOUT</button>
+  </div>
+  <div id="histStats"></div>
+  <div id="histTable"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// DONNÉES
+// ═══════════════════════════════════════════════════════════
+var COINS = [{"name": "ether.fi", "sym": "ETHFI", "price": 0.57, "c24": -2.0, "c7": 18.5, "mc": 0.45, "rank": 89, "ath_pct": -85, "max_s": 1000, "scores": {"ath": 94, "growth": 100, "community": 54, "sentiment": 86, "tech": 60, "total": 82}, "rsi": 64.8, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"], ["tag-bull", "MOMENTUM 7J"]], "accel": true, "accel_count": 5, "rare_alert": false, "rare_type": "PUMP", "risk_level": "HIGH", "sent_raw": 0.6, "sent_trend": 1, "news_vol": 72, "github": 65, "comm_grow": 78, "history_30d": [0.298596, 0.313522, 0.322502, 0.334143, 0.339215, 0.342854, 0.349329, 0.374092, 0.358645, 0.380746, 0.386125, 0.404173, 0.408477, 0.418241, 0.438153, 0.435655, 0.439431, 0.46806, 0.476247, 0.489034, 0.492006, 0.488744, 0.517002, 0.510398, 0.525584, 0.521169, 0.535233, 0.556531, 0.568318, 0.57], "score_history": [78, 83, 81, 84, 82], "catalyseur": "TVL en hausse +23% sur 7j \u00b7 Int\u00e9gration EigenLayer confirm\u00e9e \u00b7 Volume de restaking record cette semaine", "target_conservative": 0.798, "target_moderate": 1.14, "target_aggressive": 1.71, "stop_conservative": 0.526504, "stop_moderate": 0.47864, "stop_aggressive": 0.41881, "data_date": "2026-03-25T09:00:00Z", "ath_price": 3.98866667}, {"name": "Polkadot", "sym": "DOT", "price": 1.48, "c24": -1.2, "c7": -3.2, "mc": 2.479, "rank": 33, "ath_pct": -95, "max_s": 1000, "scores": {"ath": 88, "growth": 80, "community": 72, "sentiment": 89, "tech": 65, "total": 81}, "rsi": 47.4, "tags": [["tag-tech", "DEEP OVERSOLD"], ["tag-rare", "OFFRE LIMIT\u00c9E"], ["tag-social", "COMMUNAUT\u00c9 FORTE"]], "accel": true, "accel_count": 3, "rare_alert": false, "rare_type": "OPPORTUNITY", "risk_level": "HIGH", "sent_raw": 0.6, "sent_trend": 1, "news_vol": 88, "github": 82, "comm_grow": 72, "history_30d": [2.099527, 2.026066, 1.925868, 2.010279, 1.885314, 1.885026, 1.91441, 1.932438, 1.911701, 1.861805, 1.865729, 1.785527, 1.900095, 1.784674, 1.769086, 1.746523, 1.773955, 1.721109, 1.701732, 1.663705, 1.64404, 1.643229, 1.616072, 1.600888, 1.559651, 1.591767, 1.555334, 1.570159, 1.519053, 1.48], "score_history": [71, 70, 70, 73, 81], "catalyseur": "Halving de r\u00e9compenses pr\u00e9vu \u00b7 JAM protocol en test \u00b7 Regain de l'activit\u00e9 des parachains", "target_conservative": 2.072, "target_moderate": 2.96, "target_aggressive": 5.18, "stop_conservative": 1.3482, "stop_moderate": 1.24334, "stop_aggressive": 1.09354, "data_date": "2026-03-25T09:00:00Z", "ath_price": 29.96}, {"name": "Chainlink", "sym": "LINK", "price": 8.9, "c24": -2.6, "c7": 2.3, "mc": 6.303, "rank": 15, "ath_pct": -87, "max_s": 1000, "scores": {"ath": 92, "growth": 71, "community": 75, "sentiment": 84, "tech": 60, "total": 79}, "rsi": 51.8, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"], ["tag-social", "COMMUNAUT\u00c9 FORTE"]], "accel": true, "accel_count": 3, "rare_alert": false, "rare_type": "OPPORTUNITY", "risk_level": "HIGH", "sent_raw": 0.5, "sent_trend": 1, "news_vol": 78, "github": 75, "comm_grow": 58, "history_30d": [9.292793, 9.476737, 9.289096, 9.087808, 9.104812, 8.839902, 9.469184, 9.474313, 8.943952, 8.998698, 9.017121, 9.031693, 9.219165, 9.179574, 9.160101, 9.195046, 9.155729, 9.16424, 8.764263, 8.922618, 9.128355, 8.677883, 9.244803, 9.207467, 8.996512, 9.019309, 8.885835, 9.15812, 9.032789, 8.9], "score_history": [74, 72, 70, 74, 79], "catalyseur": "CCIP d\u00e9passe $100B s\u00e9curis\u00e9s \u00b7 Int\u00e9gration 3 nouveaux L2 \u00b7 Sentiment institutionnel tr\u00e8s positif", "target_conservative": 12.46, "target_moderate": 17.8, "target_aggressive": 26.7, "stop_conservative": 8.226, "stop_moderate": 7.5862, "stop_aggressive": 6.6722, "data_date": "2026-03-25T09:00:00Z", "ath_price": 70.30769231}, {"name": "Virtuals Protocol", "sym": "VIRTUAL", "price": 0.7, "c24": 0.4, "c7": 8.2, "mc": 0.459, "rank": 84, "ath_pct": -78, "max_s": 1000, "scores": {"ath": 95, "growth": 91, "community": 51, "sentiment": 82, "tech": 65, "total": 77}, "rsi": 56.6, "tags": [["tag-bull", "DEEP VALUE"], ["tag-rare", "OFFRE LIMIT\u00c9E"], ["tag-social", "SENTIMENT +"]], "accel": true, "accel_count": 3, "rare_alert": false, "rare_type": "PUMP", "risk_level": "HIGH", "sent_raw": 0.5, "sent_trend": 1, "news_vol": 65, "github": 58, "comm_grow": 72, "history_30d": [0.586685, 0.621478, 0.601168, 0.62216, 0.614178, 0.625187, 0.645066, 0.608261, 0.62881, 0.621755, 0.627289, 0.64473, 0.633588, 0.631931, 0.640902, 0.678768, 0.655637, 0.651485, 0.671128, 0.648557, 0.670476, 0.685037, 0.677074, 0.674743, 0.651018, 0.700349, 0.689515, 0.709826, 0.720421, 0.7], "score_history": [68, 65, 65, 62, 77], "catalyseur": "Nouveau partenariat avec studio gaming majeur \u00b7 Lancement V2 imminent \u00b7 Forte croissance communaut\u00e9", "target_conservative": 0.98, "target_moderate": 1.4, "target_aggressive": 2.1, "stop_conservative": 0.61336, "stop_moderate": 0.5576, "stop_aggressive": 0.4879, "data_date": "2026-03-25T09:00:00Z", "ath_price": 3.16818182}, {"name": "River", "sym": "RIVER", "price": 24.25, "c24": -6.6, "c7": 35.0, "mc": 0.475, "rank": 85, "ath_pct": -42, "max_s": 100, "scores": {"ath": 70, "growth": 93, "community": 52, "sentiment": 92, "tech": 50, "total": 77}, "rsi": 78.0, "tags": [["tag-rare", "OFFRE LIMIT\u00c9E"], ["tag-bull", "MOMENTUM 7J"], ["tag-social", "SENTIMENT +"]], "accel": true, "accel_count": 4, "rare_alert": false, "rare_type": "PUMP", "risk_level": "HIGH", "sent_raw": 0.7, "sent_trend": 1, "news_vol": 92, "github": 25, "comm_grow": 95, "history_30d": [9.419777, 9.6412, 10.536192, 10.832945, 11.590342, 11.765377, 12.258017, 12.659254, 13.389312, 14.396908, 13.818275, 14.470398, 15.357219, 15.738202, 16.046902, 17.552955, 17.283233, 18.533699, 18.27426, 18.188473, 19.83305, 20.702132, 20.936142, 21.703733, 21.289841, 21.586051, 22.929961, 22.97256, 24.016427, 24.25], "score_history": [70, 67, 65, 70, 77], "catalyseur": "Volume x4 en 24h \u00b7 Breakout au-dessus de r\u00e9sistance cl\u00e9 \u00b7 Momentum RSI en forte acc\u00e9l\u00e9ration", "target_conservative": 30.925121, "target_moderate": 35.049017, "target_aggressive": 41.724138, "stop_conservative": 22.264, "stop_moderate": 20.57, "stop_aggressive": 18.15, "data_date": "2026-03-25T09:00:00Z", "ath_price": 41.72413793}];
+var DATA_DATE = new Date('2026-03-25T09:00:00Z');
+var FEES = 0.001; // 0.1% Binance
+
+// ═══════════════════════════════════════════════════════════
+// ÉTAT GLOBAL
+// ═══════════════════════════════════════════════════════════
+var coin = COINS[0];
+var risk = 'c';
+var chart = null;
+
+// Position ouverte (null si aucune)
+var position = null;
+// {coin, entryPrice, qty, amount, target, stop, trailStop, trailTarget,
+//  trailActivated, score, date, trailHistory}
+
+// ═══════════════════════════════════════════════════════════
+// DISCLAIMER
+// ═══════════════════════════════════════════════════════════
+var hrs = (new Date() - DATA_DATE) / 3600000;
+if (hrs > 6) document.getElementById('disc').textContent = '⚠ Données > 6h · Vérifiez le prix sur Binance · Simulation éducative';
+
+// ═══════════════════════════════════════════════════════════
+// FORMAT
+// ═══════════════════════════════════════════════════════════
+function fmt(n) {
+  if (n == null || isNaN(n)) return '—';
+  if (n >= 10000) return '$' + Math.round(n).toLocaleString('fr-FR');
+  if (n >= 100)   return '$' + n.toFixed(2);
+  if (n >= 1)     return '$' + n.toFixed(3);
+  if (n >= 0.01)  return '$' + n.toFixed(4);
+  return '$' + n.toFixed(6);
+}
+function pct(n) { return (n >= 0 ? '+' : '') + n.toFixed(2) + '%'; }
+function fmtDate(d) {
+  return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'2-digit'})
+        + ' ' + d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ═══════════════════════════════════════════════════════════
+// TARGET / STOP SELON RISQUE
+// ═══════════════════════════════════════════════════════════
+function getTS(c, r) {
+  if (!c) return { target: 0, stop: 0 };
+  if (r === 'c') return { target: c.target_conservative, stop: c.stop_conservative };
+  if (r === 'm') return { target: c.target_moderate,     stop: c.stop_moderate };
+  return               { target: c.target_aggressive,   stop: c.stop_aggressive };
+}
+
+// ═══════════════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════════════
+function showTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(function(b) { b.classList.remove('on'); });
+  document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('on'); });
+  btn.classList.add('on');
+  document.getElementById(id + 'Panel').classList.add('on');
+  if (id === 'hist') renderHist();
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT COINS
+// ═══════════════════════════════════════════════════════════
+(function() {
+  var g = document.getElementById('coinGrid');
+  var h = '';
+  for (var i = 0; i < Math.min(COINS.length, 5); i++) {
+    var c = COINS[i];
+    h += '<button class="cbtn' + (i === 0 ? ' on' : '') + '" onclick="selectCoin(' + i + ',this)">'
+       + c.sym + '<br><span style="font-size:8px;color:var(--dim)">' + fmt(c.price) + '</span></button>';
+  }
+  g.innerHTML = h;
+  update();
+})();
+
+// ═══════════════════════════════════════════════════════════
+// SÉLECTION
+// ═══════════════════════════════════════════════════════════
+function selectCoin(idx, btn) {
+  document.querySelectorAll('.cbtn').forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+  coin = COINS[idx];
+  update();
+}
+function setRisk(r, btn) {
+  risk = r;
+  document.querySelectorAll('.rbtn').forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+  update();
+}
+
+// ═══════════════════════════════════════════════════════════
+// MISE À JOUR UI
+// ═══════════════════════════════════════════════════════════
+function update() {
+  var amount = parseFloat(document.getElementById('amount').value) || 1000;
+  var ts = getTS(coin, risk);
+  var entry  = coin.price;
+  var target = ts.target;
+  var stop   = ts.stop;
+
+  // Si position ouverte, utiliser ses niveaux ajustés (trailing)
+  var displayTarget = position ? position.trailTarget : target;
+  var displayStop   = position ? position.trailStop   : stop;
+
+  var gainPct = (displayTarget - entry) / entry * 100;
+  var lossPct = (displayStop   - entry) / entry * 100;
+  var amountAfterFees = amount * (1 - FEES);
+  var qty     = amountAfterFees / entry;
+  var gainAmt = qty * (displayTarget - entry) * (1 - FEES);
+  var lossAmt = qty * (displayStop   - entry) * (1 - FEES);
+  var rr = Math.abs(gainPct / (lossPct || 1));
+
+  var rLbl   = risk === 'c' ? '🛡 Conservateur' : risk === 'm' ? '⚖ Modéré' : '🚀 Agressif';
+  var rColor = risk === 'c' ? 'var(--green)' : risk === 'm' ? 'var(--amber)' : 'var(--red)';
+
+  // Résultats
+  document.getElementById('res').innerHTML =
+    row('Coin',         '<span style="color:var(--orange)">' + coin.name + '</span>') +
+    row('Profil',       '<span style="color:' + rColor + '">' + rLbl + '</span>') +
+    row('Score Oracle', '<span style="color:var(--orange);font-family:Orbitron,sans-serif">' + coin.scores.total + '/100</span>') +
+    row('Frais (0.1%)', '<span style="color:var(--dim)">-$' + (amount * FEES).toFixed(2) + '</span>') +
+    row('Quantité',     qty.toFixed(4) + ' ' + coin.sym) +
+    row('Entrée',       fmt(entry)) +
+    row('Target',       '<span style="color:var(--green)">' + fmt(displayTarget) + ' (' + pct(gainPct) + ')</span>') +
+    row('Stop loss',    '<span style="color:var(--red)">'   + fmt(displayStop)   + ' (' + pct(lossPct) + ')</span>') +
+    row('Ratio R/R',    rr.toFixed(1) + ':1');
+
+  // PNL
+  document.getElementById('p1').innerHTML = '<span style="color:var(--green)">+$' + gainAmt.toFixed(0) + '</span><br><span style="font-size:9px;color:var(--dim)">' + pct(gainPct) + '</span>';
+  document.getElementById('p2').innerHTML = '<span style="color:var(--red)">-$' + Math.abs(lossAmt).toFixed(0) + '</span><br><span style="font-size:9px;color:var(--dim)">' + pct(lossPct) + '</span>';
+  document.getElementById('p3').innerHTML = '<span style="font-size:10px">' + fmt(entry) + '</span><br><span style="font-size:9px;color:var(--green)">→ ' + fmt(displayTarget) + '</span>';
+
+  // Position ouverte
+  updatePositionUI();
+
+  // Bouton achat
+  var buyBtn = document.getElementById('buyBtn');
+  buyBtn.disabled = position !== null;
+  buyBtn.textContent = position ? 'POSITION DÉJÀ OUVERTE' : 'SIMULER L\'ACHAT — MARKET ORDER';
+
+  drawChart(entry, displayTarget, displayStop, position ? position.entryPrice : null);
+}
+
+function row(lbl, val) {
+  return '<div class="rrow"><span class="rlbl">' + lbl + '</span><span class="rval">' + val + '</span></div>';
+}
+
+// ═══════════════════════════════════════════════════════════
+// POSITION UI
+// ═══════════════════════════════════════════════════════════
+function updatePositionUI() {
+  var posBox   = document.getElementById('posBox');
+  var trailBox = document.getElementById('trailBox');
+  if (!position) {
+    posBox.classList.remove('on');
+    trailBox.classList.remove('on');
+    return;
+  }
+  posBox.classList.add('on');
+  var currentPrice = coin.sym === position.coinSym ? coin.price : position.entryPrice;
+  var unrealPct = (currentPrice - position.entryPrice) / position.entryPrice * 100;
+  var unrealAmt = position.qty * (currentPrice - position.entryPrice);
+  document.getElementById('posDetails').innerHTML =
+    '<div class="pos-row"><span style="color:var(--dim)">Coin</span><span style="color:var(--orange)">' + position.coinSym + '</span></div>' +
+    '<div class="pos-row"><span style="color:var(--dim)">Entrée</span><span>' + fmt(position.entryPrice) + '</span></div>' +
+    '<div class="pos-row"><span style="color:var(--dim)">Quantité</span><span>' + position.qty.toFixed(4) + '</span></div>' +
+    '<div class="pos-row"><span style="color:var(--dim)">Target actuel</span><span style="color:var(--green)">' + fmt(position.trailTarget) + '</span></div>' +
+    '<div class="pos-row"><span style="color:var(--dim)">Stop actuel</span><span style="color:var(--red)">' + fmt(position.trailStop) + '</span></div>' +
+    '<div class="pos-row"><span style="color:var(--dim)">P&L latent</span><span style="color:' + (unrealAmt >= 0 ? 'var(--green)' : 'var(--red)') + '">' + (unrealAmt >= 0 ? '+' : '') + '$' + unrealAmt.toFixed(2) + ' (' + pct(unrealPct) + ')</span></div>';
+
+  if (position.trailActivated) {
+    trailBox.classList.add('on');
+    document.getElementById('trailDetails').innerHTML =
+      '<div class="trail-row"><span style="color:var(--dim)">Ajustements</span><span style="color:var(--gold)">' + position.trailHistory.length + 'x</span></div>' +
+      '<div class="trail-row"><span style="color:var(--dim)">Stop initial</span><span>' + fmt(position.stop) + '</span></div>' +
+      '<div class="trail-row"><span style="color:var(--dim)">Stop actuel</span><span style="color:var(--green)">' + fmt(position.trailStop) + '</span></div>';
+  } else {
+    trailBox.classList.remove('on');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// ACHAT
+// ═══════════════════════════════════════════════════════════
+function executeBuy() {
+  if (position) return;
+  var amount = parseFloat(document.getElementById('amount').value) || 1000;
+  var ts = getTS(coin, risk);
+  var entryPrice = coin.price;
+  var amountAfterFees = amount * (1 - FEES);
+  var qty = amountAfterFees / entryPrice;
+
+  position = {
+    coinSym:       coin.sym,
+    coinName:      coin.name,
+    entryPrice:    entryPrice,
+    qty:           qty,
+    amount:        amount,
+    target:        ts.target,
+    stop:          ts.stop,
+    trailTarget:   ts.target,
+    trailStop:     ts.stop,
+    trailActivated:false,
+    trailHistory:  [],
+    score:         coin.scores.total,
+    risk:          risk,
+    date:          new Date(),
+    peakPrice:     entryPrice
+  };
+
+  // Sauvegarder état
+  savePosition();
+  update();
+  console.log('✅ Achat simulé:', position.coinSym, 'à', fmt(entryPrice));
+}
+
+// ═══════════════════════════════════════════════════════════
+// VENTE (target atteinte ou stop touché ou manuelle)
+// ═══════════════════════════════════════════════════════════
+function executeClose(exitPrice, reason) {
+  if (!position) return;
+  var pos = position;
+  var exitAfterFees = exitPrice * (1 - FEES);
+  var grossPL = pos.qty * (exitAfterFees - pos.entryPrice);
+  var netCapital = pos.amount + grossPL;
+  var plPct = (exitPrice - pos.entryPrice) / pos.entryPrice * 100;
+
+  // Sauvegarder dans historique
+  var hist = loadHist();
+  hist.push({
+    id:           Date.now(),
+    coinSym:      pos.coinSym,
+    coinName:     pos.coinName,
+    entryPrice:   pos.entryPrice,
+    exitPrice:    exitPrice,
+    qty:          pos.qty,
+    amount:       pos.amount,
+    netCapital:   netCapital,
+    plAmt:        grossPL,
+    plPct:        plPct,
+    score:        pos.score,
+    risk:         pos.risk,
+    reason:       reason,
+    dateOpen:     pos.date.toISOString(),
+    dateClose:    new Date().toISOString(),
+    trailCount:   pos.trailHistory.length,
+    trailHistory: pos.trailHistory
+  });
+  saveHist(hist);
+
+  // Réinvestissement automatique sur coin #1
+  var newAmount = Math.max(0, netCapital);
+  position = null;
+  clearPosition();
+
+  // Mettre à jour le montant
+  document.getElementById('amount').value = newAmount.toFixed(2);
+
+  // Sélectionner le coin #1 automatiquement
+  coin = COINS[0];
+  document.querySelectorAll('.cbtn').forEach(function(b, i) {
+    b.classList.remove('on');
+    if (i === 0) b.classList.add('on');
+  });
+
+  var msg = reason === 'target' ? '🎯 Target atteinte' : reason === 'stop' ? '🛑 Stop touché' : '✋ Clôture manuelle';
+  var plStr = (grossPL >= 0 ? '+' : '') + '$' + grossPL.toFixed(2) + ' (' + pct(plPct) + ')';
+  alert(msg + '\n\n' + 'P&L : ' + plStr + '\n' + 'Capital disponible : $' + newAmount.toFixed(2) + '\n\n' + '\u2705 100% r\u00e9investi sur ' + COINS[0].name + ' (#1)');
+
+  update();
+}
+
+function manualSell() {
+  if (!position) return;
+  if (!confirm('Clôturer la position ' + position.coinSym + ' au prix actuel ?')) return;
+  executeClose(coin.price, 'manual');
+}
+
+// ═══════════════════════════════════════════════════════════
+// TRAILING STOP
+// Règle : dès que prix monte +10%, stop monte +5%
+// ═══════════════════════════════════════════════════════════
+function checkTrailing(currentPrice) {
+  if (!position) return;
+  var changePct = (currentPrice - position.entryPrice) / position.entryPrice * 100;
+
+  // Seuil : +10% de hausse
+  if (changePct >= 10) {
+    // Ajustement conservateur : stop monte de la moitié
+    var stopAdjFactor = changePct / 100 * 0.5;
+    var newStop   = position.stop * (1 + stopAdjFactor);
+    var newTarget = position.target * (1 + stopAdjFactor * 0.7);
+
+    if (newStop > position.trailStop) {
+      position.trailHistory.push({
+        price: currentPrice,
+        changePct: changePct,
+        oldStop: position.trailStop,
+        newStop: newStop,
+        newTarget: newTarget,
+        date: new Date().toISOString()
+      });
+      position.trailStop   = newStop;
+      position.trailTarget = newTarget;
+      position.trailActivated = true;
+      savePosition();
+    }
+  }
+
+  // Vérifier déclenchement stop ou target
+  if (currentPrice <= position.trailStop) {
+    executeClose(position.trailStop, 'stop');
+  } else if (currentPrice >= position.trailTarget) {
+    executeClose(position.trailTarget, 'target');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// PERSISTANCE LOCALSTORAGE
+// ═══════════════════════════════════════════════════════════
+function savePosition() {
+  try { localStorage.setItem('at_sim_pos', JSON.stringify(position)); } catch(e) {}
+}
+function clearPosition() {
+  try { localStorage.removeItem('at_sim_pos'); } catch(e) {}
+}
+function loadPosition() {
+  try {
+    var s = localStorage.getItem('at_sim_pos');
+    if (s) {
+      var p = JSON.parse(s);
+      p.date = new Date(p.date);
+      return p;
+    }
+  } catch(e) {}
+  return null;
+}
+function loadHist() {
+  try {
+    var s = localStorage.getItem('at_sim_hist');
+    return s ? JSON.parse(s) : [];
+  } catch(e) { return []; }
+}
+function saveHist(h) {
+  try { localStorage.setItem('at_sim_hist', JSON.stringify(h)); } catch(e) {}
+}
+function clearHist() {
+  if (!confirm('Effacer tout l\'historique des positions ?')) return;
+  try { localStorage.removeItem('at_sim_hist'); } catch(e) {}
+  renderHist();
+}
+
+// Restaurer position au chargement
+position = loadPosition();
+
+// ═══════════════════════════════════════════════════════════
+// HISTORIQUE UI
+// ═══════════════════════════════════════════════════════════
+function renderHist() {
+  var hist = loadHist();
+  var statsEl = document.getElementById('histStats');
+  var tableEl = document.getElementById('histTable');
+
+  if (!hist.length) {
+    statsEl.innerHTML = '';
+    tableEl.innerHTML = '<div id="emptyHist">Aucune position clôturée · Effectuez votre première simulation</div>';
+    return;
+  }
+
+  // Stats globales
+  var totalPL = hist.reduce(function(s,h) { return s + h.plAmt; }, 0);
+  var wins = hist.filter(function(h) { return h.plAmt >= 0; }).length;
+  var totalCapital = hist.length ? hist[hist.length-1].netCapital : 0;
+  var initCapital = hist.length ? hist[0].amount : 0;
+  var totalReturn = initCapital ? (totalCapital - initCapital) / initCapital * 100 : 0;
+
+  statsEl.innerHTML =
+    stat(totalPL >= 0 ? '+$'+totalPL.toFixed(0) : '-$'+Math.abs(totalPL).toFixed(0), 'P&L TOTAL', totalPL >= 0 ? 'var(--green)' : 'var(--red)') +
+    stat(wins + '/' + hist.length, 'TRADES GAGNANTS', 'var(--gold)') +
+    stat('$' + totalCapital.toFixed(0), 'CAPITAL ACTUEL', 'var(--text)') +
+    stat(pct(totalReturn), 'RENDEMENT TOTAL', totalReturn >= 0 ? 'var(--green)' : 'var(--red)');
+
+  // Table
+  var riskLabels = { c: 'Cons.', m: 'Mod.', a: 'Agg.' };
+  var reasonLabels = { target: '🎯 Target', stop: '🛑 Stop', manual: '✋ Manuel' };
+  var rows = '';
+  for (var i = hist.length - 1; i >= 0; i--) {
+    var h = hist[i];
+    var cls = h.plAmt >= 0 ? 'tag-win' : 'tag-loss';
+    var plStr = (h.plAmt >= 0 ? '+' : '') + '$' + Math.abs(h.plAmt).toFixed(2);
+    rows += '<tr>'
+      + '<td>' + new Date(h.dateClose).toLocaleDateString('fr-FR') + '</td>'
+      + '<td><strong>' + h.coinSym + '</strong><br><span style="font-size:9px;color:var(--dim)">' + h.coinName + '</span></td>'
+      + '<td>' + fmt(h.entryPrice) + '</td>'
+      + '<td>' + fmt(h.exitPrice) + '</td>'
+      + '<td class="' + cls + '">' + plStr + '<br><span style="font-size:9px">' + pct(h.plPct) + '</span></td>'
+      + '<td>$' + h.netCapital.toFixed(0) + '</td>'
+      + '<td><span style="font-size:9px;color:var(--orange)">' + h.score + '</span></td>'
+      + '<td>' + (reasonLabels[h.reason] || h.reason) + '</td>'
+      + '<td style="font-size:9px;color:var(--dim)">' + (h.trailCount ? h.trailCount + 'x' : '—') + '</td>'
+      + '</tr>';
+  }
+
+  tableEl.innerHTML = '<table>'
+    + '<thead><tr><th>Date</th><th>Coin</th><th>Entrée</th><th>Sortie</th><th>P&L</th><th>Capital</th><th>Score</th><th>Raison</th><th>Trail</th></tr></thead>'
+    + '<tbody>' + rows + '</tbody></table>';
+}
+
+function stat(val, lbl, color) {
+  return '<div class="hstat"><div class="hstat-val" style="color:' + color + '">' + val + '</div><div class="hstat-lbl">' + lbl + '</div></div>';
+}
+
+// ═══════════════════════════════════════════════════════════
+// GRAPHIQUE
+// ═══════════════════════════════════════════════════════════
+function drawChart(entry, target, stop, entryMark) {
+  var box    = document.getElementById('chartBox');
+  var canvas = document.getElementById('cv');
+  // Destroy FIRST before any canvas manipulation
+  if (chart) { chart.destroy(); chart = null; }
+  var W = box.clientWidth  || 600;
+  var H = box.clientHeight || 180;
+  canvas.width  = W;
+  canvas.height = H;
+
+  var hist = coin.history_30d || [];
+  var PROJ = 60;
+  var lastP = hist.length ? hist[hist.length - 1] : entry;
+
+  // Labels
+  var labels = [];
+  for (var i = 0; i < hist.length; i++) {
+    var dAgo = hist.length - 1 - i;
+    if      (dAgo === 0)  labels.push('Auj.');
+    else if (dAgo === 10) labels.push('J-10');
+    else if (dAgo === 20) labels.push('J-20');
+    else if (dAgo === 30) labels.push('J-30');
+    else                  labels.push('');
+  }
+  for (var i = 1; i <= PROJ; i++) {
+    labels.push(i === PROJ ? 'J+60' : (i % 10 === 0 ? 'J+' + i : ''));
+  }
+
+  var total = hist.length + PROJ;
+
+  // Historique
+  var histData = hist.slice();
+  for (var i = 0; i < PROJ; i++) histData.push(null);
+
+  // Projection vers target
+  var projData = [];
+  for (var i = 0; i < hist.length - 1; i++) projData.push(null);
+  projData.push(lastP);
+  for (var i = 1; i <= PROJ; i++) {
+    projData.push(lastP + (target - lastP) * (i / PROJ));
+  }
+
+  // Zone probabilité (s'ouvre depuis Auj.)
+  var zTop = [], zBot = [];
+  for (var i = 0; i < total; i++) {
+    if (i < hist.length - 1) { zTop.push(null); zBot.push(null); }
+    else {
+      var t = (i - (hist.length - 1)) / PROJ;
+      zTop.push(entry + (target - entry) * t);
+      zBot.push(entry + (stop   - entry) * t);
+    }
+  }
+
+  // Lignes horizontales
+  var tLine = [], sLine = [], eLine = [];
+  for (var i = 0; i < total; i++) {
+    tLine.push(target);
+    sLine.push(stop);
+    eLine.push(entryMark !== null ? entryMark : null);
+  }
+
+  // Y scale: always show full history + stop + target
+  var histMin = hist.length ? Math.min.apply(null, hist) : stop;
+  var yMin = Math.min(histMin, stop) * 0.92;
+  var yMax = target * 1.08;
+
+  chart = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        { label:'_zTop', data:zTop, borderColor:'transparent', backgroundColor:'rgba(0,255,157,0.12)', fill:1, pointRadius:0, tension:0.3, spanGaps:false },
+        { label:'_zBot', data:zBot, borderColor:'transparent', backgroundColor:'rgba(255,59,92,0.10)',  fill:false, pointRadius:0, tension:0.3, spanGaps:false },
+        { label:'Target',     data:tLine, borderColor:'rgba(0,255,157,0.65)',  borderWidth:1.5, borderDash:[6,3], fill:false, pointRadius:0 },
+        { label:'Stop',       data:sLine, borderColor:'rgba(255,59,92,0.65)',  borderWidth:1.5, borderDash:[6,3], fill:false, pointRadius:0 },
+        { label:'Entrée',     data:eLine, borderColor:'rgba(255,107,53,0.8)',  borderWidth:1.5, borderDash:[3,3], fill:false, pointRadius:0 },
+        { label:'Historique', data:histData, borderColor:'#00c8ff', borderWidth:2, backgroundColor:'rgba(0,200,255,0.05)', fill:true,  pointRadius:0, tension:0.3, spanGaps:false },
+        { label:'Projection', data:projData, borderColor:'#f5c518', borderWidth:2, borderDash:[5,4], fill:false, pointRadius:0, tension:0.3, spanGaps:false }
+      ]
+    },
+    options: {
+      responsive:false, maintainAspectRatio:false, animation:{duration:250},
+      interaction:{mode:'index',intersect:false},
+      scales:{
+        x:{ ticks:{color:'#e0e8f0',font:{size:9},maxTicksLimit:15,autoSkip:false,callback:function(v,i){return labels[i]||'';}}, grid:{color:'rgba(255,255,255,0.03)'} },
+        y:{ min:yMin, max:yMax,
+            ticks:{color:'#6b7a8d',font:{size:9},callback:function(v){return fmt(v);}},
+            grid:{color:'rgba(255,255,255,0.04)'} }
+      },
+      plugins:{
+        zoom:{
+          zoom:{
+            wheel:{enabled:true, speed:0.15},
+            pinch:{enabled:true},
+            mode:'y'
+          },
+          pan:{enabled:true, mode:'y'}
+        },
+        legend:{display:false},
+        tooltip:{
+          filter:function(item){return item.dataset.label && item.dataset.label[0]!=='_';},
+          backgroundColor:'rgba(12,16,32,0.95)',
+          titleColor:'#f5c518',bodyColor:'#e0e8f0',
+          borderColor:'rgba(245,197,24,0.3)',borderWidth:1,
+          callbacks:{label:function(ctx){return ctx.dataset.label+': '+fmt(ctx.raw);}}
+        }
+      }
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// DÉMARRAGE
+// ═══════════════════════════════════════════════════════════
+
+// ── SIMULATOR I18N ────────────────────────────────────────────────────────────
+var SIM_I18N = {
+  fr:{
+    amount:'MONTANT À INVESTIR ($)', coin:'COIN (TOP 5)', risk:'NIVEAU DE RISQUE',
+    chart:'HISTORIQUE 30J — AUJ. — PROJECTION J+60',
+    cons:'🛡 Cons.', mod:'⚖ Mod.', agg:'🚀 Agg.',
+    buy:'SIMULER L\'ACHAT — MARKET ORDER', busy:'POSITION DÉJÀ OUVERTE',
+    back:'← DASHBOARD',
+    disc_prefix:'Prix du '
+  },
+  en:{
+    amount:'AMOUNT TO INVEST ($)', coin:'COIN (TOP 5)', risk:'RISK LEVEL',
+    chart:'30D HISTORY — TODAY — +60D PROJECTION',
+    cons:'🛡 Cons.', mod:'⚖ Mod.', agg:'🚀 Agg.',
+    buy:'SIMULATE BUY — MARKET ORDER', busy:'POSITION ALREADY OPEN',
+    back:'← DASHBOARD',
+    disc_prefix:'Prices from '
+  },
+  es:{
+    amount:'MONTO A INVERTIR ($)', coin:'COIN (TOP 5)', risk:'NIVEL DE RIESGO',
+    chart:'HISTORIAL 30D — HOY — PROYECCIÓN +60D',
+    cons:'🛡 Cons.', mod:'⚖ Mod.', agg:'🚀 Agr.',
+    buy:'SIMULAR COMPRA — MARKET ORDER', busy:'POSICIÓN YA ABIERTA',
+    back:'← DASHBOARD',
+    disc_prefix:'Precios del '
+  }
+};
+
+function applySimLang(l) {
+  if (!SIM_I18N[l]) l = 'fr';
+  localStorage.setItem('at_lang', l);
+  var L = SIM_I18N[l];
+  var s = function(id, v){ var e=document.getElementById(id); if(e) e.textContent=v; };
+  s('slbl_amount', L.amount);
+  s('slbl_coin',   L.coin);
+  s('slbl_risk',   L.risk);
+  s('slbl_chart',  L.chart);
+  s('simBackBtn',  L.back);
+  // Risk buttons
+  var rb = document.querySelectorAll('#riskGrid button');
+  if (rb[0]) rb[0].textContent = L.cons;
+  if (rb[1]) rb[1].textContent = L.mod;
+  if (rb[2]) rb[2].textContent = L.agg;
+  // Buy button
+  var buyBtn = document.getElementById('buyBtn');
+  if (buyBtn) buyBtn.textContent = position ? L.busy : L.buy;
+  // Disclaimer
+  var disc = document.getElementById('disc');
+  if (disc) {
+    var d = new Date(DATA_DATE);
+    var locale = l==='en' ? 'en-GB' : l==='es' ? 'es-ES' : 'fr-FR';
+    var dateStr = d.toLocaleDateString(locale, {day:'2-digit',month:'2-digit',year:'numeric'});
+    disc.textContent = '\u26a0 ' + L.disc_prefix + dateStr + ' \u00b7 ' + (l==='en'?'Educational simulation':'Simulation \u00e9ducative') + ' \u00b7 0.1% Binance';
+  }
+  // Lang buttons active state
+  document.querySelectorAll('.slang-btn').forEach(function(b){
+    var active = b.dataset.lang === l;
+    b.style.borderColor = active ? 'var(--gold)' : 'var(--border)';
+    b.style.color       = active ? 'var(--gold)' : 'var(--dim)';
+  });
+}
+
+window.addEventListener('load', function() {
+  // Apply language from URL param or localStorage
+  var urlLang = new URLSearchParams(window.location.search).get('lang');
+  var storedLang = localStorage.getItem('at_lang') || 'fr';
+  applySimLang(urlLang || storedLang);
+
+  // Restaurer capital si position ouverte
+  if (position) {
+    document.getElementById('amount').value = position.amount.toFixed(2);
+    // Retrouver le coin
+    for (var i = 0; i < COINS.length; i++) {
+      if (COINS[i].sym === position.coinSym) {
+        coin = COINS[i];
+        document.querySelectorAll('.cbtn').forEach(function(b,j){
+          b.classList.remove('on');
+          if (j===i) b.classList.add('on');
+        });
+        break;
+      }
+    }
+  }
+  update();
+});
+
+window.addEventListener('resize', function() { update(); });
+</script>
+</body>
+</html>
