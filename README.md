@@ -1,1 +1,1 @@
-This AI-powered altcoin tracker will take you to the moon.
+This AI-powered predictive altcoin tracker will get you to the moon.
