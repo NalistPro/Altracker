@@ -1,0 +1,95 @@
+{
+ "date_utc": "2026-10-05T18:37:24.157211+00:00",
+ "tests": {
+  "Binance data-api (prix)": {
+   "ok": true,
+   "http": 200,
+   "erreur": null
+  },
+  "Binance api.binance.com (prix)": {
+   "ok": false,
+   "http": 451,
+   "erreur": "HTTP 451"
+  },
+  "Binance futures (funding rate)": {
+   "ok": false,
+   "http": 451,
+   "erreur": "HTTP 451"
+  },
+  "Bybit (prix, secours)": {
+   "ok": false,
+   "http": 403,
+   "erreur": "HTTP 403"
+  },
+  "OKX (prix, secours)": {
+   "ok": true,
+   "http": 200,
+   "erreur": null
+  },
+  "Fear & Greed (alternative.me)": {
+   "ok": true,
+   "http": 200,
+   "erreur": null
+  },
+  "DefiLlama (TVL)": {
+   "ok": true,
+   "http": 200,
+   "erreur": null
+  },
+  "GitHub API": {
+   "ok": true,
+   "http": 200,
+   "erreur": null
+  },
+  "CoinGecko markets": {
+   "ok": true,
+   "http": 200,
+   "erreur": null,
+   "cle_utilisee": false
+  },
+  "CoinGecko categorie stablecoins": {
+   "ok": true,
+   "http": 200,
+   "erreur": null
+  },
+  "CoinGecko categorie wrapped-tokens": {
+   "ok": true,
+   "http": 200,
+   "erreur": null
+  },
+  "CoinGecko categorie liquid-staking-tokens": {
+   "ok": true,
+   "http": 200,
+   "erreur": null
+  },
+  "CoinGecko categorie bridged-tokens": {
+   "ok": true,
+   "http": 200,
+   "erreur": null
+  }
+ },
+ "univers": {
+  "retenus": 81,
+  "retires": [
+   "btc",
+   "eth",
+   "usdt",
+   "usdc",
+   "usds",
+   "usde",
+   "dai",
+   "usd1",
+   "usdg",
+   "pyusd",
+   "rlusd",
+   "buidl",
+   "usdf",
+   "usdd",
+   "u",
+   "bfusd",
+   "usdgo",
+   "gho",
+   "ousd"
+  ]
+ }
+}
