@@ -1,0 +1,16 @@
+{
+ "date_utc": "2026-10-07T21:38:25.712407+00:00",
+ "jour_traite": "2026-10-07",
+ "coins": 66,
+ "statuts": {
+  "ok": 66
+ },
+ "taux_echec_%": 0.0,
+ "fear_greed": "ok (3167 jours, derniere 2026-10-07)",
+ "archivage": {
+  "global": "deja fait aujourd'hui",
+  "derives": "ok (64 coins)",
+  "tvl": "ok (30 coins)"
+ },
+ "problemes": {}
+}
