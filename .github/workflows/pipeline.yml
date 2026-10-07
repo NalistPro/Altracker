@@ -1,0 +1,71 @@
+name: Pipeline quotidien
+
+# Lundi a samedi : mise a jour incrementale. Dimanche : reconstruction complete.
+# Heure UTC : GitHub peut retarder l'execution de quelques minutes.
+on:
+  schedule:
+    - cron: "17 1 * * 1-6"
+    - cron: "17 1 * * 0"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "quotidien = rapide (2-3 min) | reconstruction = complet (15-20 min)"
+        type: choice
+        options:
+          - quotidien
+          - reconstruction
+        default: quotidien
+
+permissions:
+  contents: write
+
+# Une seule execution a la fois (evite les conflits d'ecriture)
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+
+env:
+  MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || (github.event.schedule == '17 1 * * 0' && 'reconstruction' || 'quotidien') }}
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Recuperer le depot
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installer les bibliotheques
+        run: pip install pandas numpy scikit-learn
+
+      - name: Reconstruction complete (univers et historique)
+        if: env.MODE == 'reconstruction'
+        env:
+          COINGECKO_KEY: ${{ secrets.COINGECKO_KEY }}
+        run: python scripts/collect_history.py
+
+      - name: Mise a jour des prix et archivage
+        env:
+          COINGECKO_KEY: ${{ secrets.COINGECKO_KEY }}
+        run: python scripts/update_daily.py data
+
+      - name: Modele et scores
+        run: python scripts/model_backtest.py data
+
+      - name: Enregistrer les resultats dans le depot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          if git diff --staged --quiet; then
+            echo "Rien a enregistrer"
+          else
+            git commit -m "Pipeline ${MODE} du $(date -u +%F)"
+            git pull --rebase origin main
+            git push
+          fi
