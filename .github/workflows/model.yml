@@ -1,0 +1,35 @@
+name: Modele et scores
+
+# Declenchement manuel uniquement (bouton "Run workflow")
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  modele:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Recuperer le depot
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installer les bibliotheques
+        run: pip install pandas numpy scikit-learn
+
+      - name: Calculer le modele, le backtest et les scores
+        run: python scripts/model_backtest.py data
+
+      - name: Enregistrer les resultats dans le depot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          git diff --staged --quiet || git commit -m "Lot 4 : backtest et scores du modele"
+          git push
