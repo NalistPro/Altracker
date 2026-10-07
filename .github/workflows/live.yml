@@ -1,0 +1,45 @@
+name: Instantane horaire
+
+# Toutes les heures : prix du top 100, publies sur la branche "live"
+# (cette branche est reecrite a chaque fois : elle ne fait pas grossir ton depot).
+on:
+  schedule:
+    - cron: "7 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: live
+  cancel-in-progress: true
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Recuperer le depot
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Recuperer les prix
+        env:
+          COINGECKO_KEY: ${{ secrets.COINGECKO_KEY }}
+        run: python scripts/live_snapshot.py /tmp/live.json
+
+      - name: Publier sur la branche live
+        run: |
+          mkdir /tmp/pub
+          cp /tmp/live.json /tmp/pub/live.json
+          cd /tmp/pub
+          git init -q -b live
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add live.json
+          git commit -qm "Instantane $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" live
