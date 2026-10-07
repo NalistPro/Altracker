@@ -65,7 +65,7 @@ fng = pd.read_csv(os.path.join(DATA, "history", "_fear_greed.csv"), parse_dates=
 
 coins = sorted(series)
 debut = min(d.index.min() for d in series.values())
-fin = min(d.index.max() for d in series.values())
+fin = max(d.index.max() for d in series.values())  # un coin perime est simplement ignore le dernier jour
 idx = pd.date_range(debut, fin, freq="D")
 
 
@@ -258,6 +258,11 @@ with open(os.path.join(OUT, "backtest_report.json"), "w", encoding="utf-8") as f
 final = HistGradientBoostingClassifier(**PARAMS).fit(labeled[FEATS], labeled["y"])
 jour = idx[-1]
 actuel = base[base.index.get_level_values(0) == jour].copy()
+a_un_prix = close.loc[jour].notna()
+actuel = actuel[[bool(a_un_prix[c]) for c in actuel.index.get_level_values(1)]]
+ignores = [c for c in coins if not a_un_prix[c]]
+if ignores:
+    print(f"Coins ignores (pas de prix au {jour.date()}) : {ignores}")
 actuel["proba"] = final.predict_proba(actuel[FEATS])[:, 1]
 actuel = actuel.droplevel(0).sort_values("proba", ascending=False)
 actuel["score"] = (actuel["proba"].rank(pct=True) * 100).round(0)
@@ -286,6 +291,47 @@ if not deja:
             f.write("date,symbole,rang,score,proba,prix\n")
         for e in liste:
             f.write(f"{jour.date()},{e['symbole']},{e['rang']},{e['score']},{e['proba_top30']},{e['prix']}\n")
+
+
+
+def evaluer_reel():
+    """Compare les scores deja publies (scores_history.csv) aux rendements reellement observes."""
+    h = pd.read_csv(hist, parse_dates=["date"])
+    liq_ok = F["liq30"] >= np.log(MIN_VOL_USD)
+    res = {}
+    for hor in (7, 15, 20):
+        lignes = []
+        for d, g in h.groupby("date"):
+            d2 = d + pd.Timedelta(days=hor)
+            if d not in close.index or d2 not in close.index:
+                continue
+            r = close.loc[d2] / close.loc[d] - 1
+            g = g.set_index("symbole").sort_values("rang")
+            g = g[[(s in r.index) and pd.notna(r[s]) for s in g.index]]
+            if len(g) < 10:
+                continue
+            top = g[[bool(liq_ok.loc[d, s]) for s in g.index]].head(N_PICK).index
+            lignes.append((d, float(r[top].mean()), float(r[g.index].mean()),
+                           float(btc_c.loc[d2] / btc_c.loc[d] - 1)))
+        if lignes:
+            df = pd.DataFrame(lignes, columns=["date", "top5", "univers", "btc"])
+            res[f"{hor}j"] = {"dates_evaluees": len(df),
+                              "periodes_independantes": max(1, len(df) // hor),
+                              "rendement_top5_%": round(float(df.top5.mean()) * 100, 2),
+                              "rendement_univers_%": round(float(df.univers.mean()) * 100, 2),
+                              "rendement_btc_%": round(float(df.btc.mean()) * 100, 2),
+                              "top5_bat_univers_%": round(float((df.top5 > df.univers).mean()) * 100, 1)}
+        else:
+            res[f"{hor}j"] = {"dates_evaluees": 0}
+    res["note"] = ("Test en conditions reelles : fiable seulement apres plusieurs periodes independantes "
+                   "(au moins 6 de 20 jours, soit environ 4 mois).")
+    with open(os.path.join(OUT, "live_test.json"), "w", encoding="utf-8") as f:
+        json.dump(res, f, ensure_ascii=False, indent=1)
+    return res
+
+
+test_reel = evaluer_reel()
+print("Test reel :", {k: v.get("dates_evaluees") for k, v in test_reel.items() if k != "note"})
 
 print(f"\nTop 5 liquide au {jour.date()} : " + ", ".join(f"{e['symbole']} ({e['score']})" for e in [e for e in liste if e["liquide"]][:N_PICK]))
 print("Rapport : data/model/backtest_report.json")
