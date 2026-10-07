@@ -1,12 +1,13 @@
 """
-Altcoin Tracker - Lot 3 : univers nettoye + historique valide multi-sources.
+Altcoin Tracker - Lot 3.1 : univers nettoye + historique valide multi-sources.
 Bibliotheque standard uniquement (rien a installer).
 
 Nouveautes par rapport au lot 2 :
   - exclusion des tokens de bourses et des produits financiers tokenises
   - 6 sources de prix (Binance, OKX, Gate, KuCoin, MEXC, Bitget) + CoinGecko en dernier recours
   - validation de chaque serie : fraicheur, coherence du prix, jours manquants
-  - choix automatique de la meilleure source (la plus longue parmi les valides)
+  - choix de la source : Binance puis OKX en priorite (liquidite), les autres en secours
+  - controle croise entre sources (detecte les homonymes) et rejet des dates futures
 
 Produit : data/universe.json, data/history/*.csv, data/snapshots/global.csv, data/coverage_report.json
 """
@@ -30,7 +31,7 @@ MEXC = "https://api.mexc.com/api/v3"
 BGT = "https://api.bitget.com/api/v2"
 
 ORDRE = ["binance", "okx", "gate", "kucoin", "mexc", "bitget"]
-MIN_BON, MIN_LIMITE, ASSEZ_LONG = 365, 180, 1900
+MIN_BON, MIN_LIMITE = 365, 180
 ENTETE = ["date", "open", "high", "low", "close", "volume", "quote_volume", "trades"]
 
 os.makedirs("data/history", exist_ok=True)
@@ -83,8 +84,8 @@ def jour_s(sec):
 
 
 def en_lignes(d):
-    d.pop(TODAY, None)  # la bougie du jour est incomplete
-    return [d[k] for k in sorted(d)]
+    # on ecarte la bougie du jour (incomplete) et toute date future (decalage horaire d'une bourse)
+    return [d[k] for k in sorted(d) if k < TODAY]
 
 
 def ecrire_csv(nom, entete, lignes):
@@ -345,6 +346,16 @@ def analyser(lignes, prix_ref):
     return {"n": len(lignes), "debut": lignes[0][0], "fin": lignes[-1][0], "trous": trous, "raison": raison}
 
 
+def concordance(a, b):
+    """Ecart median relatif entre les cloture de deux sources sur les jours communs (None si < 30 jours)."""
+    try:
+        ca = {r[0]: float(r[4]) for r in a}
+        ecarts = sorted(abs(float(r[4]) / ca[r[0]] - 1) for r in b if r[0] in ca and ca[r[0]] > 0)
+        return ecarts[len(ecarts) // 2] if len(ecarts) >= 30 else None
+    except Exception:
+        return None
+
+
 def niveau(n):
     return "bon" if n >= MIN_BON else "limite" if n >= MIN_LIMITE else "insuffisant"
 
@@ -359,7 +370,7 @@ a_traiter += [("BTC", "bitcoin", prix_par_symbole.get("BTC"), None),
               ("ETH", "ethereum", prix_par_symbole.get("ETH"), None)]
 
 for sym, cid, prix, u in a_traiter:
-    meilleur, essais = None, []
+    meilleur, essais, valides = None, [], []
     for s in ORDRE:
         if sym not in PAIRES.get(s, set()):
             continue
@@ -369,13 +380,20 @@ for sym, cid, prix, u in a_traiter:
             lignes, essais = [], essais + [f"{s}:erreur {type(ex).__name__}"]
         a = analyser(lignes, prix)
         a["source"], a["lignes"] = s, lignes
+        # controle croise : la serie doit concorder avec une source deja validee
+        if a["raison"] is None and valides:
+            ecart = concordance(valides[0]["lignes"], lignes)
+            if ecart is not None and ecart > 0.10:
+                a["raison"] = f"incoherent avec {valides[0]['source']} (ecart {ecart:.0%})"
         essais.append(f"{s}:{a['raison'] or str(a['n']) + 'j ok'}")
         if a["raison"] is None:
-            if meilleur is None or a["n"] > meilleur["n"]:
+            valides.append(a)
+            if a["n"] >= MIN_BON:  # premiere source (par priorite) avec assez d'historique
                 meilleur = a
-            if a["n"] >= ASSEZ_LONG:
                 break
         time.sleep(0.1)
+    if meilleur is None and valides:  # sinon : la serie valide la plus longue
+        meilleur = max(valides, key=lambda x: x["n"])
 
     if meilleur is None and u is not None:  # dernier recours : CoinGecko
         lignes = f_coingecko(cid)
