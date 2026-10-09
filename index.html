@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Altracker — Top 100 Scout</title>
 <style>
-:root{--bg:#f3f4f1;--card:#fff;--tx:#12171c;--mu:#5f6b76;--bd:#dde1dc;--ac:#0b6e6e;--up:#16794a;--dn:#b42318;--wa:#9a5b0a}
-@media(prefers-color-scheme:dark){:root{--bg:#0f1316;--card:#161c20;--tx:#e6eaec;--mu:#8d9aa4;--bd:#263037;--ac:#3fc1b9;--up:#4ade80;--dn:#f87171;--wa:#e8a23a}}
+:root{color-scheme:light;--bg:#f3f4f1;--card:#fff;--tx:#12171c;--mu:#5f6b76;--bd:#dde1dc;--ac:#0b6e6e;--up:#16794a;--dn:#b42318;--wa:#9a5b0a}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 #app{max-width:880px;margin:0 auto;padding:20px 16px 48px}
@@ -37,6 +36,16 @@ th{font-weight:600;font-size:13px;color:var(--mu)}tr:last-child td{border-bottom
 .low{color:var(--wa);font-size:12.5px}
 .box{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;margin-top:12px}
 .box p{margin:6px 0 0}.warn{font-size:13px;color:var(--wa)}
+.mk{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px 14px}.card.wide{grid-column:1/-1}
+.ct{font-weight:600;font-size:13.5px;color:var(--mu)}.cb{font:700 30px/1.2 Georgia,serif;margin:2px 0 6px;font-variant-numeric:tabular-nums}.cb span{font:600 13px system-ui;color:var(--ac);margin-left:10px}
+.card p{margin:6px 0 0;font-size:12.5px;color:var(--mu)}
+.cl{cursor:pointer}.cl:hover{background:color-mix(in srgb,var(--ac) 8%,transparent)}
+dialog{width:min(680px,94vw);max-height:90vh;border:1px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);padding:18px 20px}
+dialog::backdrop{background:#0008}.x{float:right;font-size:26px;line-height:1;border:0;background:none;color:var(--mu);cursor:pointer}
+h3{margin:0;font:700 22px Georgia,serif}h4{margin:18px 0 0}.big{font:700 28px Georgia,serif;color:var(--ac)}
+.lg{font-size:12px;color:var(--mu)}.lg i{display:inline-block;width:14px;height:3px;margin:0 4px 3px 10px}
+.ev{display:grid;grid-template-columns:150px 1fr 48px;gap:8px;align-items:center;font-size:13.5px;margin-top:6px}.ev div{position:relative;height:8px;background:var(--bd);border-radius:4px}.ev i{position:absolute;top:0;height:100%}.ev .p{background:var(--up)}.ev .n{background:var(--dn)}.ev b{text-align:right}
 footer{margin-top:40px;font-size:12.5px;color:var(--mu)}
 @media(max-width:520px){.pick{grid-template-columns:56px 1fr;}.sn{font-size:34px}.pp{grid-column:1/-1;text-align:left}}
 </style>
@@ -59,7 +68,12 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const nf=(n,d)=>n==null||isNaN(n)?'–':Number(n).toLocaleString(L,{minimumFractionDigits:d,maximumFractionDigits:d});
 const usd=p=>p==null?'–':'$'+(p>=100?nf(p,0):p>=1?nf(p,2):nf(p,4));
 const pc=v=>v==null?'<span class="mu">–</span>':`<span class="${v>=0?'up':'dn'}">${v>=0?'+':''}${nf(v,1)} %</span>`;
-const S={q:'',liq:true,amt:1000,n:5,sc:null,rep:null,live:null,px:{}};
+const U={
+fr:{mk:"Tendances du marché",fg:"Fear & Greed",fg_n:"0 = peur extrême, 100 = euphorie.",f1:"Peur extrême",f2:"Peur",f3:"Neutre",f4:"Avidité",f5:"Euphorie",alt:"Alt Season",alt_n:"Part des coins qui battent BTC sur 90 j. 75 % ou plus : saison des alts. 25 % ou moins : saison BTC.",a1:"Saison des alts",a2:"Saison BTC",a3:"Intermédiaire",ath:"BTC face à son ATH",ath_n:"Écart au plus haut historique de BTC.",br:"Largeur du marché",br_n:"Part des coins en hausse sur 30 jours.",hv:"Cycle du halving",day:"Jour",hv_n:"Zones d'après les 3 derniers cycles (estimation, échantillon faible) : orange = sommets historiques (jours 365-550), vert = creux historiques (jours 777-930), trait rouge = aujourd'hui, courbe = BTC depuis le halving. Prochain halving vers avril 2028.",p1:"Début de cycle",p2:"Zone de sommet historique",p3:"Marché baissier",p4:"Zone de creux historique",p5:"Fin de cycle",tu:"Haussière",tn:"Neutre",td:"Baissière",i7:"Variation 7 j",i30:"Variation 30 j",i90:"Variation 90 j",ih90:"Écart au plus haut 90 j",ih365:"Écart au plus haut 1 an",iath:"Écart à l'ATH (depuis 2021)",ivol:"Volume vs moyenne 90 j",why:"Pourquoi ce score",why_n:"Effet de chaque famille d'indicateurs sur la probabilité (points de %, positif = favorable).",g_trend:"Tendance",g_risk:"Volatilité",g_highs:"Distance aux plus hauts",g_vol:"Volume et liquidité",g_rsi:"RSI",g_mkt:"Marché global",g_btc:"Lien avec BTC",px_:"Prix et moyennes",cl:"Fermer"},
+es:{mk:"Tendencias del mercado",fg:"Fear & Greed",fg_n:"0 = miedo extremo, 100 = euforia.",f1:"Miedo extremo",f2:"Miedo",f3:"Neutral",f4:"Codicia",f5:"Euforia",alt:"Alt Season",alt_n:"Parte de las monedas que superan a BTC en 90 d. 75 % o más: temporada alt. 25 % o menos: temporada BTC.",a1:"Temporada alt",a2:"Temporada BTC",a3:"Intermedio",ath:"BTC frente a su ATH",ath_n:"Distancia al máximo histórico de BTC.",br:"Amplitud del mercado",br_n:"Parte de las monedas al alza en 30 días.",hv:"Ciclo del halving",day:"Día",hv_n:"Zonas según los 3 últimos ciclos (estimación, muestra pequeña): naranja = máximos históricos (días 365-550), verde = mínimos históricos (días 777-930), línea roja = hoy, curva = BTC desde el halving. Próximo halving hacia abril de 2028.",p1:"Inicio de ciclo",p2:"Zona de máximo histórico",p3:"Mercado bajista",p4:"Zona de mínimo histórico",p5:"Final de ciclo",tu:"Alcista",tn:"Neutral",td:"Bajista",i7:"Variación 7 d",i30:"Variación 30 d",i90:"Variación 90 d",ih90:"Distancia al máximo de 90 d",ih365:"Distancia al máximo de 1 año",iath:"Distancia al ATH (desde 2021)",ivol:"Volumen vs media de 90 d",why:"Por qué esta puntuación",why_n:"Efecto de cada familia de indicadores en la probabilidad (puntos de %, positivo = favorable).",g_trend:"Tendencia",g_risk:"Volatilidad",g_highs:"Distancia a máximos",g_vol:"Volumen y liquidez",g_rsi:"RSI",g_mkt:"Mercado global",g_btc:"Relación con BTC",px_:"Precio y medias",cl:"Cerrar"},
+en:{mk:"Market trends",fg:"Fear & Greed",fg_n:"0 = extreme fear, 100 = euphoria.",f1:"Extreme fear",f2:"Fear",f3:"Neutral",f4:"Greed",f5:"Euphoria",alt:"Alt Season",alt_n:"Share of coins beating BTC over 90 d. 75% or more: alt season. 25% or less: BTC season.",a1:"Alt season",a2:"BTC season",a3:"In between",ath:"BTC vs its ATH",ath_n:"Distance from BTC's all-time high.",br:"Market breadth",br_n:"Share of coins up over 30 days.",hv:"Halving cycle",day:"Day",hv_n:"Zones based on the last 3 cycles (estimate, small sample): orange = historical tops (days 365-550), green = historical bottoms (days 777-930), red line = today, curve = BTC since the halving. Next halving around April 2028.",p1:"Early cycle",p2:"Historical top zone",p3:"Bear market",p4:"Historical bottom zone",p5:"Late cycle",tu:"Bullish",tn:"Neutral",td:"Bearish",i7:"7 d change",i30:"30 d change",i90:"90 d change",ih90:"From 90 d high",ih365:"From 1 y high",iath:"From ATH (since 2021)",ivol:"Volume vs 90 d average",why:"Why this score",why_n:"Effect of each indicator family on the probability (% points, positive = favourable).",g_trend:"Trend",g_risk:"Volatility",g_highs:"Distance from highs",g_vol:"Volume and liquidity",g_rsi:"RSI",g_mkt:"Overall market",g_btc:"Link with BTC",px_:"Price and averages",cl:"Close"}};
+for(const l in U)Object.assign(T[l],U[l]);
+const S={q:'',liq:true,amt:1000,n:5,sc:null,rep:null,live:null,px:{},mk:null,det:null};
 const lv=c=>{const x=S.px[c.symbole];return x&&c.prix&&x.prix/c.prix>.5&&x.prix/c.prix<2?x:null};
 const price=c=>(lv(c)||c).prix;
 
@@ -74,6 +88,8 @@ async function load(){
   try{[S.sc,S.rep]=await Promise.all([j('data/model/latest_scores.json'),j('data/model/backtest_report.json')])}
   catch(e){$('#app').innerHTML=`<p class="err">${t('err')}</p>`;return}
   try{S.live=await j('https://raw.githubusercontent.com/NalistPro/Altracker/live/live.json');S.live.coins.forEach(c=>S.px[c.symbole]=c)}catch(e){S.live=null}
+  try{S.mk=await j('data/model/market.json')}catch(e){}
+  try{S.det=await j('data/model/detail.json')}catch(e){}
   shell();
 }
 function shell(){
@@ -85,6 +101,7 @@ function shell(){
    <p class="sub">${t('sub')}</p></header>
   <p class="disc">${t('disc')}</p>
   <p class="meta" id="meta"></p>
+  <section><h2>${t('mk')}</h2><div class="mk" id="mk"></div></section>
   <section><h2>${t('top')}</h2><p class="mu">${t('topn')}</p><ol id="top"></ol></section>
   <section><h2>${t('all')}</h2><p class="mu">${t('how')}</p>
    <div class="tools"><input type="search" id="q" placeholder="${t('q')}" value="${esc(S.q)}" aria-label="${t('q')}">
@@ -93,13 +110,15 @@ function shell(){
   <section><h2>${t('sim')}</h2><p class="mu">${t('simn')}</p>
    <div class="tools"><label>${t('amt')} <input type="number" id="am" min="10" step="100" value="${S.amt}"></label>
    <label>${t('nb')} <select id="nn">${nOpt}</select></label></div><div id="sm"></div></section>
-  <footer>${t('foot')}</footer>`;
+  <dialog id="dg"></dialog><footer>${t('foot')}</footer>`;
   document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{L=b.dataset.l;localStorage.setItem('lang',L);shell()});
   $('#q').oninput=e=>{S.q=e.target.value;table()};
   $('#lq').onchange=e=>{S.liq=e.target.checked;table()};
   $('#am').oninput=e=>{S.amt=Math.max(0,+e.target.value||0);sim()};
   $('#nn').onchange=e=>{S.n=+e.target.value;sim()};
-  head();picks();table();sim();
+  $('#app').onclick=e=>{const r=e.target.closest('[data-s]');if(r)fiche(r.dataset.s)};
+  $('#dg').onclick=e=>{if(e.target.id==='dg'||e.target.dataset.x)$('#dg').close()};
+  head();market();picks();table();sim();
 }
 function head(){
   const sc=S.sc,age=(Date.now()-new Date(sc.date_donnees+'T00:00:00Z'))/864e5,lv_=S.live;
@@ -110,14 +129,14 @@ function head(){
 }
 const topList=()=>S.sc.top5.map(s=>S.sc.classement.find(c=>c.symbole===s)).filter(Boolean);
 function picks(){
-  $('#top').innerHTML=topList().map(c=>`<li class="pick"><div class="sn">${c.score}</div>
+  $('#top').innerHTML=topList().map(c=>`<li class="pick cl" data-s="${esc(c.symbole)}"><div class="sn">${c.score}</div>
    <div><b>${esc(c.symbole)}</b> <span class="mu">${esc(c.nom)}</span><div class="bar"><i style="width:${c.score}%"></i></div></div>
    <div class="pp"><b>${usd(price(c))}</b><small>${pc(c['ret7_%'])} ${t('d7')}</small><small>${pc(c['ret30_%'])} ${t('d30')}</small></div></li>`).join('');
 }
 function table(){
   const q=S.q.trim().toLowerCase();
   const rows=S.sc.classement.filter(c=>(!S.liq||c.liquide)&&(!q||c.symbole.toLowerCase().includes(q)||c.nom.toLowerCase().includes(q)));
-  $('#tb').innerHTML=rows.length?rows.map(c=>{const x=lv(c);return `<tr><td>${c.rang}</td><td><b>${esc(c.symbole)}</b> <span class="mu">${esc(c.nom)}</span>${c.liquide?'':` <span class="low">${t('low')}</span>`}</td>
+  $('#tb').innerHTML=rows.length?rows.map(c=>{const x=lv(c);return `<tr class="cl" data-s="${esc(c.symbole)}"><td>${c.rang}</td><td><b>${esc(c.symbole)}</b> <span class="mu">${esc(c.nom)}</span>${c.liquide?'':` <span class="low">${t('low')}</span>`}</td>
    <td><span class="mb"><i style="width:${c.score}%"></i></span>${c.score}</td><td>${usd(price(c))}</td><td>${pc(x?x.var_24h:null)}</td><td>${pc(c['ret7_%'])}</td><td>${pc(c['ret30_%'])}</td><td>$${nf(c['volume_30j_Musd'],1)}M</td></tr>`}).join('')
    :`<tr><td colspan="8" class="mu" style="text-align:center">${t('none')}</td></tr>`;
 }
@@ -130,6 +149,42 @@ function sim(){
     <p>${t('med')} : ${pc(m['rendement_median_20j_%'])} (${g(m['rendement_median_20j_%'])}) &nbsp; ${t('mean')} : ${pc(m['rendement_moyen_20j_%'])} (${g(m['rendement_moyen_20j_%'])})</p>
     <p>${t('pos')} : ${nf(m['periodes_positives_%'],0)} % &nbsp; ${t('btc')} : ${t('med')} ${pc(b['rendement_median_20j_%'])}</p>
     <p class="warn">${t('warn')}</p></div>`;
+}
+const pth=(v,w,h,lo,hi)=>v.map((y,i)=>(i?'L':'M')+(i/(v.length-1||1)*w).toFixed(1)+' '+(h-(y-lo)/((hi-lo)||1)*h).toFixed(1)).join('');
+function spark(s,lo,hi,g){const v=s.map(x=>x[1]),Y=y=>(64-(y-lo)/(hi-lo)*64).toFixed(1);
+  return `<svg viewBox="0 0 300 64" width="100%" preserveAspectRatio="none" aria-hidden="true" style="height:64px">${(g||[]).map(y=>`<line x1="0" x2="300" y1="${Y(y)}" y2="${Y(y)}" stroke="var(--bd)" stroke-dasharray="3 3"/>`).join('')}<path d="${pth(v,300,64,lo,hi)}" fill="none" stroke="var(--ac)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`}
+const card=(ti,big,lab,note,sv,cls)=>`<div class="card ${cls||''}"><div class="ct">${ti}</div><div class="cb">${big}<span>${lab||''}</span></div>${sv}<p>${note}</p></div>`;
+function market(){
+  const m=S.mk;if(!m){$('#mk').innerHTML='';return}
+  const f=m.fng.valeur,fl=t(f<25?'f1':f<45?'f2':f<56?'f3':f<75?'f4':'f5'),a=m.alt.valeur,al=t(a>=75?'a1':a<=25?'a2':'a3');
+  const h=m.halving,c=h.courbe,ys=c.map(x=>x[1]),lo=Math.min(...ys)*.9,hi=Math.max(...ys)*1.05,X=d=>d/1460*600;
+  const ph=t(h.jour<365?'p1':h.jour<=550?'p2':h.jour<777?'p3':h.jour<=930?'p4':'p5');
+  const bd=(a,b,col)=>`<rect x="${X(a)}" y="0" width="${X(b)-X(a)}" height="120" fill="${col}" opacity=".2"/>`;
+  const hv=`<svg viewBox="0 0 600 120" width="100%" aria-hidden="true">${bd(365,550,'var(--wa)')}${bd(777,930,'var(--up)')}<path d="${c.map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(1)+' '+(120-(p[1]-lo)/(hi-lo)*120).toFixed(1)).join('')}" fill="none" stroke="var(--tx)" stroke-width="2"/><line x1="${X(h.jour)}" x2="${X(h.jour)}" y1="0" y2="120" stroke="var(--dn)" stroke-width="2"/></svg>`;
+  $('#mk').innerHTML=card(t('fg'),f,fl,t('fg_n'),spark(m.fng.serie,0,100,[25,75]))
+   +card(t('alt'),a+' %',al,t('alt_n'),spark(m.alt.serie,0,100,[25,75]))
+   +card(t('ath'),nf(m.btc_ath.valeur,1)+' %','$'+nf(m.btc_ath.ath_prix,0),t('ath_n'),spark(m.btc_ath.serie,Math.min(-60,...m.btc_ath.serie.map(x=>x[1])),0,[]))
+   +card(t('br'),m.breadth.valeur+' %','',t('br_n'),spark(m.breadth.serie,0,100,[50]))
+   +card(t('hv'),t('day')+' '+h.jour,ph,t('hv_n'),hv,'wide');
+}
+const sma=(v,n)=>v.map((_,i)=>i<n-1?null:v.slice(i-n+1,i+1).reduce((a,b)=>a+b,0)/n);
+function fiche(sym){
+  const d=S.det&&S.det.coins[sym],c=S.sc.classement.find(x=>x.symbole===sym);if(!d||!c)return;
+  const v=d.c,N=Math.min(180,v.length),o=v.length-N,A=[sma(v,20),sma(v,50),sma(v,100)],w=v.slice(o),lo=Math.min(...w)*.97,hi=Math.max(...w)*1.03;
+  const P=a=>{let s='',k=0;a.slice(o).forEach((y,i)=>{if(y==null)return;s+=(k?'L':'M')+(i/(N-1)*600).toFixed(1)+' '+(200-(y-lo)/(hi-lo)*200).toFixed(1);k=1});return s};
+  const L=v[v.length-1],[a20,a50,a100]=A.map(x=>x[x.length-1]);
+  const tr=L>a20&&L>a50&&a20>a50?['up',t('tu')]:L<a20&&L<a50&&L<a100?['dn',t('td')]:['mu',t('tn')];
+  const i=d.i,E=x=>x==null?null:Math.expm1(x)*100,Q=x=>x==null?null:x*100;
+  const rows=[['i7',E(i.ret7)],['i30',E(i.ret30)],['i90',E(i.ret90)],['ih90',Q(i.dd90)],['ih365',Q(i.dd365)],['iath',Q(i.dd_ath)],['ivol',E(i.vol_rel)]];
+  const mx=Math.max(...d.e.map(x=>Math.abs(x[1])),1);
+  $('#dg').innerHTML=`<button data-x="1" class="x" aria-label="${t('cl')}">×</button><h3>${esc(sym)} <span class="mu">${esc(c.nom)}</span></h3>
+   <p><b class="big">${c.score}</b> ${t('score')} &nbsp; ${usd(price(c))} &nbsp; <b class="${tr[0]}">${tr[1]}</b> &nbsp; RSI ${nf(i.rsi14,0)}</p>
+   <svg viewBox="0 0 600 200" width="100%" aria-hidden="true"><path d="${P(v)}" fill="none" stroke="var(--tx)" stroke-width="2"/><path d="${P(A[0])}" fill="none" stroke="#c2410c" stroke-width="1.5"/><path d="${P(A[1])}" fill="none" stroke="var(--ac)" stroke-width="1.5"/><path d="${P(A[2])}" fill="none" stroke="#7c3aed" stroke-width="1.5"/></svg>
+   <p class="lg"><i style="background:var(--tx)"></i>${t('px_')} <i style="background:#c2410c"></i>20 <i style="background:var(--ac)"></i>50 <i style="background:#7c3aed"></i>100</p>
+   <div class="tw"><table><tbody>${rows.map(r=>`<tr><td>${t(r[0])}</td><td>${pc(r[1])}</td></tr>`).join('')}</tbody></table></div>
+   <h4>${t('why')}</h4><p class="mu">${t('why_n')}</p>
+   ${d.e.map(x=>`<div class="ev"><span>${t('g_'+x[0])}</span><div><i class="${x[1]>=0?'p':'n'}" style="width:${Math.abs(x[1])/mx*50}%;${x[1]>=0?'left':'right'}:50%"></i></div><b>${x[1]>0?'+':''}${nf(x[1],1)}</b></div>`).join('')}`;
+  $('#dg').showModal();
 }
 load();
 </script>
