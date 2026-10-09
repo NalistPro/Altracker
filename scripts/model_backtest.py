@@ -104,6 +104,7 @@ F["dd365"] = close / close.rolling(365, min_periods=180).max() - 1
 F["atr14"] = ((high - low) / close).rolling(14).mean()
 F["vol_rel"] = np.log(qv.rolling(7).mean() / qv.rolling(90, min_periods=60).mean())
 F["liq30"] = np.log(qv.rolling(30).mean())
+F["dd_ath"] = close / close.cummax() - 1  # distance au plus haut de tout l'historique (depuis 2021)
 
 blr = np.log(btc_c).diff()
 F["corr_btc60"] = lr.rolling(60).corr(blr)
@@ -281,6 +282,54 @@ with open(os.path.join(OUT, "latest_scores.json"), "w", encoding="utf-8") as f:
                "top5": [e["symbole"] for e in liste if e["liquide"]][:N_PICK],
                "classement": liste}, f,
               ensure_ascii=False, indent=1)
+
+# ---- contexte de marche + fiches detaillees (lus par le site)
+def pts(x, n, d=2):
+    x = x.dropna().iloc[-n:]
+    return [[i.strftime("%Y-%m-%d"), round(float(v), d)] for i, v in x.items()]
+
+
+r90 = F["ret90"].sub(np.log(btc_c / btc_c.shift(90)), axis=0)
+alt = ((r90 > 0).where(F["ret90"].notna()).mean(axis=1) * 100).where(F["ret90"].notna().sum(axis=1) >= 20)
+dd_btc = (btc_c / btc_c.cummax() - 1) * 100
+H0 = pd.Timestamp("2024-04-20")  # dernier halving
+cyc = btc_c[btc_c.index >= H0] / btc_c[H0] * 100
+ath_i = btc_c.idxmax()
+market = {
+    "date": str(jour.date()),
+    "fng": {"valeur": int(fng_s.iloc[-1]), "serie": pts(fng_s, 120, 0)},
+    "alt": {"valeur": int(round(alt.dropna().iloc[-1])), "serie": pts(alt, 365, 0)},
+    "btc_ath": {"valeur": round(float(dd_btc.iloc[-1]), 1), "ath_prix": int(btc_c.max()), "ath_date": str(ath_i.date()),
+                "serie": pts(dd_btc, 365, 1)},
+    "breadth": {"valeur": int(round(marche["breadth30"].iloc[-1] * 100)), "serie": pts(marche["breadth30"] * 100, 365, 0)},
+    "halving": {"derniere": "2024-04-20", "prochaine": "2028-04-18", "jour": int((jour - H0).days),
+                "ath_jour": int((ath_i - H0).days),
+                "courbe": [[int((i - H0).days), round(float(v), 1)] for i, v in cyc.iloc[::7].items()],
+                "pics": [368, 526, 548], "creux": [777, 889, 925]},
+}
+json.dump(market, open(os.path.join(OUT, "market.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
+
+GR = {"trend": [k for k in FEATS if k.startswith(("ret", "rel", "dist_sma", "rk_ret"))],
+      "risk": ["vol7", "vol30", "vol_ratio", "atr14", "rk_vol30"], "highs": ["dd90", "dd365", "dd_ath", "rk_dd90"],
+      "vol": ["vol_rel", "liq30", "rk_vol_rel"], "rsi": ["rsi14"], "mkt": list(marche), "btc": ["corr_btc60"]}
+X = actuel[FEATS]
+p0 = final.predict_proba(X)[:, 1]
+med = labeled[FEATS].median()
+imp = {}
+for g, cols in GR.items():
+    Xg = X.copy()
+    Xg[cols] = med[cols].to_numpy()
+    imp[g] = p0 - final.predict_proba(Xg)[:, 1]
+det = {}
+for n_, sym in enumerate(actuel.index):
+    c = close[sym].dropna().iloc[-280:]
+    r = actuel.loc[sym]
+    det[sym] = {"c": [float(f"{v:.6g}") for v in c],
+                "i": {k: (None if pd.isna(r[k]) else round(float(r[k]), 4))
+                      for k in ("ret7", "ret30", "ret90", "dd90", "dd365", "dd_ath", "rsi14", "vol30", "vol_rel")},
+                "e": [[g, round(float(imp[g][n_]) * 100, 1)] for g in GR]}
+json.dump({"date": str(jour.date()), "coins": det}, open(os.path.join(OUT, "detail.json"), "w", encoding="utf-8"),
+          ensure_ascii=False, separators=(",", ":"))
 
 hist = os.path.join(OUT, "scores_history.csv")
 deja = os.path.exists(hist) and str(jour.date()) in open(hist, encoding="utf-8").read()
