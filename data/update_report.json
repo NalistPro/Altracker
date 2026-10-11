@@ -1,14 +1,14 @@
 {
- "date_utc": "2026-10-10T07:10:51.411037+00:00",
- "jour_traite": "2026-10-10",
+ "date_utc": "2026-10-11T07:14:03.290836+00:00",
+ "jour_traite": "2026-10-11",
  "coins": 66,
  "statuts": {
   "ok": 66
  },
  "taux_echec_%": 0.0,
- "fear_greed": "ok (3170 jours, derniere 2026-10-10)",
+ "fear_greed": "ok (3171 jours, derniere 2026-10-11)",
  "archivage": {
-  "global": "ok",
+  "global": "deja fait aujourd'hui",
   "derives": "ok (64 coins)",
   "tvl": "ok (30 coins)"
  },
