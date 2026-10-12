@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Altracker — Simulateur de risque</title>
+<style>
+:root{color-scheme:light;--bg:#f3f4f1;--card:#fff;--tx:#12171c;--mu:#5f6b76;--bd:#dde1dc;--ac:#0b6e6e;--up:#16794a;--dn:#b42318;--wa:#9a5b0a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:880px;margin:0 auto;padding:20px 16px 48px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;justify-content:space-between}
+h1{font:700 28px/1.1 Georgia,serif;margin:0}.sub{flex-basis:100%;margin:2px 0 0;color:var(--mu)}
+a{color:var(--ac);font-weight:600;text-decoration:none}
+.lang button{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:3px 11px;cursor:pointer}
+.lang button:first-child{border-radius:6px 0 0 6px}.lang button:last-child{border-radius:0 6px 6px 0}
+.lang button[aria-pressed=true]{background:var(--ac);border-color:var(--ac);color:#fff}
+.tools{display:flex;flex-wrap:wrap;gap:12px 22px;margin:20px 0 14px;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px 16px}
+label{display:grid;gap:3px;font-size:13px;color:var(--mu)}
+input,select{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:6px 9px;width:130px}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.tw{overflow-x:auto;background:var(--card);border:1px solid var(--bd);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;white-space:nowrap}
+th,td{padding:9px 12px;text-align:right;border-bottom:1px solid var(--bd)}th:first-child,td:first-child{text-align:left}
+th{font-weight:600;font-size:13px;color:var(--mu)}tr:last-child td{border-bottom:0}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:14px 0}
+.k{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px 14px}.k span{display:block;font-size:13px;color:var(--mu)}
+.k b{font:700 24px Georgia,serif;font-variant-numeric:tabular-nums}.dn{color:var(--dn)}
+.n{font-size:13px;color:var(--mu)}.w{border-left:3px solid var(--wa);padding:4px 12px;font-size:13.5px;color:var(--mu);margin-top:16px}
+</style>
+</head>
+<body>
+<main id="app"><p class="n">…</p></main>
+<script>
+const T={
+fr:{ti:"Simulateur de risque",sub:"Répartis un capital entre les meilleurs coins du modèle et vois ce que tu risques.",back:"← Retour au classement",cap:"Capital (USD)",nb:"Nombre de coins",stop:"Stop-loss (%)",coin:"Coin",amt:"Montant",qty:"Quantité",sp:"Prix du stop",ls:"Perte si stop",rg:"Fourchette typique à 20 j",k1:"Perte maximale si tous les stops sont touchés",k2:"Part du capital",k3:"Fourchette typique du portefeuille",n1:"La fourchette est calculée avec la volatilité des 30 derniers jours : elle couvre environ 2 cas sur 3. Ce n'est pas une prévision, et un coin peut sortir de cette zone. Le stop suppose que tu peux vendre au prix prévu, ce qui n'est pas garanti en cas de forte chute.",w:"Outil d'étude, pas un conseil en investissement. Ne risque jamais plus que ce que tu peux te permettre de perdre.",err:"Impossible de charger les données."},
+es:{ti:"Simulador de riesgo",sub:"Reparte un capital entre las mejores monedas del modelo y mira cuánto arriesgas.",back:"← Volver a la clasificación",cap:"Capital (USD)",nb:"Número de monedas",stop:"Stop-loss (%)",coin:"Moneda",amt:"Importe",qty:"Cantidad",sp:"Precio del stop",ls:"Pérdida si stop",rg:"Rango típico a 20 d",k1:"Pérdida máxima si se activan todos los stops",k2:"Parte del capital",k3:"Rango típico de la cartera",n1:"El rango se calcula con la volatilidad de los últimos 30 días: cubre unos 2 de cada 3 casos. No es una previsión, y una moneda puede salir de esa zona. El stop supone que puedes vender al precio previsto, lo cual no está garantizado en una caída fuerte.",w:"Herramienta de estudio, no es asesoramiento de inversión. Nunca arriesgues más de lo que puedes permitirte perder.",err:"No se pueden cargar los datos."},
+en:{ti:"Risk simulator",sub:"Split a budget across the model's top coins and see what you risk.",back:"← Back to the ranking",cap:"Budget (USD)",nb:"Number of coins",stop:"Stop-loss (%)",coin:"Coin",amt:"Amount",qty:"Quantity",sp:"Stop price",ls:"Loss at stop",rg:"Typical 20 d range",k1:"Maximum loss if every stop is hit",k2:"Share of budget",k3:"Typical portfolio range",n1:"The range uses the last 30 days of volatility: it covers about 2 cases out of 3. It is not a forecast, and a coin can leave this zone. The stop assumes you can sell at the planned price, which is not guaranteed in a sharp drop.",w:"Research tool, not investment advice. Never risk more than you can afford to lose.",err:"Could not load the data."}};
+const $=s=>document.querySelector(s);
+let L=localStorage.getItem('lang')||(navigator.language||'fr').slice(0,2);if(!T[L])L='fr';
+const t=k=>T[L][k],S={cap:1000,n:5,stop:15,sc:null,dt:null};
+const nf=(n,d=0)=>Number(n).toLocaleString(L,{minimumFractionDigits:d,maximumFractionDigits:d});
+const usd=p=>'$'+(p>=100?nf(p):p>=1?nf(p,2):nf(p,4)),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const RAW='https://raw.githubusercontent.com/NalistPro/Altracker/main/';
+async function j(u){for(const x of [u,RAW+u]){try{const r=await fetch(x,{cache:'no-store'});if(r.ok)return await r.json()}catch(e){}}throw new Error(u)}
+async function go(){
+  try{[S.sc,S.dt]=await Promise.all([j('data/model/latest_scores.json'),j('data/model/detail.json')])}
+  catch(e){$('#app').innerHTML=`<p class="n" style="color:var(--dn)">${t('err')}</p>`;return}
+  shell();
+}
+function shell(){
+  document.documentElement.lang=L;
+  $('#app').innerHTML=`<header><h1>${t('ti')}</h1><div class="lang">${['fr','es','en'].map(l=>`<button data-l="${l}" aria-pressed="${l===L}">${l.toUpperCase()}</button>`).join('')}</div>
+   <p class="sub">${t('sub')} <a href="index.html">${t('back')}</a></p></header>
+   <div class="tools"><label>${t('cap')}<input type="number" id="cap" min="10" step="100" value="${S.cap}"></label>
+   <label>${t('nb')}<select id="nb">${[1,2,3,4,5].map(i=>`<option ${i===S.n?'selected':''}>${i}</option>`).join('')}</select></label>
+   <label>${t('stop')}<input type="number" id="sp" min="1" max="90" step="1" value="${S.stop}"></label></div><div id="out"></div>
+   <p class="n">${t('n1')}</p><p class="w">${t('w')}</p>`;
+  document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{L=b.dataset.l;localStorage.setItem('lang',L);shell()});
+  $('#cap').oninput=e=>{S.cap=Math.max(0,+e.target.value||0);draw()};
+  $('#nb').onchange=e=>{S.n=+e.target.value;draw()};
+  $('#sp').oninput=e=>{S.stop=Math.min(90,Math.max(1,+e.target.value||15));draw()};
+  draw();
+}
+function draw(){
+  const top=S.sc.top5.map(s=>S.sc.classement.find(c=>c.symbole===s)).filter(Boolean).slice(0,S.n),a=S.cap/(top.length||1),f=S.stop/100;
+  let lossT=0,loT=0,hiT=0;
+  const rows=top.map(c=>{
+    const v=(S.dt.coins[c.symbole]||{i:{}}).i.vol30||0.05,s=v*Math.sqrt(20),q=a/c.prix,lo=c.prix*Math.exp(-s),hi=c.prix*Math.exp(s);
+    lossT+=a*f;loT+=q*lo;hiT+=q*hi;
+    return `<tr><td><b>${esc(c.symbole)}</b></td><td>$${nf(a)}</td><td>${nf(q,q>=100?0:q>=1?2:4)}</td><td>${usd(c.prix*(1-f))}</td><td class="dn">−$${nf(a*f)}</td><td>${usd(lo)} – ${usd(hi)}</td></tr>`}).join('');
+  $('#out').innerHTML=`<div class="tw"><table><thead><tr><th>${t('coin')}</th><th>${t('amt')}</th><th>${t('qty')}</th><th>${t('sp')}</th><th>${t('ls')}</th><th>${t('rg')}</th></tr></thead><tbody>${rows}</tbody></table></div>
+   <div class="sum"><div class="k"><span>${t('k1')}</span><b class="dn">−$${nf(lossT)}</b></div>
+   <div class="k"><span>${t('k2')}</span><b>${nf(S.cap?lossT/S.cap*100:0,1)} %</b></div>
+   <div class="k"><span>${t('k3')}</span><b>$${nf(loT)} – $${nf(hiT)}</b></div></div>`;
+}
+go();
+</script>
+</body>
+</html>
