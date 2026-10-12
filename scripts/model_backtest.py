@@ -307,6 +307,11 @@ market = {
                 "courbe": [[int((i - H0).days), round(float(v), 1)] for i, v in cyc.iloc[::7].items()],
                 "pics": [368, 526, 548], "creux": [777, 889, 925]},
 }
+ethbtc = eth_c / btc_c
+market["ethbtc"] = {"valeur": round(float(ethbtc.iloc[-1]), 5), "var30": round(float(ethbtc.iloc[-1] / ethbtc.iloc[-31] - 1) * 100, 1),
+                    "serie": pts(ethbtc, 365, 5)}
+volb = blr.rolling(30).std() * np.sqrt(365) * 100
+market["volbtc"] = {"valeur": round(float(volb.iloc[-1])), "serie": pts(volb, 365, 0)}
 json.dump(market, open(os.path.join(OUT, "market.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
 
 GR = {"trend": [k for k in FEATS if k.startswith(("ret", "rel", "dist_sma", "rk_ret"))],
