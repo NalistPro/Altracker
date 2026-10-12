@@ -9,7 +9,7 @@ Regles (modifiables ci-dessous) :
                 liquides, ou apres 20 jours (fin de l'horizon du modele).
 Le script ne passe jamais d'ordre : il informe.
 
-Secrets GitHub : GMAIL_USER, GMAIL_APP_PASSWORD, ALERT_TO (jamais ecrits dans le depot).
+Secrets GitHub : RESEND_API_KEY + ALERT_TO (recommande), ou GMAIL_USER + GMAIL_APP_PASSWORD + ALERT_TO. Jamais dans le depot.
 Usage : python scripts/alerts.py data [--test]     (ALERT_DRY=1 : affiche le message au lieu de l'envoyer)
 """
 import csv
@@ -18,6 +18,8 @@ import os
 import smtplib
 import ssl
 import sys
+import urllib.error
+import urllib.request
 from datetime import datetime, timedelta, timezone
 from email.message import EmailMessage
 from html import escape
@@ -78,6 +80,25 @@ def pourquoi(detail, sym):
 
 
 # ------------------------------------------------------------------
+def via_resend(cle, dest, sujet, texte, html):
+    corps = json.dumps({"from": "Altracker <onboarding@resend.dev>", "to": [dest], "subject": sujet,
+                        "text": texte, "html": html}).encode("utf-8")
+    req = urllib.request.Request("https://api.resend.com/emails", data=corps, method="POST",
+                                 headers={"Authorization": f"Bearer {cle}", "Content-Type": "application/json",
+                                          "User-Agent": "altracker/1.0"})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            print(f"E-mail envoyé via Resend (HTTP {r.status}) : {sujet}")
+            return True
+    except urllib.error.HTTPError as e:
+        print(f"ECHEC Resend (HTTP {e.code}) : {e.read().decode('utf-8', 'replace')[:300]}")
+        if e.code in (401, 403, 422):
+            print("Verifie RESEND_API_KEY, et que ALERT_TO est exactement l'adresse utilisee pour creer le compte Resend.")
+    except Exception as ex:
+        print(f"ECHEC Resend ({type(ex).__name__}) : {ex}")
+    return False
+
+
 def envoyer(sujet, blocs):
     """blocs : liste de (style, texte). Renvoie True si le message est parti (ou affiche en mode DRY)."""
     texte = "\n\n".join(t for _, t in blocs)
@@ -87,6 +108,14 @@ def envoyer(sujet, blocs):
     if os.environ.get("ALERT_DRY"):
         print(f"\n===== SUJET : {sujet} =====\n{texte}\n=====")
         return True
+    cle = os.environ.get("RESEND_API_KEY", "").strip()
+    if cle:  # envoi par l'API web de Resend (prioritaire : plus fiable que Gmail depuis GitHub)
+        dest = os.environ.get("ALERT_TO", "").strip()
+        if not dest:
+            print("ECHEC : secret ALERT_TO absent ou vide.")
+            return False
+        html = f"<div style='font-family:Georgia,serif;font-size:15px;line-height:1.55;max-width:560px'>{corps}</div>"
+        return via_resend(cle, dest, sujet, texte, html)
     user, mdp, dest = (os.environ.get(k, "").strip() for k in ("GMAIL_USER", "GMAIL_APP_PASSWORD", "ALERT_TO"))
     manquants = [k for k, v in (("GMAIL_USER", user), ("GMAIL_APP_PASSWORD", mdp), ("ALERT_TO", dest)) if not v]
     if manquants:
