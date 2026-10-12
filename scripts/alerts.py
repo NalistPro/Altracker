@@ -98,12 +98,33 @@ def envoyer(sujet, blocs):
     m.set_content(texte)
     m.add_alternative(f"<div style='font-family:Georgia,serif;font-size:15px;line-height:1.55;max-width:560px'>{corps}</div>",
                       subtype="html")
+    mdp = mdp.replace(" ", "")  # Google affiche le code par blocs de 4 : les espaces ne font pas partie du code
+    ctx = ssl.create_default_context()
+    erreurs = []
     try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=ssl.create_default_context(), timeout=30) as s:
-            s.login(user, mdp)
-            s.send_message(m)
-        print(f"E-mail envoyé : {sujet}")
-        return True
+        for nom, ouvrir in (("port 587 (STARTTLS)", lambda: smtplib.SMTP("smtp.gmail.com", 587, timeout=30)),
+                            ("port 465 (SSL)", lambda: smtplib.SMTP_SSL("smtp.gmail.com", 465, context=ctx, timeout=30))):
+            etape = "connexion"
+            try:
+                with ouvrir() as s:
+                    s.ehlo()
+                    if "587" in nom:
+                        etape = "chiffrement"
+                        s.starttls(context=ctx)
+                        s.ehlo()
+                    etape = "identification"
+                    s.login(user, mdp)
+                    etape = "envoi"
+                    s.send_message(m)
+                print(f"E-mail envoyé via {nom} : {sujet}")
+                return True
+            except smtplib.SMTPAuthenticationError:
+                raise
+            except Exception as ex:
+                erreurs.append(f"{nom}, étape '{etape}' : {type(ex).__name__} {ex}")
+                print("Tentative échouée -> " + erreurs[-1])
+        print("ECHEC d'envoi : les deux modes de connexion ont échoué (voir les lignes ci-dessus).")
+        return False
     except smtplib.SMTPAuthenticationError as ex:
         print(f"ECHEC d'authentification Gmail (code {ex.smtp_code}) : le mot de passe d'application est refuse. Verifie que "
               "GMAIL_USER est l'adresse complete du compte qui a cree ce mot de passe, que la validation en 2 etapes est "
