@@ -88,8 +88,10 @@ def envoyer(sujet, blocs):
         print(f"\n===== SUJET : {sujet} =====\n{texte}\n=====")
         return True
     user, mdp, dest = (os.environ.get(k, "").strip() for k in ("GMAIL_USER", "GMAIL_APP_PASSWORD", "ALERT_TO"))
-    if not (user and mdp and dest):
-        print("Secrets e-mail absents : message non envoye (rien n'est marque comme envoye).")
+    manquants = [k for k, v in (("GMAIL_USER", user), ("GMAIL_APP_PASSWORD", mdp), ("ALERT_TO", dest)) if not v]
+    if manquants:
+        print("ECHEC : secret(s) absent(s) ou vide(s) : " + ", ".join(manquants) + ". Verifie le nom exact dans "
+              "Settings > Secrets and variables > Actions, onglet 'Secrets' (pas 'Variables').")
         return False
     m = EmailMessage()
     m["Subject"], m["From"], m["To"] = sujet, f"Altracker <{user}>", dest
@@ -102,8 +104,13 @@ def envoyer(sujet, blocs):
             s.send_message(m)
         print(f"E-mail envoyé : {sujet}")
         return True
+    except smtplib.SMTPAuthenticationError as ex:
+        print(f"ECHEC d'authentification Gmail (code {ex.smtp_code}) : le mot de passe d'application est refuse. Verifie que "
+              "GMAIL_USER est l'adresse complete du compte qui a cree ce mot de passe, que la validation en 2 etapes est "
+              "active sur ce compte, puis cree un nouveau mot de passe d'application si besoin.")
+        return False
     except Exception as ex:
-        print(f"Echec d'envoi ({type(ex).__name__}) : {ex}")
+        print(f"ECHEC d'envoi ({type(ex).__name__}) : {ex}")
         return False
 
 
@@ -175,6 +182,8 @@ def main():
         noms = ", ".join(c["symbole"] for c in opps)
         sujet = ("[TEST] " if TEST else "") + f"Altracker : {'opportunité' if len(opps) == 1 else 'opportunités'} repérée{'s' if len(opps) > 1 else ''} ({noms})"
         envoye_ok = envoyer(sujet, blocs) and envoye_ok
+        if TEST and not envoye_ok:
+            sys.exit(1)  # le test doit apparaitre en rouge s'il echoue
         if envoye_ok and not TEST:
             for c in opps:
                 etat["positions"][c["symbole"]] = {"date": jour, "prix": c["prix"]}
