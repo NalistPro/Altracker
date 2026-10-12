@@ -57,6 +57,14 @@ jobs:
       - name: Modele et scores
         run: python scripts/model_backtest.py data
 
+      - name: Alertes e-mail
+        continue-on-error: true
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          ALERT_TO: ${{ secrets.ALERT_TO }}
+        run: python scripts/alerts.py data
+
       - name: Enregistrer les resultats dans le depot
         run: |
           git config user.name "github-actions[bot]"
