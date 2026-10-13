@@ -1,94 +1,226 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="dark">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Altracker — Top 100 Scout</title>
+<meta name="description" content="Classement des altcoins du top 100 par un modèle statistique.">
+<meta name="theme-color" content="#0a0e13">
+<meta name="color-scheme" content="dark light">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Altracker">
+<script>
+// Thème appliqué avant le premier rendu (évite le flash blanc)
+(function(){try{var th=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=th;var m=document.querySelector('meta[name=theme-color]');if(m)m.content=th==='light'?'#f3f5f4':'#0a0e13'}catch(e){}})();
+</script>
 <style>
-:root{color-scheme:light;--bg:#f3f4f1;--card:#fff;--tx:#12171c;--mu:#5f6b76;--bd:#dde1dc;--ac:#0b6e6e;--up:#16794a;--dn:#b42318;--wa:#9a5b0a}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-#app{max-width:880px;margin:0 auto;padding:20px 16px 48px}
-header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;justify-content:space-between}
-h1{font:700 30px/1.1 Georgia,"Times New Roman",serif;margin:0;letter-spacing:-.01em}
-h2{font:700 20px/1.2 Georgia,serif;margin:36px 0 4px}
-.sub{flex-basis:100%;margin:2px 0 0;color:var(--mu)}
-.lang button{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:3px 11px;cursor:pointer}
-.lang button:first-child{border-radius:6px 0 0 6px}.lang button:last-child{border-radius:0 6px 6px 0}
-.lang button[aria-pressed=true]{background:var(--ac);border-color:var(--ac);color:#fff}
-button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
-.disc{border-left:3px solid var(--wa);padding:6px 12px;margin:16px 0 8px;font-size:13.5px;color:var(--mu)}
-.meta{display:flex;flex-wrap:wrap;gap:2px 18px;margin:0;font-size:13.5px;color:var(--mu)}
-.mu{color:var(--mu)}.up{color:var(--up)}.dn{color:var(--dn)}.err{color:var(--dn);font-weight:600}
-ol{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px}
-.pick{display:grid;grid-template-columns:76px 1fr auto;gap:14px;align-items:center;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px 16px}
-.sn{font:700 44px/1 Georgia,serif;font-variant-numeric:tabular-nums;color:var(--ac);text-align:right}
-.bar{height:6px;background:var(--bd);border-radius:3px;margin-top:7px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
-.pp{text-align:right;font-variant-numeric:tabular-nums}.pp small{display:block;color:var(--mu);font-size:12.5px}
-.tools{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:12px 0}
-input[type=search],input[type=number],select{font:inherit;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:6px;padding:6px 9px}
-.tw{overflow-x:auto;background:var(--card);border:1px solid var(--bd);border-radius:10px}
-table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;white-space:nowrap}
-th,td{padding:8px 12px;text-align:right;border-bottom:1px solid var(--bd)}
-th:nth-child(-n+2),td:nth-child(-n+2){text-align:left}
-th{font-weight:600;font-size:13px;color:var(--mu)}tr:last-child td{border-bottom:0}
-.mb{display:inline-block;width:54px;height:6px;background:var(--bd);border-radius:3px;vertical-align:middle;margin-right:8px;overflow:hidden}.mb i{display:block;height:100%;background:var(--ac)}
-.low{color:var(--wa);font-size:12.5px}
-.box{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;margin-top:12px}
-.box p{margin:6px 0 0}.warn{font-size:13px;color:var(--wa)}
-.mk{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0 0}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px 14px}.card.wide{grid-column:1/-1}
-.ct{font-weight:600;font-size:13.5px;color:var(--mu)}.cb{font:700 30px/1.2 Georgia,serif;margin:2px 0 6px;font-variant-numeric:tabular-nums}.cb span{font:600 13px system-ui;color:var(--ac);margin-left:10px}
-.card p{margin:6px 0 0;font-size:12.5px;color:var(--mu)}
-.cl{cursor:pointer}.cl:hover{background:color-mix(in srgb,var(--ac) 8%,transparent)}
-dialog{width:min(680px,94vw);max-height:90vh;border:1px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);padding:18px 20px}
-dialog::backdrop{background:#0008}.x{float:right;font-size:26px;line-height:1;border:0;background:none;color:var(--mu);cursor:pointer}
-h3{margin:0;font:700 22px Georgia,serif}h4{margin:18px 0 0}.big{font:700 28px Georgia,serif;color:var(--ac)}
-.lg{font-size:12px;color:var(--mu)}.lg i{display:inline-block;width:14px;height:3px;margin:0 4px 3px 10px}
-.ev{display:grid;grid-template-columns:150px 1fr 48px;gap:8px;align-items:center;font-size:13.5px;margin-top:6px}.ev div{position:relative;height:8px;background:var(--bd);border-radius:4px}.ev i{position:absolute;top:0;height:100%}.ev .p{background:var(--up)}.ev .n{background:var(--dn)}.ev b{text-align:right}
-.sl{font-size:14px;color:var(--ac);font-weight:600;text-decoration:none;border:1px solid var(--ac);border-radius:6px;padding:3px 11px}
-ol{grid-template-columns:repeat(5,1fr)}
-.pick{display:flex;flex-direction:column;justify-content:space-between;aspect-ratio:1;padding:12px;gap:4px}
-.pick .sn{font-size:42px;text-align:left}.pp{text-align:left}.nm{font-size:12px;color:var(--mu);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.card{padding:10px 12px}.cb{font-size:24px}.ct{cursor:help}
-.more{text-align:center;margin:10px 0 0}.more button{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:6px;padding:6px 18px;cursor:pointer}
-@media(max-width:700px){.mk{grid-template-columns:repeat(2,1fr)}ol{grid-template-columns:repeat(2,1fr)}.pick{aspect-ratio:auto;gap:8px}}
-footer{margin-top:40px;font-size:12.5px;color:var(--mu)}
-@media(max-width:520px){.pick{grid-template-columns:56px 1fr;}.sn{font-size:34px}.pp{grid-column:1/-1;text-align:left}}
+:root,[data-theme=dark]{color-scheme:dark;--bg:#0a0e13;--s1:#111820;--s2:#18212b;--bd:#232d39;--tx:#e8edf2;--mu:#8a97a6;--ac:#2dd4bf;--up:#34d399;--dn:#f87171;--wa:#fbbf24;--sh:0 8px 30px #0008}
+[data-theme=light]{color-scheme:light;--bg:#f3f5f4;--s1:#fff;--s2:#eef1ef;--bd:#dde2de;--tx:#12171c;--mu:#5f6b76;--ac:#0b8a82;--up:#16794a;--dn:#b42318;--wa:#9a5b0a;--sh:0 8px 30px #0003}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overscroll-behavior-y:contain;padding-top:env(safe-area-inset-top)}
+button,a{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.mu{color:var(--mu)}.up{color:var(--up)}.dn{color:var(--dn)}.err{color:var(--dn);font-weight:600}.s{font-size:13px}
+h2{font:700 18px/1.2 system-ui;margin:0;letter-spacing:-.01em}
+#app{max-width:760px;margin:0 auto;padding:0 14px calc(92px + env(safe-area-inset-bottom))}
+
+/* ——— En-tête ——— */
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px;padding:10px 14px;margin:0 -14px;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid transparent}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:19px;letter-spacing:-.02em;margin-right:auto}
+.logo img{width:28px;height:28px;border-radius:8px}
+.seg{display:flex;background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:2px}
+.seg button{padding:3px 9px;border-radius:8px;font-size:12px;font-weight:700;color:var(--mu)}
+.seg button[aria-pressed=true]{background:var(--ac);color:#04201d}
+.ib{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:var(--s1);border:1px solid var(--bd);color:var(--mu)}
+.ib svg{width:18px;height:18px}
+.spin svg{animation:sp .8s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
+#ptr{position:fixed;top:calc(env(safe-area-inset-top) + 60px);left:50%;transform:translate(-50%,-80px);z-index:30;background:var(--s2);border:1px solid var(--bd);border-radius:20px;padding:6px 14px;font-size:12.5px;box-shadow:var(--sh);opacity:0;pointer-events:none}
+
+/* ——— Bandeau d'infos ——— */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 4px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--mu);background:var(--s1);border:1px solid var(--bd);border-radius:20px;padding:3px 10px}
+.chip.w{color:var(--wa);border-color:color-mix(in srgb,var(--wa) 40%,var(--bd))}
+.chip i{width:7px;height:7px;border-radius:50%;background:var(--up)}
+.chip.w i{background:var(--wa)}
+.disc{border-left:3px solid var(--wa);padding:4px 12px;margin:12px 0 0;font-size:12.5px;color:var(--mu)}
+section{margin-top:26px}
+.sh{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+
+/* ——— Cartes marché ——— */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:12px 14px;min-width:0}
+.card.wide{grid-column:1/-1}
+.ct{font-size:12.5px;font-weight:600;color:var(--mu)}
+.cb{font:700 26px/1.2 system-ui;font-variant-numeric:tabular-nums;margin-top:2px}
+.cb small{font-size:12.5px;font-weight:600;margin-left:6px}
+.card p{margin:6px 0 0;font-size:12px;color:var(--mu);line-height:1.4}
+.gauge{display:block;width:100%;max-width:260px;margin:0 auto}
+.gv{font:800 38px system-ui;fill:var(--tx)}
+.glab{text-align:center;font-weight:700;margin-top:-6px}
+.trk{position:relative;height:10px;border-radius:5px;margin:14px 0 6px;background:linear-gradient(90deg,#f97316,#eab308 50%,#22c55e)}
+.trk b{position:absolute;top:50%;width:16px;height:16px;border-radius:50%;background:var(--s1);border:3px solid var(--tx);transform:translate(-50%,-50%)}
+.trk u{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--bg);opacity:.9}
+.sp{display:block;width:100%;height:36px;margin-top:6px}
+
+/* ——— Top 5 ——— */
+.car{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin:10px -14px 0;padding:2px 14px 6px;scrollbar-width:none}
+.car::-webkit-scrollbar{display:none}
+.tc{flex:0 0 150px;scroll-snap-align:start;text-align:left;background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:12px;position:relative;overflow:hidden}
+.tc:active{transform:scale(.98)}
+.tc .rk{position:absolute;top:10px;right:12px;font-size:12px;font-weight:700;color:var(--mu)}
+.tc b.sy{display:block;font-size:17px;margin-top:8px}
+.tc .nm{font-size:12px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tc .pr{font-weight:700;margin-top:6px;font-variant-numeric:tabular-nums}
+.ring{display:block}.rt{font-weight:800;fill:var(--tx)}
+
+/* ——— Variations 24 h ——— */
+.mv{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.mv ul{list-style:none;margin:0;padding:0;background:var(--s1);border:1px solid var(--bd);border-radius:16px;overflow:hidden}
+.mv li{display:flex;justify-content:space-between;padding:9px 12px;border-bottom:1px solid var(--bd);cursor:pointer;font-variant-numeric:tabular-nums}
+.mv li:last-child{border:0}
+.mv li:active{background:var(--s2)}
+
+/* ——— Carte thermique ——— */
+.pills{display:flex;gap:6px}
+.pill{padding:3px 11px;border-radius:20px;font-size:12.5px;font-weight:600;color:var(--mu);border:1px solid var(--bd);background:var(--s1)}
+.pill[aria-pressed=true]{background:var(--ac);border-color:var(--ac);color:#04201d}
+.heat{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:4px;margin-top:10px}
+.tile{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid color-mix(in srgb,var(--bd) 60%,transparent);color:var(--tx);min-width:0}
+.tile b{font-size:12.5px}.tile small{font-size:10.5px;opacity:.85;font-variant-numeric:tabular-nums}
+.tile.dim{opacity:.55}
+.tile:active{transform:scale(.94)}
+
+/* ——— Liste ——— */
+.tools{display:flex;flex-direction:column;gap:10px;margin:12px 0 0}
+.search{display:flex;align-items:center;gap:8px;background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:0 12px}
+.search svg{width:16px;height:16px;color:var(--mu);flex:none}
+.search input{flex:1;min-width:0;background:none;border:0;color:var(--tx);font:inherit;padding:10px 0}
+.search input:focus-visible{outline:0}
+.srt{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;align-items:center}
+.srt::-webkit-scrollbar{display:none}
+.srt .pill{white-space:nowrap;flex:none}
+.sw{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mu);white-space:nowrap;flex:none;margin-left:auto}
+.sw input{accent-color:var(--ac);width:16px;height:16px}
+.rl{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.row{display:grid;grid-template-columns:22px 40px minmax(0,1fr) 70px auto 34px;gap:10px;align-items:center;background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:9px 10px 9px 12px;cursor:pointer}
+.row:active{background:var(--s2)}
+.row .rk{font-size:12px;color:var(--mu);text-align:right;font-variant-numeric:tabular-nums}
+.row .who{min-width:0}.row .who b{display:block}
+.row .who span{display:block;font-size:12px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .pr{text-align:right;font-variant-numeric:tabular-nums}
+.row .pr b{display:block}.row .pr small{font-size:12px}
+.row .low{font-size:10.5px;color:var(--wa);margin-left:4px;font-weight:600}
+.st{width:34px;height:34px;display:grid;place-items:center;color:var(--mu);border-radius:50%}
+.st svg{width:19px;height:19px}
+.st[aria-pressed=true]{color:var(--wa)}.st[aria-pressed=true] svg{fill:currentColor}
+.more{text-align:center;margin:12px 0 0}.more button{border:1px solid var(--bd);background:var(--s1);border-radius:20px;padding:7px 20px;font-size:13.5px}
+.empty{text-align:center;color:var(--mu);padding:36px 10px;background:var(--s1);border:1px dashed var(--bd);border-radius:16px}
+@media(max-width:430px){.row{grid-template-columns:40px minmax(0,1fr) 54px auto 30px;gap:8px;padding-left:10px}.row .rk{display:none}.row .sp2 svg{width:54px}}
+
+/* ——— Barre du bas ——— */
+nav{position:fixed;left:0;right:0;bottom:0;z-index:25;display:flex;justify-content:center;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom)}
+nav .in{display:flex;width:100%;max-width:760px}
+nav button,nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 7px;font-size:11px;font-weight:600;color:var(--mu);text-decoration:none}
+nav svg{width:22px;height:22px}
+nav [aria-current=page]{color:var(--ac)}
+
+/* ——— Fiche détail (bottom sheet) ——— */
+dialog{border:0;padding:0;background:var(--s1);color:var(--tx);width:100%;max-width:640px;max-height:92vh;max-height:92dvh;margin:auto auto 0;border-radius:24px 24px 0 0;box-shadow:var(--sh);overflow:hidden}
+dialog[open]{animation:up .28s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+dialog::backdrop{background:#0009;backdrop-filter:blur(2px);animation:fd .2s}
+@keyframes up{from{transform:translateY(40px);opacity:0}}@keyframes fd{from{opacity:0}}
+@media(min-width:700px){dialog{margin:auto;border-radius:24px;max-height:86vh}}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--bd);margin:8px auto 0;flex:none}
+.sb{overflow-y:auto;padding:12px 18px calc(20px + env(safe-area-inset-bottom));overscroll-behavior:contain}
+.dh{display:flex;align-items:center;gap:12px}
+.dh h3{margin:0;font-size:22px;line-height:1.1}.dh .grow{flex:1;min-width:0}
+.px{font:800 28px system-ui;font-variant-numeric:tabular-nums;margin-top:12px}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:2px 10px;border-radius:20px;border:1px solid currentColor;margin-left:8px;vertical-align:middle}
+.tip{font-size:13px;color:var(--mu);min-height:20px;font-variant-numeric:tabular-nums}
+#ch{display:block;width:100%;height:auto;touch-action:pan-y;cursor:crosshair;margin-top:4px}
+.ctl{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}
+.lg{display:flex;gap:6px}
+.lg button{font-size:12px;font-weight:600;color:var(--mu);border:1px solid var(--bd);border-radius:20px;padding:2px 9px;display:flex;align-items:center;gap:5px}
+.lg button i{width:10px;height:3px;border-radius:2px;background:var(--c)}
+.lg button[aria-pressed=false]{opacity:.45}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:14px}
+.stat{background:var(--s2);border-radius:12px;padding:8px 12px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13.5px;font-variant-numeric:tabular-nums}
+.stat span:first-child{color:var(--mu);font-size:12.5px}
+.rsi{margin-top:14px}
+.rsi .trk{background:linear-gradient(90deg,#22c55e 0 30%,var(--bd) 30% 70%,#ef4444 70%);margin:10px 0 4px;opacity:.9}
+.rsi .lab{display:flex;justify-content:space-between;font-size:11px;color:var(--mu)}
+h4{margin:20px 0 2px;font-size:15px}
+.ev{display:grid;grid-template-columns:minmax(90px,130px) 1fr 44px;gap:8px;align-items:center;font-size:13px;margin-top:8px}
+.ev div{position:relative;height:8px;background:var(--s2);border-radius:4px}
+.ev div:before{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--bd)}
+.ev i{position:absolute;top:0;height:100%;border-radius:4px}.ev .p{background:var(--up)}.ev .n{background:var(--dn)}
+.ev b{text-align:right;font-variant-numeric:tabular-nums}
+
+/* ——— Divers ——— */
+#toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--tx);color:var(--bg);padding:8px 16px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:60;max-width:90vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.ios{display:flex;gap:10px;align-items:center;background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:10px 12px;margin-top:12px;font-size:13px}
+.ios button{margin-left:auto;color:var(--mu);font-size:20px;line-height:1}
+footer{margin-top:34px;font-size:12px;color:var(--mu);text-align:center}
+.sk{height:84px;border-radius:16px;margin-top:10px;background:linear-gradient(90deg,var(--s1),var(--s2),var(--s1));background-size:200% 100%;animation:sk 1.3s infinite}@keyframes sk{to{background-position:-200% 0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<main id="app"><p class="mu">…</p></main>
+<div id="ptr"></div>
+<main id="app"><div class="sk"></div><div class="sk"></div><div class="sk"></div></main>
+<div id="toast" role="status"></div>
 <script>
-if('serviceWorker' in navigator)navigator.serviceWorker.getRegistrations().then(r=>r.forEach(x=>x.unregister()));
-if(window.caches)caches.keys().then(k=>k.forEach(x=>caches.delete(x)));
-
+/* ═════════ Traductions (textes d'origine conservés) ═════════ */
 const T={
-fr:{sub:"Classement des altcoins du top 100 par un modèle statistique, sur un horizon de 20 jours.",disc:"Outil d'étude, pas un conseil en investissement. Les performances passées ne garantissent pas les résultats futurs.",data:"Scores du",px:"Prix de",dom:"Dominance BTC",top:"Top 5 du moment",topn:"Parmi les coins assez liquides (volume moyen d'au moins 2 M$ par jour).",all:"Classement complet",how:"Le score va de 0 à 100 : c'est le rang relatif du coin selon le modèle (100 = le mieux placé de l'univers).",q:"Rechercher un coin",liq:"Coins liquides seulement",coin:"Coin",score:"Score",price:"Prix",d1:"24 h",d7:"7 j",d30:"30 j",vol:"Volume 30 j",low:"liquidité faible",sim:"Simulateur",simn:"Répartis un capital entre les meilleurs coins et compare-le à l'historique du modèle.",amt:"Capital (USD)",nb:"Nombre de coins",qty:"Quantité",share:"Part",amount:"Montant",hist:"Historique du test sur 20 jours",med:"Médiane",mean:"Moyenne",pos:"Périodes positives",btc:"BTC, même période",warn:"Résultats d'un test sur le passé, gonflés par le biais du survivant : seuls les coins encore dans le top 100 sont inclus. Ce n'est pas une promesse.",old:"Données anciennes : la mise à jour automatique semble arrêtée.",err:"Impossible de charger les données.",none:"Aucun coin ne correspond.",foot:"Données : CoinGecko, Binance, Gate.io, OKX, KuCoin, MEXC. Mise à jour automatique."},
-es:{sub:"Clasificación de las altcoins del top 100 con un modelo estadístico, a un horizonte de 20 días.",disc:"Herramienta de estudio, no es asesoramiento de inversión. El rendimiento pasado no garantiza resultados futuros.",data:"Puntuaciones del",px:"Precios de",dom:"Dominancia BTC",top:"Top 5 del momento",topn:"Entre las monedas con liquidez suficiente (volumen medio de al menos 2 M$ al día).",all:"Clasificación completa",how:"La puntuación va de 0 a 100: es la posición relativa de la moneda según el modelo (100 = la mejor del universo).",q:"Buscar una moneda",liq:"Solo monedas líquidas",coin:"Moneda",score:"Puntos",price:"Precio",d1:"24 h",d7:"7 d",d30:"30 d",vol:"Volumen 30 d",low:"liquidez baja",sim:"Simulador",simn:"Reparte un capital entre las mejores monedas y compáralo con el historial del modelo.",amt:"Capital (USD)",nb:"Número de monedas",qty:"Cantidad",share:"Parte",amount:"Importe",hist:"Historial de la prueba a 20 días",med:"Mediana",mean:"Media",pos:"Periodos positivos",btc:"BTC, mismo periodo",warn:"Resultados de una prueba sobre el pasado, inflados por el sesgo de supervivencia: solo se incluyen las monedas que siguen en el top 100. No es una promesa.",old:"Datos antiguos: la actualización automática parece detenida.",err:"No se pueden cargar los datos.",none:"Ninguna moneda coincide.",foot:"Datos: CoinGecko, Binance, Gate.io, OKX, KuCoin, MEXC. Actualización automática."},
-en:{sub:"Top 100 altcoins ranked by a statistical model, on a 20-day horizon.",disc:"Research tool, not investment advice. Past performance does not guarantee future results.",data:"Scores as of",px:"Prices at",dom:"BTC dominance",top:"Top 5 right now",topn:"Among coins liquid enough to trade (average volume of at least $2M per day).",all:"Full ranking",how:"The score runs from 0 to 100: it is the coin's relative rank according to the model (100 = best placed in the universe).",q:"Search a coin",liq:"Liquid coins only",coin:"Coin",score:"Score",price:"Price",d1:"24 h",d7:"7 d",d30:"30 d",vol:"30 d volume",low:"low liquidity",sim:"Simulator",simn:"Split a budget across the top coins and compare it with the model's track record.",amt:"Budget (USD)",nb:"Number of coins",qty:"Quantity",share:"Share",amount:"Amount",hist:"Backtest history over 20 days",med:"Median",mean:"Mean",pos:"Positive periods",btc:"BTC, same period",warn:"Results of a test on past data, inflated by survivorship bias: only coins still in the top 100 are included. This is not a promise.",old:"Stale data: the automatic update seems to have stopped.",err:"Could not load the data.",none:"No coin matches.",foot:"Data: CoinGecko, Binance, Gate.io, OKX, KuCoin, MEXC. Updated automatically."}
+fr:{sub:"Classement des altcoins du top 100 par un modèle statistique, sur un horizon de 20 jours.",disc:"Outil d'étude, pas un conseil en investissement. Les performances passées ne garantissent pas les résultats futurs.",data:"Scores du",px:"Prix de",dom:"Dominance BTC",top:"Top 5 du moment",topn:"Parmi les coins assez liquides (volume moyen d'au moins 2 M$ par jour).",all:"Classement complet",how:"Le score va de 0 à 100 : c'est le rang relatif du coin selon le modèle (100 = le mieux placé de l'univers).",q:"Rechercher un coin",liq:"Liquides seulement",coin:"Coin",score:"Score",price:"Prix",d1:"24 h",d7:"7 j",d30:"30 j",vol:"Volume 30 j",low:"liquidité faible",old:"Données anciennes : la mise à jour automatique semble arrêtée.",err:"Impossible de charger les données.",none:"Aucun coin ne correspond.",foot:"Données : CoinGecko, Binance, Gate.io, OKX, KuCoin, MEXC. Mise à jour automatique."},
+es:{sub:"Clasificación de las altcoins del top 100 con un modelo estadístico, a un horizonte de 20 días.",disc:"Herramienta de estudio, no es asesoramiento de inversión. El rendimiento pasado no garantiza resultados futuros.",data:"Puntuaciones del",px:"Precios de",dom:"Dominancia BTC",top:"Top 5 del momento",topn:"Entre las monedas con liquidez suficiente (volumen medio de al menos 2 M$ al día).",all:"Clasificación completa",how:"La puntuación va de 0 a 100: es la posición relativa de la moneda según el modelo (100 = la mejor del universo).",q:"Buscar una moneda",liq:"Solo líquidas",coin:"Moneda",score:"Puntos",price:"Precio",d1:"24 h",d7:"7 d",d30:"30 d",vol:"Volumen 30 d",low:"liquidez baja",old:"Datos antiguos: la actualización automática parece detenida.",err:"No se pueden cargar los datos.",none:"Ninguna moneda coincide.",foot:"Datos: CoinGecko, Binance, Gate.io, OKX, KuCoin, MEXC. Actualización automática."},
+en:{sub:"Top 100 altcoins ranked by a statistical model, on a 20-day horizon.",disc:"Research tool, not investment advice. Past performance does not guarantee future results.",data:"Scores as of",px:"Prices at",dom:"BTC dominance",top:"Top 5 right now",topn:"Among coins liquid enough to trade (average volume of at least $2M per day).",all:"Full ranking",how:"The score runs from 0 to 100: it is the coin's relative rank according to the model (100 = best placed in the universe).",q:"Search a coin",liq:"Liquid only",coin:"Coin",score:"Score",price:"Price",d1:"24 h",d7:"7 d",d30:"30 d",vol:"30 d volume",low:"low liquidity",old:"Stale data: the automatic update seems to have stopped.",err:"Could not load the data.",none:"No coin matches.",foot:"Data: CoinGecko, Binance, Gate.io, OKX, KuCoin, MEXC. Updated automatically."}
 };
+const U={
+fr:{fg:"Fear & Greed",fg_n:"0 = peur extrême, 100 = euphorie.",f1:"Peur extrême",f2:"Peur",f3:"Neutre",f4:"Avidité",f5:"Euphorie",alt:"Alt Season",alt_n:"Part des coins qui battent BTC sur 90 j. 75 % ou plus : saison des alts. 25 % ou moins : saison BTC.",a1:"Saison des alts",a2:"Saison BTC",a3:"Intermédiaire",tu:"Haussière",tn:"Neutre",td:"Baissière",i7:"Variation 7 j",i30:"Variation 30 j",i90:"Variation 90 j",ih90:"Écart au plus haut 90 j",ih365:"Écart au plus haut 1 an",iath:"Écart à l'ATH (depuis 2021)",ivol:"Volume vs moy. 90 j",why:"Pourquoi ce score",why_n:"Effet de chaque famille d'indicateurs sur la probabilité (points de %, positif = favorable).",g_trend:"Tendance",g_risk:"Volatilité",g_highs:"Distance aux plus hauts",g_vol:"Volume et liquidité",g_rsi:"RSI",g_mkt:"Marché global",g_btc:"Lien avec BTC",px_:"Prix",cl:"Fermer",eb:"ETH / BTC",eb_n:"Force d'Ethereum face à BTC. Quand le ratio monte, les altcoins ont tendance à suivre.",vb:"Volatilité BTC",vb_n:"Agitation annualisée de BTC sur 30 jours. Faible = marché calme.",v1:"Calme",v2:"Modérée",v3:"Agitée",more:"Voir tout",less:"Réduire"},
+es:{fg:"Fear & Greed",fg_n:"0 = miedo extremo, 100 = euforia.",f1:"Miedo extremo",f2:"Miedo",f3:"Neutral",f4:"Codicia",f5:"Euforia",alt:"Alt Season",alt_n:"Parte de las monedas que superan a BTC en 90 d. 75 % o más: temporada alt. 25 % o menos: temporada BTC.",a1:"Temporada alt",a2:"Temporada BTC",a3:"Intermedio",tu:"Alcista",tn:"Neutral",td:"Bajista",i7:"Variación 7 d",i30:"Variación 30 d",i90:"Variación 90 d",ih90:"Distancia al máx. de 90 d",ih365:"Distancia al máx. de 1 año",iath:"Distancia al ATH (desde 2021)",ivol:"Volumen vs media 90 d",why:"Por qué esta puntuación",why_n:"Efecto de cada familia de indicadores en la probabilidad (puntos de %, positivo = favorable).",g_trend:"Tendencia",g_risk:"Volatilidad",g_highs:"Distancia a máximos",g_vol:"Volumen y liquidez",g_rsi:"RSI",g_mkt:"Mercado global",g_btc:"Relación con BTC",px_:"Precio",cl:"Cerrar",eb:"ETH / BTC",eb_n:"Fuerza de Ethereum frente a BTC. Cuando el ratio sube, las altcoins suelen seguir.",vb:"Volatilidad BTC",vb_n:"Agitación anualizada de BTC en 30 días. Baja = mercado tranquilo.",v1:"Calma",v2:"Moderada",v3:"Agitada",more:"Ver todo",less:"Reducir"},
+en:{fg:"Fear & Greed",fg_n:"0 = extreme fear, 100 = euphoria.",f1:"Extreme fear",f2:"Fear",f3:"Neutral",f4:"Greed",f5:"Euphoria",alt:"Alt Season",alt_n:"Share of coins beating BTC over 90 d. 75% or more: alt season. 25% or less: BTC season.",a1:"Alt season",a2:"BTC season",a3:"In between",tu:"Bullish",tn:"Neutral",td:"Bearish",i7:"7 d change",i30:"30 d change",i90:"90 d change",ih90:"From 90 d high",ih365:"From 1 y high",iath:"From ATH (since 2021)",ivol:"Volume vs 90 d avg",why:"Why this score",why_n:"Effect of each indicator family on the probability (% points, positive = favourable).",g_trend:"Trend",g_risk:"Volatility",g_highs:"Distance from highs",g_vol:"Volume and liquidity",g_rsi:"RSI",g_mkt:"Overall market",g_btc:"Link with BTC",px_:"Price",cl:"Close",eb:"ETH / BTC",eb_n:"Ethereum's strength against BTC. When the ratio rises, altcoins tend to follow.",vb:"BTC volatility",vb_n:"Annualised BTC volatility over 30 days. Low = calm market.",v1:"Calm",v2:"Moderate",v3:"Turbulent",more:"See all",less:"Collapse"}};
+/* Nouveaux textes de l'interface « app » */
+const N={
+fr:{tH:"Accueil",tR:"Classement",tF:"Favoris",tS:"Simulateur",mood:"Humeur du marché",heat:"Carte du marché",heatn:"Variation de chaque coin. Touche une tuile pour le détail.",movers:"Plus fortes variations 24 h",fav0:"Aucun favori pour l'instant. Touche l'étoile d'un coin pour le suivre ici.",rf:"Actualiser",ptr:"Relâche pour actualiser",ptr0:"Tire pour actualiser",done:"Données actualisées",off:"Hors ligne : dernières données enregistrées",inst:"Installer l'app",ios:"Pour l'installer : touche Partager, puis « Sur l'écran d'accueil ».",ma:"Moyennes",th:"Thème",flw:"Suivre",unf:"Ne plus suivre",today:"aujourd'hui",rsi:"RSI (14 j)",ov:"survente",ob:"surachat",mx:"Tout",ago:"J-"},
+es:{tH:"Inicio",tR:"Ranking",tF:"Favoritos",tS:"Simulador",mood:"Ánimo del mercado",heat:"Mapa del mercado",heatn:"Variación de cada moneda. Toca un cuadro para ver el detalle.",movers:"Mayores variaciones 24 h",fav0:"Aún no hay favoritos. Toca la estrella de una moneda para seguirla aquí.",rf:"Actualizar",ptr:"Suelta para actualizar",ptr0:"Tira para actualizar",done:"Datos actualizados",off:"Sin conexión: últimos datos guardados",inst:"Instalar la app",ios:"Para instalarla: toca Compartir y luego «Añadir a pantalla de inicio».",ma:"Medias",th:"Tema",flw:"Seguir",unf:"Dejar de seguir",today:"hoy",rsi:"RSI (14 d)",ov:"sobreventa",ob:"sobrecompra",mx:"Todo",ago:"D-"},
+en:{tH:"Home",tR:"Ranking",tF:"Watchlist",tS:"Simulator",mood:"Market mood",heat:"Market map",heatn:"Each coin's change. Tap a tile for details.",movers:"Biggest 24 h moves",fav0:"No favourites yet. Tap a coin's star to follow it here.",rf:"Refresh",ptr:"Release to refresh",ptr0:"Pull to refresh",done:"Data refreshed",off:"Offline: showing last saved data",inst:"Install app",ios:"To install: tap Share, then “Add to Home Screen”.",ma:"Averages",th:"Theme",flw:"Follow",unf:"Unfollow",today:"today",rsi:"RSI (14 d)",ov:"oversold",ob:"overbought",mx:"All",ago:"D-"}};
+for(const l in T)Object.assign(T[l],U[l],N[l]);
+
+/* ═════════ Utilitaires ═════════ */
 const $=s=>document.querySelector(s);
-let L=localStorage.getItem('lang')||(navigator.language||'fr').slice(0,2);if(!T[L])L='fr';
-const t=k=>T[L][k];
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+let L=store.get('lang',(navigator.language||'fr').slice(0,2));if(!T[L])L='fr';
+const t=k=>T[L][k]??k;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const nf=(n,d)=>n==null||isNaN(n)?'–':Number(n).toLocaleString(L,{minimumFractionDigits:d,maximumFractionDigits:d});
 const usd=p=>p==null?'–':'$'+(p>=100?nf(p,0):p>=1?nf(p,2):nf(p,4));
 const pc=v=>v==null?'<span class="mu">–</span>':`<span class="${v>=0?'up':'dn'}">${v>=0?'+':''}${nf(v,1)} %</span>`;
-const U={
-fr:{mk:"Tendances du marché",fg:"Fear & Greed",fg_n:"0 = peur extrême, 100 = euphorie.",f1:"Peur extrême",f2:"Peur",f3:"Neutre",f4:"Avidité",f5:"Euphorie",alt:"Alt Season",alt_n:"Part des coins qui battent BTC sur 90 j. 75 % ou plus : saison des alts. 25 % ou moins : saison BTC.",a1:"Saison des alts",a2:"Saison BTC",a3:"Intermédiaire",ath:"BTC face à son ATH",ath_n:"Écart au plus haut historique de BTC.",br:"Largeur du marché",br_n:"Part des coins en hausse sur 30 jours.",hv:"Cycle du halving",day:"Jour",hv_n:"Zones d'après les 3 derniers cycles (estimation, échantillon faible) : orange = sommets historiques (jours 365-550), vert = creux historiques (jours 777-930), trait rouge = aujourd'hui, courbe = BTC depuis le halving. Prochain halving vers avril 2028.",p1:"Début de cycle",p2:"Zone de sommet historique",p3:"Marché baissier",p4:"Zone de creux historique",p5:"Fin de cycle",tu:"Haussière",tn:"Neutre",td:"Baissière",i7:"Variation 7 j",i30:"Variation 30 j",i90:"Variation 90 j",ih90:"Écart au plus haut 90 j",ih365:"Écart au plus haut 1 an",iath:"Écart à l'ATH (depuis 2021)",ivol:"Volume vs moyenne 90 j",why:"Pourquoi ce score",why_n:"Effet de chaque famille d'indicateurs sur la probabilité (points de %, positif = favorable).",g_trend:"Tendance",g_risk:"Volatilité",g_highs:"Distance aux plus hauts",g_vol:"Volume et liquidité",g_rsi:"RSI",g_mkt:"Marché global",g_btc:"Lien avec BTC",px_:"Prix et moyennes",cl:"Fermer"},
-es:{mk:"Tendencias del mercado",fg:"Fear & Greed",fg_n:"0 = miedo extremo, 100 = euforia.",f1:"Miedo extremo",f2:"Miedo",f3:"Neutral",f4:"Codicia",f5:"Euforia",alt:"Alt Season",alt_n:"Parte de las monedas que superan a BTC en 90 d. 75 % o más: temporada alt. 25 % o menos: temporada BTC.",a1:"Temporada alt",a2:"Temporada BTC",a3:"Intermedio",ath:"BTC frente a su ATH",ath_n:"Distancia al máximo histórico de BTC.",br:"Amplitud del mercado",br_n:"Parte de las monedas al alza en 30 días.",hv:"Ciclo del halving",day:"Día",hv_n:"Zonas según los 3 últimos ciclos (estimación, muestra pequeña): naranja = máximos históricos (días 365-550), verde = mínimos históricos (días 777-930), línea roja = hoy, curva = BTC desde el halving. Próximo halving hacia abril de 2028.",p1:"Inicio de ciclo",p2:"Zona de máximo histórico",p3:"Mercado bajista",p4:"Zona de mínimo histórico",p5:"Final de ciclo",tu:"Alcista",tn:"Neutral",td:"Bajista",i7:"Variación 7 d",i30:"Variación 30 d",i90:"Variación 90 d",ih90:"Distancia al máximo de 90 d",ih365:"Distancia al máximo de 1 año",iath:"Distancia al ATH (desde 2021)",ivol:"Volumen vs media de 90 d",why:"Por qué esta puntuación",why_n:"Efecto de cada familia de indicadores en la probabilidad (puntos de %, positivo = favorable).",g_trend:"Tendencia",g_risk:"Volatilidad",g_highs:"Distancia a máximos",g_vol:"Volumen y liquidez",g_rsi:"RSI",g_mkt:"Mercado global",g_btc:"Relación con BTC",px_:"Precio y medias",cl:"Cerrar"},
-en:{mk:"Market trends",fg:"Fear & Greed",fg_n:"0 = extreme fear, 100 = euphoria.",f1:"Extreme fear",f2:"Fear",f3:"Neutral",f4:"Greed",f5:"Euphoria",alt:"Alt Season",alt_n:"Share of coins beating BTC over 90 d. 75% or more: alt season. 25% or less: BTC season.",a1:"Alt season",a2:"BTC season",a3:"In between",ath:"BTC vs its ATH",ath_n:"Distance from BTC's all-time high.",br:"Market breadth",br_n:"Share of coins up over 30 days.",hv:"Halving cycle",day:"Day",hv_n:"Zones based on the last 3 cycles (estimate, small sample): orange = historical tops (days 365-550), green = historical bottoms (days 777-930), red line = today, curve = BTC since the halving. Next halving around April 2028.",p1:"Early cycle",p2:"Historical top zone",p3:"Bear market",p4:"Historical bottom zone",p5:"Late cycle",tu:"Bullish",tn:"Neutral",td:"Bearish",i7:"7 d change",i30:"30 d change",i90:"90 d change",ih90:"From 90 d high",ih365:"From 1 y high",iath:"From ATH (since 2021)",ivol:"Volume vs 90 d average",why:"Why this score",why_n:"Effect of each indicator family on the probability (% points, positive = favourable).",g_trend:"Trend",g_risk:"Volatility",g_highs:"Distance from highs",g_vol:"Volume and liquidity",g_rsi:"RSI",g_mkt:"Overall market",g_btc:"Link with BTC",px_:"Price and averages",cl:"Close"}};
-for(const l in U)Object.assign(T[l],U[l]);
-const V={
-fr:{eb:"ETH / BTC",eb_n:"Force d'Ethereum face à BTC. Quand le ratio monte, les altcoins ont tendance à suivre.",vb:"Volatilité BTC",vb_n:"Agitation annualisée de BTC sur 30 jours. Faible = marché calme, forte = marché agité.",v1:"Calme",v2:"Modérée",v3:"Agitée",more:"Voir tout",less:"Réduire",simL:"Simulateur"},
-es:{eb:"ETH / BTC",eb_n:"Fuerza de Ethereum frente a BTC. Cuando el ratio sube, las altcoins suelen seguir.",vb:"Volatilidad BTC",vb_n:"Agitación anualizada de BTC en 30 días. Baja = mercado tranquilo, alta = mercado agitado.",v1:"Calma",v2:"Moderada",v3:"Agitada",more:"Ver todo",less:"Reducir",simL:"Simulador"},
-en:{eb:"ETH / BTC",eb_n:"Ethereum's strength against BTC. When the ratio rises, altcoins tend to follow.",vb:"BTC volatility",vb_n:"Annualised BTC volatility over 30 days. Low = calm market, high = turbulent market.",v1:"Calm",v2:"Moderate",v3:"Turbulent",more:"See all",less:"Collapse",simL:"Simulator"}};
-for(const l in V)Object.assign(T[l],V[l]);
-const S={q:'',liq:true,more:false,amt:1000,n:5,sc:null,rep:null,live:null,px:{},mk:null,det:null};
+const col=s=>`hsl(${Math.round(s*1.25)} 68% 52%)`;           // 0 = rouge … 100 = vert
+const IC={
+ home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>',
+ rank:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+ star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.2 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></svg>',
+ calc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/></svg>',
+ sync:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16M3 12A9 9 0 0 1 18.5 5.8L21 8"/><path d="M21 3v5h-5M3 21v-5h5"/></svg>',
+ sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+ dl:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>',
+ srch:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>'
+};
+
+/* ═════════ État & données ═════════ */
+const S={tab:'home',q:'',liq:true,sort:'score',more:false,hp:'d7',rg:90,ma:{20:true,50:true,100:false},sc:null,live:null,px:{},mk:null,det:null,sel:null,busy:false,
+  fav:new Set(JSON.parse(store.get('fav','[]')||'[]'))};
 const lv=c=>{const x=S.px[c.symbole];return x&&c.prix&&x.prix/c.prix>.5&&x.prix/c.prix<2?x:null};
 const price=c=>(lv(c)||c).prix;
-
 const RAW='https://raw.githubusercontent.com/NalistPro/Altracker/main/';
 async function j(u){
   for(const x of u.startsWith('http')?[u]:[u,RAW+u]){
@@ -96,90 +228,252 @@ async function j(u){
   }
   throw new Error(u);
 }
-async function load(){
-  try{[S.sc,S.rep]=await Promise.all([j('data/model/latest_scores.json'),j('data/model/backtest_report.json')])}
-  catch(e){$('#app').innerHTML=`<p class="err">${t('err')}</p>`;return}
-  try{S.live=await j('https://raw.githubusercontent.com/NalistPro/Altracker/live/live.json');S.live.coins.forEach(c=>S.px[c.symbole]=c)}catch(e){S.live=null}
+async function load(manual){
+  S.busy=true;spin();
+  try{S.sc=await j('data/model/latest_scores.json')}
+  catch(e){S.busy=false;spin();if(!S.sc){$('#app').innerHTML=`<p class="err" style="margin-top:30px">${t('err')}</p>`;return}toast(t('err'));return}
+  try{S.live=await j('https://raw.githubusercontent.com/NalistPro/Altracker/live/live.json');S.px={};S.live.coins.forEach(c=>S.px[c.symbole]=c)}catch(e){S.live=null}
   try{S.mk=await j('data/model/market.json')}catch(e){}
   try{S.det=await j('data/model/detail.json')}catch(e){}
-  shell();
+  S.busy=false;spin();
+  if($('#view'))view();else shell();
+  if(manual)toast(t('done'));
 }
-function shell(){
-  document.documentElement.lang=L;
-  const nOpt=[1,2,3,4,5].map(i=>`<option ${i===S.n?'selected':''}>${i}</option>`).join('');
-  $('#app').innerHTML=`
-  <header><h1>Altracker</h1>
-   <div class="lang">${['fr','es','en'].map(l=>`<button data-l="${l}" aria-pressed="${l===L}">${l.toUpperCase()}</button>`).join('')}</div><a class="sl" href="simulateur.html">${t('simL')}</a>
-   <p class="sub">${t('sub')}</p></header>
-  <div class="mk" id="mk"></div>
-  <p class="disc">${t('disc')}</p>
-  <p class="meta" id="meta"></p>
-  <section><h2>${t('top')}</h2><p class="mu">${t('topn')}</p><ol id="top"></ol></section>
-  <section><h2>${t('all')}</h2><p class="mu">${t('how')}</p>
-   <div class="tools"><input type="search" id="q" placeholder="${t('q')}" value="${esc(S.q)}" aria-label="${t('q')}">
-   <label><input type="checkbox" id="lq" ${S.liq?'checked':''}> ${t('liq')}</label></div>
-   <div class="tw"><table><thead><tr><th>#</th><th>${t('coin')}</th><th>${t('score')}</th><th>${t('price')}</th><th>${t('d1')}</th><th>${t('d7')}</th><th>${t('d30')}</th><th>${t('vol')}</th></tr></thead><tbody id="tb"></tbody></table></div><p class="more"><button id="mr"></button></p></section>
-  <dialog id="dg"></dialog><footer>${t('foot')}</footer>`;
-  document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{L=b.dataset.l;localStorage.setItem('lang',L);shell()});
-  $('#q').oninput=e=>{S.q=e.target.value;table()};
-  $('#lq').onchange=e=>{S.liq=e.target.checked;table()};
-  $('#mr').onclick=()=>{S.more=!S.more;table()};
-  $('#app').onclick=e=>{const r=e.target.closest('[data-s]');if(r)fiche(r.dataset.s)};
-  $('#dg').onclick=e=>{if(e.target.id==='dg'||e.target.dataset.x)$('#dg').close()};
-  head();market();picks();table();
-}
-function head(){
-  const sc=S.sc,age=(Date.now()-new Date(sc.date_donnees+'T00:00:00Z'))/864e5,lv_=S.live;
-  const px=lv_?new Date(lv_.mis_a_jour_utc).toLocaleTimeString(L,{hour:'2-digit',minute:'2-digit'}):null;
-  $('#meta').innerHTML=`<span>${t('data')} ${new Date(sc.date_donnees+'T00:00:00Z').toLocaleDateString(L,{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'})}</span>`
-   +(px?`<span>${t('px')} ${px}</span>`:'')+(lv_&&lv_.dominance_btc?`<span>${t('dom')} ${nf(lv_.dominance_btc,1)} %</span>`:'')
-   +(age>3?`<span class="err">${t('old')}</span>`:'');
-}
-const topList=()=>S.sc.top5.map(s=>S.sc.classement.find(c=>c.symbole===s)).filter(Boolean);
-function picks(){
-  $('#top').innerHTML=topList().map(c=>`<li class="pick cl" data-s="${esc(c.symbole)}"><div class="sn">${c.score}</div>
-   <div><b>${esc(c.symbole)}</b><div class="nm">${esc(c.nom)}</div><div class="bar"><i style="width:${c.score}%"></i></div></div>
-   <div class="pp"><b>${usd(price(c))}</b><small>${pc(c['ret7_%'])} ${t('d7')}</small></div></li>`).join('');
-}
-function table(){
-  const q=S.q.trim().toLowerCase();
-  const rows=S.sc.classement.filter(c=>(!S.liq||c.liquide)&&(!q||c.symbole.toLowerCase().includes(q)||c.nom.toLowerCase().includes(q)));
-  const lim=S.more||q?rows.length:10;$('#mr').hidden=!!q||rows.length<=10;$('#mr').textContent=S.more?t('less'):`${t('more')} (${rows.length-10})`;
-  $('#tb').innerHTML=rows.length?rows.slice(0,lim).map(c=>{const x=lv(c);return `<tr class="cl" data-s="${esc(c.symbole)}"><td>${c.rang}</td><td><b>${esc(c.symbole)}</b> <span class="mu">${esc(c.nom)}</span>${c.liquide?'':` <span class="low">${t('low')}</span>`}</td>
-   <td><span class="mb"><i style="width:${c.score}%"></i></span>${c.score}</td><td>${usd(price(c))}</td><td>${pc(x?x.var_24h:null)}</td><td>${pc(c['ret7_%'])}</td><td>${pc(c['ret30_%'])}</td><td>$${nf(c['volume_30j_Musd'],1)}M</td></tr>`}).join('')
-   :`<tr><td colspan="8" class="mu" style="text-align:center">${t('none')}</td></tr>`;
-}
+const spin=()=>{const b=$('#rf');if(b)b.classList.toggle('spin',S.busy)};
+function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2200)}
+
+/* ═════════ Briques graphiques ═════════ */
 const pth=(v,w,h,lo,hi)=>v.map((y,i)=>(i?'L':'M')+(i/(v.length-1||1)*w).toFixed(1)+' '+(h-(y-lo)/((hi-lo)||1)*h).toFixed(1)).join('');
-function spark(s,lo,hi,g){const v=s.map(x=>x[1]),Y=y=>(64-(y-lo)/(hi-lo)*64).toFixed(1);
-  return `<svg viewBox="0 0 300 64" width="100%" preserveAspectRatio="none" aria-hidden="true" style="height:64px">${(g||[]).map(y=>`<line x1="0" x2="300" y1="${Y(y)}" y2="${Y(y)}" stroke="var(--bd)" stroke-dasharray="3 3"/>`).join('')}<path d="${pth(v,300,64,lo,hi)}" fill="none" stroke="var(--ac)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`}
-const card=(ti,big,lab,note,sv)=>`<div class="card"><div class="ct" title="${esc(note)}">${ti}</div><div class="cb">${big}<span>${lab||''}</span></div>${sv}</div>`;
-function market(){
-  const m=S.mk;if(!m){$('#mk').innerHTML='';return}
-  const f=m.fng.valeur,a=m.alt.valeur,e=m.ethbtc,v=m.volbtc,r=x=>x.serie.map(y=>y[1]);
-  $('#mk').innerHTML=card(t('fg'),f,t(f<25?'f1':f<45?'f2':f<56?'f3':f<75?'f4':'f5'),t('fg_n'),spark(m.fng.serie,0,100,[25,75]))
-   +card(t('alt'),a+' %',t(a>=75?'a1':a<=25?'a2':'a3'),t('alt_n'),spark(m.alt.serie,0,100,[25,75]))
-   +(e?card(t('eb'),nf(e.valeur,4),pc(e.var30),t('eb_n'),spark(e.serie,Math.min(...r(e)),Math.max(...r(e)),[])):'')
-   +(v?card(t('vb'),nf(v.valeur,0)+' %',t(v.valeur<35?'v1':v.valeur<60?'v2':'v3'),t('vb_n'),spark(v.serie,0,Math.max(100,...r(v)),[])):'');
+function ring(s,z=44,w=4){
+  const r=(z-w)/2,C=2*Math.PI*r,h=z/2;
+  return `<svg class="ring" width="${z}" height="${z}" viewBox="0 0 ${z} ${z}" aria-hidden="true"><circle cx="${h}" cy="${h}" r="${r}" fill="none" stroke="var(--bd)" stroke-width="${w}"/><circle cx="${h}" cy="${h}" r="${r}" fill="none" stroke="${col(s)}" stroke-width="${w}" stroke-linecap="round" stroke-dasharray="${(C*s/100).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 ${h} ${h})"/><text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" class="rt" style="font-size:${(z*.34).toFixed(1)}px">${s}</text></svg>`;
+}
+function mini(v,w=70,h=26,cls=''){
+  if(!v||v.length<2)return '';
+  const lo=Math.min(...v),hi=Math.max(...v),up=v[v.length-1]>=v[0],c=up?'var(--up)':'var(--dn)';
+  return `<svg class="${cls}" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" preserveAspectRatio="none" aria-hidden="true"><path transform="translate(0 2)" d="${pth(v,w,h-4,lo,hi)}" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>`;
+}
+function spark(s,lo,hi,g){
+  const v=s.map(x=>x[1]),Y=y=>(34-(y-lo)/((hi-lo)||1)*34).toFixed(1);
+  return `<svg class="sp" viewBox="0 0 300 36" preserveAspectRatio="none" aria-hidden="true">${(g||[]).map(y=>`<line x1="0" x2="300" y1="${Y(y)}" y2="${Y(y)}" stroke="var(--bd)" stroke-dasharray="3 3"/>`).join('')}<path d="${pth(v,300,34,lo,hi)}" fill="none" stroke="var(--ac)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`;
+}
+function gauge(v){
+  const cx=100,cy=100,r=80,P=a=>[cx+r*Math.cos(a),cy-r*Math.sin(a)];
+  const seg=[[0,25,'#ef4444'],[25,45,'#f97316'],[45,55,'#eab308'],[55,75,'#84cc16'],[75,100,'#22c55e']];
+  const arc=(a,b)=>{const p=P(Math.PI*(1-a/100)),q=P(Math.PI*(1-b/100));return `M${p[0].toFixed(1)} ${p[1].toFixed(1)}A${r} ${r} 0 0 1 ${q[0].toFixed(1)} ${q[1].toFixed(1)}`};
+  const n=P(Math.PI*(1-Math.max(0,Math.min(100,v))/100));
+  return `<svg viewBox="0 0 200 112" class="gauge" aria-hidden="true">${seg.map(s=>`<path d="${arc(s[0]+.7,s[1]-.7)}" stroke="${s[2]}" stroke-width="14" fill="none"/>`).join('')}<circle cx="${n[0].toFixed(1)}" cy="${n[1].toFixed(1)}" r="9" fill="var(--s1)" stroke="var(--tx)" stroke-width="3"/><text x="100" y="92" text-anchor="middle" class="gv">${v}</text></svg>`;
 }
 const sma=(v,n)=>v.map((_,i)=>i<n-1?null:v.slice(i-n+1,i+1).reduce((a,b)=>a+b,0)/n);
-function fiche(sym){
-  const d=S.det&&S.det.coins[sym],c=S.sc.classement.find(x=>x.symbole===sym);if(!d||!c)return;
-  const v=d.c,N=Math.min(180,v.length),o=v.length-N,A=[sma(v,20),sma(v,50),sma(v,100)],w=v.slice(o),lo=Math.min(...w)*.97,hi=Math.max(...w)*1.03;
-  const P=a=>{let s='',k=0;a.slice(o).forEach((y,i)=>{if(y==null)return;s+=(k?'L':'M')+(i/(N-1)*600).toFixed(1)+' '+(200-(y-lo)/(hi-lo)*200).toFixed(1);k=1});return s};
-  const L=v[v.length-1],[a20,a50,a100]=A.map(x=>x[x.length-1]);
-  const tr=L>a20&&L>a50&&a20>a50?['up',t('tu')]:L<a20&&L<a50&&L<a100?['dn',t('td')]:['mu',t('tn')];
-  const i=d.i,E=x=>x==null?null:Math.expm1(x)*100,Q=x=>x==null?null:x*100;
-  const rows=[['i7',E(i.ret7)],['i30',E(i.ret30)],['i90',E(i.ret90)],['ih90',Q(i.dd90)],['ih365',Q(i.dd365)],['iath',Q(i.dd_ath)],['ivol',E(i.vol_rel)]];
-  const mx=Math.max(...d.e.map(x=>Math.abs(x[1])),1);
-  $('#dg').innerHTML=`<button data-x="1" class="x" aria-label="${t('cl')}">×</button><h3>${esc(sym)} <span class="mu">${esc(c.nom)}</span></h3>
-   <p><b class="big">${c.score}</b> ${t('score')} &nbsp; ${usd(price(c))} &nbsp; <b class="${tr[0]}">${tr[1]}</b> &nbsp; RSI ${nf(i.rsi14,0)}</p>
-   <svg viewBox="0 0 600 200" width="100%" aria-hidden="true"><path d="${P(v)}" fill="none" stroke="var(--tx)" stroke-width="2"/><path d="${P(A[0])}" fill="none" stroke="#c2410c" stroke-width="1.5"/><path d="${P(A[1])}" fill="none" stroke="var(--ac)" stroke-width="1.5"/><path d="${P(A[2])}" fill="none" stroke="#7c3aed" stroke-width="1.5"/></svg>
-   <p class="lg"><i style="background:var(--tx)"></i>${t('px_')} <i style="background:#c2410c"></i>20 <i style="background:var(--ac)"></i>50 <i style="background:#7c3aed"></i>100</p>
-   <div class="tw"><table><tbody>${rows.map(r=>`<tr><td>${t(r[0])}</td><td>${pc(r[1])}</td></tr>`).join('')}</tbody></table></div>
-   <h4>${t('why')}</h4><p class="mu">${t('why_n')}</p>
-   ${d.e.map(x=>`<div class="ev"><span>${t('g_'+x[0])}</span><div><i class="${x[1]>=0?'p':'n'}" style="width:${Math.abs(x[1])/mx*50}%;${x[1]>=0?'left':'right'}:50%"></i></div><b>${x[1]>0?'+':''}${nf(x[1],1)}</b></div>`).join('')}`;
-  $('#dg').showModal();
+const topList=()=>S.sc.top5.map(s=>S.sc.classement.find(c=>c.symbole===s)).filter(Boolean);
+const last30=sym=>{const d=S.det&&S.det.coins[sym];return d?d.c.slice(-30):null};
+const val=(c,k)=>k==='score'?c.score:k==='d1'?(lv(c)?lv(c).var_24h:null):k==='d7'?c['ret7_%']:k==='d30'?c['ret30_%']:c['volume_30j_Musd'];
+
+/* ═════════ Structure de l'app ═════════ */
+let dip=null;
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent),isSA=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+function shell(){
+  document.documentElement.lang=L;
+  $('#app').innerHTML=`
+  <header class="top"><div class="logo"><img src="icon.svg" alt="" width="28" height="28">Altracker</div>
+    <button class="ib" id="inst" data-inst hidden aria-label="${t('inst')}" title="${t('inst')}">${IC.dl}</button>
+    <div class="seg">${['fr','es','en'].map(l=>`<button data-l="${l}" aria-pressed="${l===L}">${l.toUpperCase()}</button>`).join('')}</div>
+    <button class="ib" data-th aria-label="${t('th')}" title="${t('th')}">${IC.sun}</button>
+    <button class="ib" id="rf" data-rf aria-label="${t('rf')}" title="${t('rf')}">${IC.sync}</button>
+  </header>
+  <div id="view"></div>
+  <footer><p>${t('foot')}</p><p>${t('disc')}</p></footer>
+  <nav><div class="in">
+    <button data-tab="home">${IC.home}${t('tH')}</button>
+    <button data-tab="rank">${IC.rank}${t('tR')}</button>
+    <button data-tab="fav">${IC.star}${t('tF')}</button>
+    <a href="simulateur.html">${IC.calc}${t('tS')}</a>
+  </div></nav>
+  <dialog id="dg" aria-label="Détail"></dialog>`;
+  if(dip)$('#inst').hidden=false;
+  view();spin();
 }
+function view(){
+  document.querySelectorAll('nav [data-tab]').forEach(b=>{if(b.dataset.tab===S.tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
+  if(S.tab==='home')home();else rank(S.tab==='fav');
+  spin();
+}
+
+/* ——— Accueil ——— */
+function metaStrip(){
+  const sc=S.sc,age=(Date.now()-new Date(sc.date_donnees+'T00:00:00Z'))/864e5,lv_=S.live;
+  const ds=new Date(sc.date_donnees+'T00:00:00Z').toLocaleDateString(L,{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'});
+  const tm=lv_?new Date(lv_.mis_a_jour_utc).toLocaleTimeString(L,{hour:'2-digit',minute:'2-digit'}):null;
+  return `<div class="chips"><span class="chip"><i></i>${t('data')} ${ds}</span>`
+   +(tm?`<span class="chip">${t('px')} ${tm}</span>`:'')
+   +(lv_&&lv_.dominance_btc?`<span class="chip">${t('dom')} ${nf(lv_.dominance_btc,1)} %</span>`:'')
+   +(age>3?`<span class="chip w"><i></i>${t('old')}</span>`:'')
+   +(navigator.onLine===false?`<span class="chip w"><i></i>${t('off')}</span>`:'')+`</div>`;
+}
+function moodSection(){
+  const m=S.mk;if(!m)return '';
+  const f=m.fng.valeur,a=m.alt.valeur,e=m.ethbtc,v=m.volbtc,r=x=>x.serie.map(y=>y[1]);
+  const fl=t(f<25?'f1':f<45?'f2':f<56?'f3':f<75?'f4':'f5');
+  return `<section><h2>${t('mood')}</h2><div class="grid2">
+   <div class="card wide"><div class="ct">${t('fg')}</div>${gauge(f)}<div class="glab">${fl}</div>${spark(m.fng.serie,0,100,[25,75])}<p>${t('fg_n')}</p></div>
+   <div class="card wide"><div class="ct">${t('alt')}</div><div class="cb">${a} %<small class="mu">${t(a>=75?'a1':a<=25?'a2':'a3')}</small></div>
+     <div class="trk"><u style="left:25%"></u><u style="left:75%"></u><b style="left:${Math.max(2,Math.min(98,a))}%"></b></div>${spark(m.alt.serie,0,100,[25,75])}<p>${t('alt_n')}</p></div>
+   ${e?`<div class="card"><div class="ct">${t('eb')}</div><div class="cb">${nf(e.valeur,4)}</div><div class="s">${pc(e.var30)} ${t('d30')}</div>${spark(e.serie,Math.min(...r(e)),Math.max(...r(e)),[])}<p>${t('eb_n')}</p></div>`:''}
+   ${v?`<div class="card"><div class="ct">${t('vb')}</div><div class="cb">${nf(v.valeur,0)} %</div><div class="s mu">${t(v.valeur<35?'v1':v.valeur<60?'v2':'v3')}</div>${spark(v.serie,0,Math.max(100,...r(v)),[])}<p>${t('vb_n')}</p></div>`:''}
+  </div></section>`;
+}
+const topCard=c=>`<button class="tc" data-s="${esc(c.symbole)}"><span class="rk">#${c.rang}</span>${ring(c.score,56,5)}<b class="sy">${esc(c.symbole)}</b><div class="nm">${esc(c.nom)}</div><div class="pr">${usd(price(c))}</div><div class="s">${pc(c['ret7_%'])} <span class="mu">${t('d7')}</span></div>${mini(last30(c.symbole),126,30)}</button>`;
+function movers(){
+  if(!S.live)return '';
+  const a=S.sc.classement.map(c=>({c,v:val(c,'d1')})).filter(x=>x.v!=null).sort((x,y)=>y.v-x.v);
+  if(a.length<6)return '';
+  const li=x=>`<li data-s="${esc(x.c.symbole)}"><b>${esc(x.c.symbole)}</b>${pc(x.v)}</li>`;
+  return `<section><h2>${t('movers')}</h2><div class="mv"><ul>${a.slice(0,4).map(li).join('')}</ul><ul>${a.slice(-4).reverse().map(li).join('')}</ul></div></section>`;
+}
+const heatCol=(v,k)=>{if(v==null)return 'var(--s2)';const m=k==='d1'?8:k==='d7'?20:40,a=Math.min(Math.abs(v)/m,1);return `color-mix(in srgb,var(${v>=0?'--up':'--dn'}) ${Math.round(12+a*70)}%,var(--s1))`};
+function heatSection(){
+  const k=S.hp,rows=S.sc.classement;
+  const pill=(id,l)=>`<button class="pill" data-hp="${id}" aria-pressed="${k===id}">${l}</button>`;
+  return `<section><div class="sh"><h2>${t('heat')}</h2><div class="pills">${S.live?pill('d1',t('d1')):''}${pill('d7',t('d7'))}${pill('d30',t('d30'))}</div></div><p class="mu s" style="margin:4px 0 0">${t('heatn')}</p>
+   <div class="heat">${rows.map(c=>{const v=val(c,k);return `<button class="tile ${c.liquide?'':'dim'}" data-s="${esc(c.symbole)}" style="background:${heatCol(v,k)}"><b>${esc(c.symbole)}</b><small>${v==null?'–':(v>=0?'+':'')+nf(v,1)+'%'}</small></button>`}).join('')}</div></section>`;
+}
+function home(){
+  $('#view').innerHTML=`${metaStrip()}<p class="mu s" style="margin:8px 0 0">${t('sub')}</p><p class="disc">${t('disc')}</p>
+   ${moodSection()}
+   <section><h2>${t('top')}</h2><p class="mu s" style="margin:4px 0 0">${t('topn')}</p><div class="car">${topList().map(topCard).join('')}</div></section>
+   ${movers()}${heatSection()}${iosHint()}`;
+}
+function iosHint(){
+  if(!isIOS||isSA||store.get('iosHint','')==='1')return '';
+  return `<div class="ios">${IC.dl.replace('<svg','<svg width="22" height="22"')}<span>${t('ios')}</span><button data-hide aria-label="${t('cl')}">×</button></div>`;
+}
+
+/* ——— Classement / Favoris ——— */
+const star=(s)=>`<button class="st" data-f="${esc(s)}" aria-pressed="${S.fav.has(s)}" aria-label="${S.fav.has(s)?t('unf'):t('flw')} ${esc(s)}">${IC.star}</button>`;
+function rank(favOnly){
+  $('#view').innerHTML=`<section style="margin-top:14px"><h2>${favOnly?t('tF'):t('all')}</h2>${favOnly?'':`<p class="mu s" style="margin:4px 0 0">${t('how')}</p>`}
+   <div class="tools">${favOnly?'':`<label class="search">${IC.srch}<input type="search" id="q" placeholder="${t('q')}" value="${esc(S.q)}" aria-label="${t('q')}" enterkeyhint="search"></label>`}
+   <div class="srt">${[['score',t('score')],['d1',t('d1')],['d7',t('d7')],['d30',t('d30')],['vol',t('vol')]].filter(x=>x[0]!=='d1'||S.live).map(x=>`<button class="pill" data-sort="${x[0]}" aria-pressed="${S.sort===x[0]}">${x[1]}</button>`).join('')}
+   <label class="sw"><input type="checkbox" id="lq" ${S.liq?'checked':''}> ${t('liq')}</label></div></div>
+   <ul class="rl" id="rl"></ul><p class="more"><button id="mr" data-more></button></p></section>`;
+  const q=$('#q');if(q)q.oninput=e=>{S.q=e.target.value;rankList(favOnly)};
+  $('#lq').onchange=e=>{S.liq=e.target.checked;rankList(favOnly)};
+  rankList(favOnly);
+}
+function rankList(favOnly){
+  const q=favOnly?'':S.q.trim().toLowerCase(),k=S.sort;
+  let rows=S.sc.classement.filter(c=>(favOnly?S.fav.has(c.symbole):true)&&(!S.liq||c.liquide||favOnly)&&(!q||c.symbole.toLowerCase().includes(q)||c.nom.toLowerCase().includes(q)));
+  if(k!=='score')rows=rows.slice().sort((a,b)=>(val(b,k)??-1e18)-(val(a,k)??-1e18));
+  const lim=S.more||q||favOnly?rows.length:20,mr=$('#mr');
+  mr.hidden=!!q||favOnly||rows.length<=20;mr.textContent=S.more?t('less'):`${t('more')} (${rows.length-20})`;
+  const pk=['d1','d7','d30'].includes(k)?k:'d7';
+  $('#rl').innerHTML=rows.length?rows.slice(0,lim).map(c=>`<li class="row" data-s="${esc(c.symbole)}"><span class="rk">${c.rang}</span>${ring(c.score,40,4)}
+   <div class="who"><b>${esc(c.symbole)}${c.liquide?'':`<span class="low">${t('low')}</span>`}</b><span>${esc(c.nom)}</span></div>
+   <div class="sp2">${mini(last30(c.symbole),70,26)}</div>
+   <div class="pr"><b>${usd(price(c))}</b><small>${pc(val(c,pk))} <span class="mu">${t(pk)}</span></small></div>${star(c.symbole)}</li>`).join('')
+   :`<li class="empty">${favOnly?t('fav0'):t('none')}</li>`;
+}
+
+/* ——— Fiche détail ——— */
+function fiche(sym){
+  const c=S.sc.classement.find(x=>x.symbole===sym);if(!c)return;
+  S.sel=sym;
+  const d=S.det&&S.det.coins[sym],dg=$('#dg');
+  let trend='',rsi='',stats='',ev='';
+  if(d){
+    const v=d.c,Lc=v[v.length-1],[a20,a50,a100]=[20,50,100].map(n=>{const s=sma(v,n);return s[s.length-1]});
+    const tr=Lc>a20&&Lc>a50&&a20>a50?['up',t('tu')]:Lc<a20&&Lc<a50&&Lc<a100?['dn',t('td')]:['mu',t('tn')];
+    trend=`<span class="tag ${tr[0]}">${tr[1]}</span>`;
+    const i=d.i,E=x=>x==null?null:Math.expm1(x)*100,Q=x=>x==null?null:x*100;
+    const rows=[['i7',E(i.ret7)],['i30',E(i.ret30)],['i90',E(i.ret90)],['ih90',Q(i.dd90)],['ih365',Q(i.dd365)],['iath',Q(i.dd_ath)],['ivol',E(i.vol_rel)]];
+    stats=`<div class="stats">${rows.map(r=>`<div class="stat"><span>${t(r[0])}</span><b>${pc(r[1])}</b></div>`).join('')}</div>`;
+    if(i.rsi14!=null)rsi=`<div class="rsi"><div class="ct">${t('rsi')} · <b style="color:var(--tx)">${nf(i.rsi14,0)}</b></div><div class="trk"><b style="left:${Math.max(2,Math.min(98,i.rsi14))}%"></b></div><div class="lab"><span>0 · ${t('ov')}</span><span>${t('ob')} · 100</span></div></div>`;
+    const mx=Math.max(...d.e.map(x=>Math.abs(x[1])),1);
+    ev=`<h4>${t('why')}</h4><p class="mu s" style="margin:0">${t('why_n')}</p>`+d.e.map(x=>`<div class="ev"><span>${t('g_'+x[0])}</span><div><i class="${x[1]>=0?'p':'n'}" style="width:${Math.abs(x[1])/mx*50}%;${x[1]>=0?'left':'right'}:50%"></i></div><b class="${x[1]>=0?'up':'dn'}">${x[1]>0?'+':''}${nf(x[1],1)}</b></div>`).join('');
+  }
+  dg.innerHTML=`<div class="grab"></div><div class="sb">
+    <div class="dh">${ring(c.score,64,6)}<div class="grow"><h3>${esc(sym)}${trend}</h3><span class="mu s">#${c.rang} · ${esc(c.nom)}</span></div>${star(sym)}<button class="ib" data-x aria-label="${t('cl')}" style="font-size:22px;line-height:1">×</button></div>
+    <div class="px">${usd(price(c))}</div>
+    <div id="chw"></div>${stats}${rsi}${ev}</div>`;
+  if(!dg.open){dg.showModal();history.pushState({sheet:1},'');S.pushed=true}
+  dg.querySelector('.sb').scrollTop=0;
+  if(d)drawChart();
+}
+function drawChart(){
+  const d=S.det.coins[S.sel],v=d.c,N=Math.max(2,Math.min(S.rg||v.length,v.length)),o=v.length-N,W=600,H=210;
+  const w=v.slice(o),lo=Math.min(...w)*.98,hi=Math.max(...w)*1.02,Y=y=>H-(y-lo)/((hi-lo)||1)*H;
+  const P=a=>{let s='',k=0;a.slice(o).forEach((y,i)=>{if(y==null)return;s+=(k?'L':'M')+(i/(N-1)*W).toFixed(1)+' '+Y(y).toFixed(1);k=1});return s};
+  const up=w[N-1]>=w[0],c=up?'var(--up)':'var(--dn)',line=P(v);
+  const MA={20:'#fb923c',50:'#2dd4bf',100:'#a78bfa'};
+  const rg=[[30,'30'+t('d7').slice(-1)],[90,'90'+t('d7').slice(-1)],[180,'180'+t('d7').slice(-1)],[0,t('mx')]];
+  $('#chw').innerHTML=`<div class="tip" id="tip"></div>
+   <svg id="ch" viewBox="0 0 ${W} ${H}" aria-hidden="true"><defs><linearGradient id="ar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${up?'#34d399':'#f87171'}" stop-opacity=".35"/><stop offset="1" stop-color="${up?'#34d399':'#f87171'}" stop-opacity="0"/></linearGradient></defs>
+    <path d="${line} L${W} ${H} L0 ${H}Z" fill="url(#ar)"/>
+    ${[20,50,100].filter(n=>S.ma[n]).map(n=>`<path d="${P(sma(v,n))}" fill="none" stroke="${MA[n]}" stroke-width="1.5" vector-effect="non-scaling-stroke"/>`).join('')}
+    <path d="${line}" fill="none" stroke="${c}" stroke-width="2.2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+    <g id="cx" visibility="hidden"><line id="cxl" y1="0" y2="${H}" stroke="var(--mu)" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/><circle id="cxc" r="5" fill="var(--s1)" stroke="${c}" stroke-width="2.5" vector-effect="non-scaling-stroke"/></g></svg>
+   <div class="ctl"><div class="pills">${rg.map(r=>`<button class="pill" data-rg="${r[0]}" aria-pressed="${(S.rg||0)===r[0]}">${r[1]}</button>`).join('')}</div>
+    <div class="lg">${[20,50,100].map(n=>`<button data-ma="${n}" aria-pressed="${S.ma[n]}" style="--c:${MA[n]}"><i></i>${n}</button>`).join('')}</div></div>`;
+  const tip=$('#tip'),svg=$('#ch');
+  const show=i=>{
+    const ch=(w[i]/w[0]-1)*100;
+    tip.innerHTML=`<b style="color:var(--tx)">${usd(w[i])}</b> · ${i===N-1?t('today'):t('ago')+(N-1-i)} · ${pc(ch)}`;
+  };
+  show(N-1);
+  const mv=e=>{
+    const b=svg.getBoundingClientRect(),x=Math.max(0,Math.min(1,(e.clientX-b.left)/b.width)),i=Math.round(x*(N-1)),px=i/(N-1)*W;
+    $('#cx').setAttribute('visibility','visible');
+    $('#cxl').setAttribute('x1',px);$('#cxl').setAttribute('x2',px);
+    $('#cxc').setAttribute('cx',px);$('#cxc').setAttribute('cy',Y(w[i]));
+    show(i);
+  };
+  svg.addEventListener('pointermove',mv);svg.addEventListener('pointerdown',mv);
+  svg.addEventListener('pointerleave',()=>{$('#cx').setAttribute('visibility','hidden');show(N-1)});
+}
+
+/* ═════════ Interactions ═════════ */
+document.addEventListener('click',e=>{
+  const g=k=>e.target.closest(`[${k}]`);
+  let b;
+  if(b=g('data-f')){e.stopPropagation();const s=b.dataset.f;S.fav.has(s)?S.fav.delete(s):S.fav.add(s);store.set('fav',JSON.stringify([...S.fav]));
+    document.querySelectorAll(`[data-f="${CSS.escape(s)}"]`).forEach(x=>{x.setAttribute('aria-pressed',S.fav.has(s))});
+    if(S.tab==='fav'&&!$('#dg').open)view();return}
+  if(b=g('data-x')){$('#dg').close();return}
+  if(b=g('data-l')){L=b.dataset.l;store.set('lang',L);shell();return}
+  if(b=g('data-tab')){S.tab=b.dataset.tab;view();scrollTo({top:0});return}
+  if(b=g('data-th')){const n=document.documentElement.dataset.theme==='light'?'dark':'light';document.documentElement.dataset.theme=n;store.set('theme',n);document.querySelector('meta[name=theme-color]').content=n==='light'?'#f3f5f4':'#0a0e13';return}
+  if(b=g('data-rf')){load(true);return}
+  if(b=g('data-inst')){if(dip){dip.prompt();dip.userChoice.finally(()=>{dip=null;$('#inst').hidden=true})}return}
+  if(b=g('data-hide')){store.set('iosHint','1');b.closest('.ios').remove();return}
+  if(b=g('data-hp')){S.hp=b.dataset.hp;home();return}
+  if(b=g('data-sort')){S.sort=b.dataset.sort;rank(S.tab==='fav');return}
+  if(b=g('data-more')){S.more=!S.more;rankList(S.tab==='fav');return}
+  if(b=g('data-rg')){S.rg=+b.dataset.rg;drawChart();return}
+  if(b=g('data-ma')){S.ma[b.dataset.ma]=!S.ma[b.dataset.ma];drawChart();return}
+  if(b=g('data-s')){fiche(b.dataset.s);return}
+  if(e.target.id==='dg')$('#dg').close();
+});
+/* Bouton « retour » du téléphone = ferme la fiche */
+document.addEventListener('close',e=>{if(e.target.id!=='dg')return;if(S.pushed){S.pushed=false;history.back()}if(S.tab==='fav')view()},true);
+addEventListener('popstate',()=>{const d=$('#dg');if(d&&d.open){S.pushed=false;d.close()}});
+
+/* Tirer pour actualiser */
+(function(){
+  let y0=null,dy=0;const p=$('#ptr');
+  addEventListener('touchstart',e=>{y0=(scrollY<=0&&!$('#dg')?.open&&e.touches.length===1)?e.touches[0].clientY:null;dy=0},{passive:true});
+  addEventListener('touchmove',e=>{if(y0==null)return;dy=e.touches[0].clientY-y0;
+    if(dy>8){p.textContent=dy>90?t('ptr'):t('ptr0');p.style.opacity=Math.min(1,dy/70);p.style.transform=`translate(-50%,${Math.min(dy,110)-80}px)`}},{passive:true});
+  addEventListener('touchend',()=>{if(y0==null)return;if(dy>90)load(true);p.style.opacity=0;p.style.transform='translate(-50%,-80px)';y0=null},{passive:true});
+})();
+
+/* Installation (Android / Chrome) */
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();dip=e;const b=$('#inst');if(b)b.hidden=false});
+addEventListener('online',()=>{S.sc&&view();load()});
+addEventListener('offline',()=>{S.sc&&view();toast(t('off'))});
+
+/* Service worker : permet l'installation et le mode hors ligne */
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+
 load();
 </script>
 </body>
