@@ -1,80 +1,524 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="dark">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Altracker — Simulateur de risque</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Altracker — Simulateur</title>
+<meta name="theme-color" content="#0a0e13">
+<meta name="color-scheme" content="dark light">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>
+(function(){try{var th=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=th;var m=document.querySelector('meta[name=theme-color]');if(m)m.content=th==='light'?'#f3f5f4':'#0a0e13'}catch(e){}})();
+</script>
 <style>
-:root{color-scheme:light;--bg:#f3f4f1;--card:#fff;--tx:#12171c;--mu:#5f6b76;--bd:#dde1dc;--ac:#0b6e6e;--up:#16794a;--dn:#b42318;--wa:#9a5b0a}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-main{max-width:880px;margin:0 auto;padding:20px 16px 48px}
-header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;justify-content:space-between}
-h1{font:700 28px/1.1 Georgia,serif;margin:0}.sub{flex-basis:100%;margin:2px 0 0;color:var(--mu)}
-a{color:var(--ac);font-weight:600;text-decoration:none}
-.lang button{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:3px 11px;cursor:pointer}
-.lang button:first-child{border-radius:6px 0 0 6px}.lang button:last-child{border-radius:0 6px 6px 0}
-.lang button[aria-pressed=true]{background:var(--ac);border-color:var(--ac);color:#fff}
-.tools{display:flex;flex-wrap:wrap;gap:12px 22px;margin:20px 0 14px;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px 16px}
-label{display:grid;gap:3px;font-size:13px;color:var(--mu)}
-input,select{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:6px 9px;width:130px}
-input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
-.tw{overflow-x:auto;background:var(--card);border:1px solid var(--bd);border-radius:10px}
-table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;white-space:nowrap}
-th,td{padding:9px 12px;text-align:right;border-bottom:1px solid var(--bd)}th:first-child,td:first-child{text-align:left}
-th{font-weight:600;font-size:13px;color:var(--mu)}tr:last-child td{border-bottom:0}
-.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:14px 0}
-.k{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px 14px}.k span{display:block;font-size:13px;color:var(--mu)}
-.k b{font:700 24px Georgia,serif;font-variant-numeric:tabular-nums}.dn{color:var(--dn)}
-.n{font-size:13px;color:var(--mu)}.w{border-left:3px solid var(--wa);padding:4px 12px;font-size:13.5px;color:var(--mu);margin-top:16px}
+:root,[data-theme=dark]{color-scheme:dark;--bg:#0a0e13;--s1:#111820;--s2:#18212b;--bd:#232d39;--tx:#e8edf2;--mu:#8a97a6;--ac:#2dd4bf;--up:#2ebd85;--dn:#f6465d;--wa:#fbbf24;--sh:0 8px 30px #0008}
+[data-theme=light]{color-scheme:light;--bg:#f3f5f4;--s1:#fff;--s2:#eef1ef;--bd:#dde2de;--tx:#12171c;--mu:#5f6b76;--ac:#0b8a82;--up:#14915f;--dn:#d6283f;--wa:#9a5b0a;--sh:0 8px 30px #0003}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-top:env(safe-area-inset-top)}
+button,a,input{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.mu{color:var(--mu)}.up{color:var(--up)}.dn{color:var(--dn)}.s{font-size:12.5px}
+b,.num{font-variant-numeric:tabular-nums}
+#app{max-width:1180px;margin:0 auto;padding:0 12px calc(30px + env(safe-area-inset-bottom))}
+
+/* En-tête */
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px;padding:10px 12px;margin:0 -12px;background:color-mix(in srgb,var(--bg) 84%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.back{display:flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;color:var(--mu)}
+.back svg{width:18px;height:18px}
+.ttl{font-weight:800;font-size:17px;letter-spacing:-.01em;margin-right:auto}
+.paper{font-size:11px;font-weight:700;color:var(--wa);border:1px solid color-mix(in srgb,var(--wa) 45%,transparent);border-radius:20px;padding:1px 8px;margin-left:8px;white-space:nowrap}
+.seg{display:flex;background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:2px}
+.seg button{padding:3px 8px;border-radius:8px;font-size:12px;font-weight:700;color:var(--mu)}
+.seg button[aria-pressed=true]{background:var(--ac);color:#04201d}
+.ib{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--s1);border:1px solid var(--bd);color:var(--mu);font-size:16px}
+.ib svg{width:17px;height:17px}
+
+/* Portefeuille */
+.wal{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.wc{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:8px 12px;min-width:0}
+.wc span{display:block;font-size:11.5px;color:var(--mu);font-weight:600}
+.wc b{display:block;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wc small{font-size:11.5px}
+@media(max-width:560px){.wal{grid-template-columns:1fr 1fr}.paper{display:none}}
+
+/* Mise en page */
+.lay{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:10px;margin-top:10px;align-items:start}
+@media(max-width:900px){.lay{grid-template-columns:1fr}}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:12px}
+
+/* Coins */
+.coins{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:-2px -2px 8px;padding:2px}
+.coins::-webkit-scrollbar{display:none}
+.cc{flex:1 0 auto;min-width:92px;text-align:left;padding:7px 10px;border:1px solid var(--bd);border-radius:12px;background:var(--s2)}
+.cc[aria-pressed=true]{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 12%,var(--s2))}
+.cc b{display:block;font-size:14px}.cc small{font-size:11.5px}
+.hd{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px}
+.hd h1{margin:0;font-size:20px;letter-spacing:-.01em}
+.hd .pr{font:800 24px system-ui;font-variant-numeric:tabular-nums}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.bg{font-size:11.5px;font-weight:600;color:var(--mu);background:var(--s2);border-radius:20px;padding:2px 9px}
+.ctl{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill{padding:3px 11px;border-radius:20px;font-size:12.5px;font-weight:600;color:var(--mu);border:1px solid var(--bd);background:var(--s2)}
+.pill[aria-pressed=true]{background:var(--ac);border-color:var(--ac);color:#04201d}
+.mode{font-size:12px;font-weight:700;padding:2px 10px;border-radius:20px}
+.mode.p{color:var(--wa);background:color-mix(in srgb,var(--wa) 14%,transparent)}
+.mode.l{color:var(--ac);background:color-mix(in srgb,var(--ac) 14%,transparent)}
+.tip{min-height:20px;font-size:12.5px;color:var(--mu);margin-top:6px;font-variant-numeric:tabular-nums}
+#cbox{margin-top:2px}
+#ch{display:block;width:100%;touch-action:pan-y;cursor:crosshair;user-select:none}
+#ch text{font:11px system-ui;fill:var(--mu)}
+#ch .tg{font:700 11px system-ui;fill:#fff}
+#ch .lb{font:700 11.5px system-ui}
+
+/* Panneau d'ordre */
+.ord h3{margin:0 0 8px;font-size:14px}
+.prof{display:grid;gap:6px}
+.pf{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:center;text-align:left;padding:8px 10px;border:1px solid var(--bd);border-radius:12px;background:var(--s2)}
+.pf i{font-style:normal;font-size:24px;text-align:center}
+.pf b{display:block;font-size:14px}.pf small{display:block;color:var(--mu);font-size:11.5px;line-height:1.3}
+.pf em{font-style:normal;font-size:10.5px;font-weight:700;margin-left:6px;padding:1px 7px;border-radius:20px}
+.pf[data-p=low] em{color:var(--up);background:color-mix(in srgb,var(--up) 16%,transparent)}
+.pf[data-p=mid] em{color:var(--wa);background:color-mix(in srgb,var(--wa) 16%,transparent)}
+.pf[data-p=high] em{color:var(--dn);background:color-mix(in srgb,var(--dn) 16%,transparent)}
+.pf[aria-pressed=true]{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 10%,var(--s2))}
+.lab{display:flex;justify-content:space-between;margin:12px 0 4px;font-size:12px;color:var(--mu);font-weight:600}
+.inp{display:flex;align-items:center;background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:0 12px}
+.inp:focus-within{border-color:var(--ac)}
+.inp input{flex:1;min-width:0;background:none;border:0;padding:11px 0;font-size:17px;font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums}
+.inp input:focus-visible{outline:0}
+.inp span{color:var(--mu);font-weight:700;font-size:13px}
+.pcts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.pcts button{padding:5px 0;border-radius:8px;background:var(--s2);border:1px solid var(--bd);font-size:12px;font-weight:700;color:var(--mu)}
+.sm{margin-top:12px;border-top:1px dashed var(--bd);padding-top:8px}
+.rw{display:flex;justify-content:space-between;gap:8px;padding:2px 0;font-size:13px}
+.rw span:first-child{color:var(--mu)}
+.buy{width:100%;margin-top:12px;padding:13px;border-radius:12px;background:var(--up);color:#04140d;font-weight:800;font-size:15px}
+.buy:disabled{opacity:.4;cursor:not-allowed}
+.hint{min-height:18px;font-size:12px;color:var(--dn);margin-top:4px;text-align:center}
+.odds{margin-top:12px;border-top:1px dashed var(--bd);padding-top:10px}
+.ob{display:flex;height:10px;border-radius:5px;overflow:hidden;margin:8px 0 6px;background:var(--s2)}
+.ob i{display:block;height:100%}
+.ol{display:flex;justify-content:space-between;font-size:11.5px;gap:6px}
+.ol span{white-space:nowrap}
+.odds p{margin:6px 0 0;font-size:11.5px;color:var(--mu);line-height:1.35}
+
+/* Positions */
+.tabs{display:flex;gap:6px;margin-bottom:10px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px}
+.pc{background:var(--s2);border:1px solid var(--bd);border-radius:14px;padding:10px 12px;cursor:pointer}
+.pc[aria-current=true]{border-color:var(--ac)}
+.ph{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ph b{font-size:15px}
+.pnl{font-weight:800;font-size:14px}
+.pg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px;font-size:12px}
+.pg span{display:block;color:var(--mu);font-size:11px}
+.rb{position:relative;height:8px;border-radius:4px;margin:14px 0 6px;background:linear-gradient(90deg,var(--dn) 0,color-mix(in srgb,var(--dn) 30%,var(--bd)) 45%,color-mix(in srgb,var(--up) 30%,var(--bd)) 55%,var(--up) 100%)}
+.rb u{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--mu)}
+.rb b{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;background:var(--s1);border:3px solid var(--tx);transform:translate(-50%,-50%)}
+.pf2{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--mu)}
+.sell{padding:5px 12px;border-radius:8px;border:1px solid var(--bd);background:var(--s1);font-size:12px;font-weight:700;color:var(--tx)}
+.empty{text-align:center;color:var(--mu);padding:26px 10px;border:1px dashed var(--bd);border-radius:14px}
+.hr{display:grid;grid-template-columns:1.1fr 1fr 1fr auto;gap:8px;align-items:center;padding:8px 10px;background:var(--s2);border-radius:12px;font-size:12.5px}
+.hr small{display:block;color:var(--mu);font-size:11px}
+.wh{font-size:11px;font-weight:700;padding:1px 8px;border-radius:20px;white-space:nowrap}
+.wh.tp{color:var(--up);background:color-mix(in srgb,var(--up) 15%,transparent)}
+.wh.sl{color:var(--dn);background:color-mix(in srgb,var(--dn) 15%,transparent)}
+.wh.manual{color:var(--mu);background:var(--s1)}
+.hl{display:grid;gap:6px}
+.note{margin:16px 2px 0;font-size:11.5px;color:var(--mu);line-height:1.45}
+
+/* Accueil & divers */
+dialog{border:1px solid var(--bd);padding:20px;background:var(--s1);color:var(--tx);width:min(420px,94vw);border-radius:20px;box-shadow:var(--sh)}
+dialog::backdrop{background:#000a;backdrop-filter:blur(3px)}
+dialog h2{margin:0 0 6px;font-size:20px}
+.chips{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.chips button{padding:7px 0;border-radius:10px;border:1px solid var(--bd);background:var(--s2);font-weight:700;font-size:13px}
+.chips button[aria-pressed=true]{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 14%,var(--s2))}
+.go{width:100%;margin-top:16px;padding:12px;border-radius:12px;background:var(--ac);color:#04201d;font-weight:800;font-size:15px}
+#toast{white-space:pre-line;position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:14px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:60;max-width:92vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.sk{height:90px;border-radius:16px;margin-top:10px;background:linear-gradient(90deg,var(--s1),var(--s2),var(--s1));background-size:200% 100%;animation:sk 1.3s infinite}@keyframes sk{to{background-position:-200% 0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<main id="app"><p class="n">…</p></main>
+<div id="app"><div class="sk"></div><div class="sk" style="height:320px"></div></div>
+<div id="toast" role="status"></div>
+<dialog id="wd"></dialog>
 <script>
+/* ═════════ Traductions ═════════ */
 const T={
-fr:{ti:"Simulateur de risque",sub:"Répartis un capital entre les meilleurs coins du modèle et vois ce que tu risques.",back:"← Retour au classement",cap:"Capital (USD)",nb:"Nombre de coins",stop:"Stop-loss (%)",coin:"Coin",amt:"Montant",qty:"Quantité",sp:"Prix du stop",ls:"Perte si stop",rg:"Fourchette typique à 20 j",k1:"Perte maximale si tous les stops sont touchés",k2:"Part du capital",k3:"Fourchette typique du portefeuille",n1:"La fourchette est calculée avec la volatilité des 30 derniers jours : elle couvre environ 2 cas sur 3. Ce n'est pas une prévision, et un coin peut sortir de cette zone. Le stop suppose que tu peux vendre au prix prévu, ce qui n'est pas garanti en cas de forte chute.",w:"Outil d'étude, pas un conseil en investissement. Ne risque jamais plus que ce que tu peux te permettre de perdre.",err:"Impossible de charger les données."},
-es:{ti:"Simulador de riesgo",sub:"Reparte un capital entre las mejores monedas del modelo y mira cuánto arriesgas.",back:"← Volver a la clasificación",cap:"Capital (USD)",nb:"Número de monedas",stop:"Stop-loss (%)",coin:"Moneda",amt:"Importe",qty:"Cantidad",sp:"Precio del stop",ls:"Pérdida si stop",rg:"Rango típico a 20 d",k1:"Pérdida máxima si se activan todos los stops",k2:"Parte del capital",k3:"Rango típico de la cartera",n1:"El rango se calcula con la volatilidad de los últimos 30 días: cubre unos 2 de cada 3 casos. No es una previsión, y una moneda puede salir de esa zona. El stop supone que puedes vender al precio previsto, lo cual no está garantizado en una caída fuerte.",w:"Herramienta de estudio, no es asesoramiento de inversión. Nunca arriesgues más de lo que puedes permitirte perder.",err:"No se pueden cargar los datos."},
-en:{ti:"Risk simulator",sub:"Split a budget across the model's top coins and see what you risk.",back:"← Back to the ranking",cap:"Budget (USD)",nb:"Number of coins",stop:"Stop-loss (%)",coin:"Coin",amt:"Amount",qty:"Quantity",sp:"Stop price",ls:"Loss at stop",rg:"Typical 20 d range",k1:"Maximum loss if every stop is hit",k2:"Share of budget",k3:"Typical portfolio range",n1:"The range uses the last 30 days of volatility: it covers about 2 cases out of 3. It is not a forecast, and a coin can leave this zone. The stop assumes you can sell at the planned price, which is not guaranteed in a sharp drop.",w:"Research tool, not investment advice. Never risk more than you can afford to lose.",err:"Could not load the data."}};
+fr:{back:"Retour",title:"Simulateur",paper:"Argent fictif",cash:"Disponible",inv:"Investi",tot:"Valeur totale",pnl:"Gain / perte",
+score:"Score modèle",vol:"Volatilité/jour",d1:"24 h",d7:"7 j",r30:"30 j",r90:"90 j",r180:"180 j",proj:"Projection",
+prev:"Aperçu de l'ordre",livep:"Position ouverte",buy:"Acheter (argent fictif)",risk:"Niveau de risque",
+p_low:"Père de famille",p_low_s:"Risque faible",p_low_d:"Je dors tranquille : stop serré, objectif raisonnable.",
+p_mid:"Équilibré",p_mid_s:"Risque modéré",p_mid_d:"Le swing trader : un stop qui respire, un objectif ambitieux.",
+p_high:"FOMO",p_high_s:"Risque fort",p_high_d:"« Ça monte, j'achète ! » Stop large, gros objectif, sueurs froides.",
+amt:"Montant à investir",avail:"Disponible",qty:"Quantité reçue",entry:"Prix d'entrée",sl:"Stop loss",tp:"Take profit",fee:"Frais (0,1 %)",rr:"Gain / risque",
+maxloss:"Perte si stop loss",maxgain:"Gain si take profit",odds:"Scénarios simulés sur 20 jours",
+odds_n:"2 000 trajectoires aléatoires sans tendance, calibrées sur la volatilité récente du coin. Une idée des ordres de grandeur, pas une prédiction.",
+o_tp:"Take profit",o_sl:"Stop loss",o_no:"Ni l'un ni l'autre",
+open:"Positions ouvertes",hist:"Historique",none_o:"Aucune position ouverte. Choisis un coin, un profil, un montant… et fais semblant d'être riche.",none_h:"Pas encore de trade clôturé.",
+sell:"Vendre",now:"Actuel",invd:"Investi",w_tp:"Take profit",w_sl:"Stop loss",w_m:"Vente manuelle",
+w_title:"Bienvenue dans le simulateur",w_txt:"Ici tout est fictif : zéro risque, 100 % émotions. Combien de faux dollars veux-tu pour démarrer ?",w_cap:"Capital de départ",w_st:"Stablecoin de sortie",w_go:"C'est parti",
+reset:"Remettre à zéro",reset_c:"Tout effacer et recommencer ? Positions, historique et solde seront perdus.",
+bought:"Achat simulé",min:"Minimum 10",many:"Supérieur au solde disponible",today:"Aujourd'hui",cone:"Projection ±1σ",proj_d:"Projection",
+err:"Impossible de charger les données.",nochart:"Pas d'historique de prix pour ce coin.",top5:"Top 5",
+note:"Simulation éducative, pas un conseil en investissement. Frais de 0,1 % par ordre. Les stops sont vérifiés à l'ouverture de la page, chaque minute pendant qu'elle reste ouverte, et sur les clôtures journalières entre-temps : une mèche intraday peut passer inaperçue. Les niveaux dépendent du profil et de la volatilité des 30 derniers jours.",
+okTP:"🎯 {s} : take profit touché ! {v} rentrés au chaud en {u}.",okSL:"🛑 {s} : stop loss touché… {v}. Le père de famille avait raison.",okM:"✋ {s} vendu : {v}.",ago:"il y a"},
+en:{back:"Back",title:"Simulator",paper:"Play money",cash:"Available",inv:"Invested",tot:"Total value",pnl:"Profit / loss",
+score:"Model score",vol:"Daily volatility",d1:"24 h",d7:"7 d",r30:"30 d",r90:"90 d",r180:"180 d",proj:"Projection",
+prev:"Order preview",livep:"Open position",buy:"Buy (play money)",risk:"Risk level",
+p_low:"Family man",p_low_s:"Low risk",p_low_d:"I sleep soundly: tight stop, reasonable target.",
+p_mid:"Balanced",p_mid_s:"Moderate risk",p_mid_d:"The swing trader: a stop with room to breathe, an ambitious target.",
+p_high:"FOMO",p_high_s:"High risk",p_high_d:"“It's pumping, I'm in!” Wide stop, big target, cold sweats.",
+amt:"Amount to invest",avail:"Available",qty:"Quantity received",entry:"Entry price",sl:"Stop loss",tp:"Take profit",fee:"Fees (0.1%)",rr:"Reward / risk",
+maxloss:"Loss at stop loss",maxgain:"Gain at take profit",odds:"Simulated scenarios over 20 days",
+odds_n:"2,000 random paths with no trend, calibrated on the coin's recent volatility. A sense of magnitude, not a prediction.",
+o_tp:"Take profit",o_sl:"Stop loss",o_no:"Neither",
+open:"Open positions",hist:"History",none_o:"No open position. Pick a coin, a profile, an amount… and pretend to be rich.",none_h:"No closed trade yet.",
+sell:"Sell",now:"Now",invd:"Invested",w_tp:"Take profit",w_sl:"Stop loss",w_m:"Manual sale",
+w_title:"Welcome to the simulator",w_txt:"Everything here is fake: zero risk, 100% emotions. How much play money do you want to start with?",w_cap:"Starting capital",w_st:"Exit stablecoin",w_go:"Let's go",
+reset:"Reset",reset_c:"Erase everything and start over? Positions, history and balance will be lost.",
+bought:"Simulated buy",min:"Minimum 10",many:"Above available balance",today:"Today",cone:"Projection ±1σ",proj_d:"Projection",
+err:"Could not load the data.",nochart:"No price history for this coin.",top5:"Top 5",
+note:"Educational simulation, not investment advice. 0.1% fee per order. Stops are checked when the page opens, every minute while it stays open, and against daily closes in between: an intraday wick can go unnoticed. Levels depend on the profile and on the last 30 days' volatility.",
+okTP:"🎯 {s}: take profit hit! {v} safely back in {u}.",okSL:"🛑 {s}: stop loss hit… {v}. The family man was right.",okM:"✋ {s} sold: {v}.",ago:"ago"},
+es:{back:"Volver",title:"Simulador",paper:"Dinero ficticio",cash:"Disponible",inv:"Invertido",tot:"Valor total",pnl:"Ganancia / pérdida",
+score:"Puntuación",vol:"Volatilidad/día",d1:"24 h",d7:"7 d",r30:"30 d",r90:"90 d",r180:"180 d",proj:"Proyección",
+prev:"Vista previa",livep:"Posición abierta",buy:"Comprar (dinero ficticio)",risk:"Nivel de riesgo",
+p_low:"Padre de familia",p_low_s:"Riesgo bajo",p_low_d:"Duermo tranquilo: stop corto, objetivo razonable.",
+p_mid:"Equilibrado",p_mid_s:"Riesgo moderado",p_mid_d:"El swing trader: un stop con margen, un objetivo ambicioso.",
+p_high:"FOMO",p_high_s:"Riesgo alto",p_high_d:"«¡Sube, compro!» Stop amplio, gran objetivo, sudores fríos.",
+amt:"Importe a invertir",avail:"Disponible",qty:"Cantidad recibida",entry:"Precio de entrada",sl:"Stop loss",tp:"Take profit",fee:"Comisión (0,1 %)",rr:"Ganancia / riesgo",
+maxloss:"Pérdida en stop loss",maxgain:"Ganancia en take profit",odds:"Escenarios simulados a 20 días",
+odds_n:"2.000 trayectorias aleatorias sin tendencia, calibradas con la volatilidad reciente de la moneda. Un orden de magnitud, no una predicción.",
+o_tp:"Take profit",o_sl:"Stop loss",o_no:"Ninguno",
+open:"Posiciones abiertas",hist:"Historial",none_o:"Ninguna posición abierta. Elige moneda, perfil e importe… y haz como si fueras rico.",none_h:"Aún no hay operaciones cerradas.",
+sell:"Vender",now:"Actual",invd:"Invertido",w_tp:"Take profit",w_sl:"Stop loss",w_m:"Venta manual",
+w_title:"Bienvenido al simulador",w_txt:"Aquí todo es ficticio: cero riesgo, 100 % emociones. ¿Con cuántos dólares falsos quieres empezar?",w_cap:"Capital inicial",w_st:"Stablecoin de salida",w_go:"Vamos",
+reset:"Reiniciar",reset_c:"¿Borrar todo y empezar de nuevo? Se perderán posiciones, historial y saldo.",
+bought:"Compra simulada",min:"Mínimo 10",many:"Superior al saldo disponible",today:"Hoy",cone:"Proyección ±1σ",proj_d:"Proyección",
+err:"No se pueden cargar los datos.",nochart:"Sin historial de precios para esta moneda.",top5:"Top 5",
+note:"Simulación educativa, no es asesoramiento de inversión. Comisión del 0,1 % por orden. Los stops se comprueban al abrir la página, cada minuto mientras sigue abierta y con los cierres diarios entre tanto: una mecha intradía puede pasar desapercibida. Los niveles dependen del perfil y de la volatilidad de los últimos 30 días.",
+okTP:"🎯 {s}: ¡take profit alcanzado! {v} a salvo en {u}.",okSL:"🛑 {s}: stop loss alcanzado… {v}. El padre de familia tenía razón.",okM:"✋ {s} vendido: {v}.",ago:"hace"}};
+
+/* ═════════ Utilitaires ═════════ */
 const $=s=>document.querySelector(s);
-let L=localStorage.getItem('lang')||(navigator.language||'fr').slice(0,2);if(!T[L])L='fr';
-const t=k=>T[L][k],S={cap:1000,n:5,stop:15,sc:null,dt:null};
-const nf=(n,d=0)=>Number(n).toLocaleString(L,{minimumFractionDigits:d,maximumFractionDigits:d});
-const usd=p=>'$'+(p>=100?nf(p):p>=1?nf(p,2):nf(p,4)),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:v}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+let L=store.get('lang',(navigator.language||'fr').slice(0,2));if(!T[L])L='fr';
+const t=k=>T[L][k]??k;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const nf=(n,d)=>n==null||isNaN(n)?'–':Number(n).toLocaleString(L,{minimumFractionDigits:d,maximumFractionDigits:d});
+const usd=p=>p==null?'–':'$'+(p>=1000?nf(p,0):p>=100?nf(p,1):p>=1?nf(p,2):p>=.01?nf(p,4):nf(p,6));
+const sg=(v,d=1)=>(v>=0?'+':'')+nf(v,d);
+const pc=v=>v==null?'<span class="mu">–</span>':`<span class="${v>=0?'up':'dn'}">${sg(v)} %</span>`;
+const IC={back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+ sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>'};
+function toast(m,ms=3200){const e=$('#toast');e.textContent=m;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),ms)}
+
+/* ═════════ Données ═════════ */
 const RAW='https://raw.githubusercontent.com/NalistPro/Altracker/main/';
-async function j(u){for(const x of [u,RAW+u]){try{const r=await fetch(x,{cache:'no-store'});if(r.ok)return await r.json()}catch(e){}}throw new Error(u)}
-async function go(){
-  try{[S.sc,S.dt]=await Promise.all([j('data/model/latest_scores.json'),j('data/model/detail.json')])}
-  catch(e){$('#app').innerHTML=`<p class="n" style="color:var(--dn)">${t('err')}</p>`;return}
-  shell();
+async function j(u){for(const x of u.startsWith('http')?[u]:[u,RAW+u]){try{const r=await fetch(x,{cache:'no-store'});if(r.ok)return await r.json()}catch(e){}}throw new Error(u)}
+const S={sc:null,det:null,live:null,px:{},sym:null,prof:'mid',amt:'',rg:90,proj:true,tab:'open',focus:null};
+let W=null;                                        // portefeuille fictif
+const FEE=.001,MIN=10,KEY='altracker_sim_v1';
+const lv=c=>{const x=S.px[c.symbole];return x&&c.prix&&x.prix/c.prix>.5&&x.prix/c.prix<2?x:null};
+const coin=s=>S.sc.classement.find(c=>c.symbole===s);
+const price=s=>{const c=typeof s==='string'?coin(s):s;return c?(lv(c)||c).prix:null};
+const top5=()=>S.sc.top5.map(coin).filter(Boolean);
+function loadW(){try{const r=store.get(KEY,null);W=r?JSON.parse(r):null}catch(e){W=null}}
+const saveW=()=>store.set(KEY,JSON.stringify(W));
+async function loadLive(){try{const l=await j('https://raw.githubusercontent.com/NalistPro/Altracker/live/live.json');S.live=l;S.px={};l.coins.forEach(c=>S.px[c.symbole]=c)}catch(e){}}
+
+/* ═════════ Profils de risque & niveaux ═════════ */
+const PR={low:{ic:'🧓',k:[1.2,1.8],sl:[.03,.10],tp:[.045,.18]},mid:{ic:'⚖️',k:[2,4],sl:[.05,.20],tp:[.10,.45]},high:{ic:'🚀',k:[3.5,9],sl:[.08,.35],tp:[.25,1.2]}};
+const cl=(x,a,b)=>Math.max(a,Math.min(b,x));
+function vol(sym){
+  const d=S.det&&S.det.coins[sym];if(!d)return .05;
+  const c=d.c.slice(-31),r=[];for(let i=1;i<c.length;i++)if(c[i]>0&&c[i-1]>0)r.push(Math.log(c[i]/c[i-1]));
+  if(r.length<10)return .05;
+  const m=r.reduce((a,b)=>a+b,0)/r.length,s=Math.sqrt(r.reduce((a,b)=>a+(b-m)**2,0)/(r.length-1));
+  return cl(s,.01,.15);
 }
+function levels(sym,pr,p){const P=PR[pr],s=vol(sym),slp=cl(P.k[0]*s,...P.sl),tpp=cl(P.k[1]*s,...P.tp);return{slp,tpp,sl:p*(1-slp),tp:p*(1+tpp)}}
+/* Monte-Carlo sans tendance, pseudo-aléatoire déterministe (résultat stable à l'écran) */
+const hash=s=>{let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
+const rng=a=>()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+function odds(sym,slp,tpp){
+  const s=vol(sym),n=80,ss=s/2,lo=Math.log(1-slp),hi=Math.log(1+tpp),r=rng(hash(sym)^Math.round(slp*1e4)^(Math.round(tpp*1e4)<<3));
+  let a=0,b=0;const N=2000;
+  for(let k=0;k<N;k++){let x=0,res=0;for(let i=0;i<n;i++){x+=ss*Math.sqrt(-2*Math.log(1-r()))*Math.cos(2*Math.PI*r())-.5*ss*ss;if(x<=lo){res=1;break}if(x>=hi){res=2;break}}if(res===1)b++;else if(res===2)a++}
+  return[a/N,b/N,1-(a+b)/N];
+}
+
+/* ═════════ Moteur de trading fictif ═════════ */
+const val=p=>p.qty*price(p.sym)*(1-FEE);
+function closePos(p,fill,why,ts){
+  const proceeds=p.qty*fill*(1-FEE);W.cash+=proceeds;
+  W.hist.unshift({...p,exit:fill,ts2:ts||Date.now(),why,proceeds,pnl:proceeds-p.spent});
+  W.pos=W.pos.filter(x=>x.id!==p.id);
+  if(S.focus===p.id)S.focus=null;
+  return W.hist[0];
+}
+function evalPos(p){
+  const d=S.det&&S.det.coins[p.sym];
+  if(d&&S.sc){                                     // clôtures journalières depuis l'entrée
+    const base=Date.parse(S.sc.date_donnees+'T00:00:00Z'),len=d.c.length,eDay=Math.floor(p.ts/864e5);
+    for(let i=0;i<len;i++){
+      const day=Math.floor((base-(len-1-i)*864e5)/864e5);if(day<=eDay)continue;
+      if(d.c[i]<=p.sl)return{why:'sl',fill:p.sl,ts:day*864e5+864e5-1};
+      if(d.c[i]>=p.tp)return{why:'tp',fill:p.tp,ts:day*864e5+864e5-1};
+    }
+  }
+  const x=price(p.sym);if(x==null)return null;
+  if(x<=p.sl)return{why:'sl',fill:Math.min(p.sl,x),ts:Date.now()};
+  if(x>=p.tp)return{why:'tp',fill:p.tp,ts:Date.now()};
+  return null;
+}
+const money=n=>`${sg(n,2)} ${W.st}`;
+function evalAll(){
+  const msgs=[];
+  for(const p of [...W.pos]){
+    const r=evalPos(p);if(!r)continue;
+    const h=closePos(p,r.fill,r.why,r.ts);
+    msgs.push(t(r.why==='tp'?'okTP':'okSL').replace('{s}',p.sym).replace('{v}',money(h.pnl)).replace('{u}',W.st));
+  }
+  if(msgs.length){saveW();toast(msgs.join('\n'),5200)}
+  return msgs.length>0;
+}
+
+/* ═════════ Structure ═════════ */
 function shell(){
   document.documentElement.lang=L;
-  $('#app').innerHTML=`<header><h1>${t('ti')}</h1><div class="lang">${['fr','es','en'].map(l=>`<button data-l="${l}" aria-pressed="${l===L}">${l.toUpperCase()}</button>`).join('')}</div>
-   <p class="sub">${t('sub')} <a href="index.html">${t('back')}</a></p></header>
-   <div class="tools"><label>${t('cap')}<input type="number" id="cap" min="10" step="100" value="${S.cap}"></label>
-   <label>${t('nb')}<select id="nb">${[1,2,3,4,5].map(i=>`<option ${i===S.n?'selected':''}>${i}</option>`).join('')}</select></label>
-   <label>${t('stop')}<input type="number" id="sp" min="1" max="90" step="1" value="${S.stop}"></label></div><div id="out"></div>
-   <p class="n">${t('n1')}</p><p class="w">${t('w')}</p>`;
-  document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{L=b.dataset.l;localStorage.setItem('lang',L);shell()});
-  $('#cap').oninput=e=>{S.cap=Math.max(0,+e.target.value||0);draw()};
-  $('#nb').onchange=e=>{S.n=+e.target.value;draw()};
-  $('#sp').oninput=e=>{S.stop=Math.min(90,Math.max(1,+e.target.value||15));draw()};
-  draw();
+  const first=!$('#ord');
+  $('#app').innerHTML=`
+  <header class="top"><a class="back" href="index.html">${IC.back}${t('back')}</a>
+   <span class="ttl">${t('title')}<span class="paper">${t('paper')}</span></span>
+   <div class="seg">${['fr','es','en'].map(l=>`<button data-l="${l}" aria-pressed="${l===L}">${l.toUpperCase()}</button>`).join('')}</div>
+   <button class="ib" data-th aria-label="Thème">${IC.sun}</button>
+   <button class="ib" data-reset aria-label="${t('reset')}" title="${t('reset')}">⟲</button></header>
+  <div class="wal" id="wal"></div>
+  <div class="lay">
+   <section class="card"><div class="coins" id="coins"></div><div id="head"></div>
+    <div class="ctl"><div class="pills">${[30,90,180].map(n=>`<button class="pill" data-rg="${n}">${t('r'+n)}</button>`).join('')}<button class="pill" data-proj>${t('proj')}</button></div><span id="mode"></span></div>
+    <div class="tip" id="tip"></div><div id="cbox"></div></section>
+   <aside class="card ord" id="ord">
+    <h3>${t('risk')}</h3>
+    <div class="prof">${['low','mid','high'].map(k=>`<button class="pf" data-p="${k}"><i>${PR[k].ic}</i><span><b>${t('p_'+k)}<em>${t('p_'+k+'_s')}</em></b><small>${t('p_'+k+'_d')}</small></span></button>`).join('')}</div>
+    <div class="lab"><span>${t('amt')}</span><span>${t('avail')} : <b id="av"></b></span></div>
+    <label class="inp"><input id="am" type="number" inputmode="decimal" min="0" step="any" placeholder="0" value="${esc(S.amt)}" aria-label="${t('amt')}"><span id="st"></span></label>
+    <div class="pcts">${[25,50,75,100].map(n=>`<button data-pct="${n}">${n}%</button>`).join('')}</div>
+    <div class="sm" id="sm"></div>
+    <button class="buy" id="buy" data-buy>${t('buy')}</button><div class="hint" id="hint"></div>
+    <div class="odds"><b>${t('odds')}</b><div class="ob" id="ob"></div><div class="ol" id="ol"></div><p>${t('odds_n')}</p></div>
+   </aside></div>
+  <section class="card" style="margin-top:10px"><div class="tabs"><button class="pill" data-tab="open"></button><button class="pill" data-tab="hist"></button></div><div id="pl"></div></section>
+  <p class="note">${t('note')}</p>`;
+  $('#am').oninput=e=>{S.amt=e.target.value;S.focus=null;upd(false)};
+  if(window.ResizeObserver){let w0=0;new ResizeObserver(()=>{const w=$('#cbox')&&$('#cbox').clientWidth;if(w&&Math.abs(w-w0)>2){w0=w;chart()}}).observe($('#cbox'))}
+  full();
 }
-function draw(){
-  const top=S.sc.top5.map(s=>S.sc.classement.find(c=>c.symbole===s)).filter(Boolean).slice(0,S.n),a=S.cap/(top.length||1),f=S.stop/100;
-  let lossT=0,loT=0,hiT=0;
-  const rows=top.map(c=>{
-    const v=(S.dt.coins[c.symbole]||{i:{}}).i.vol30||0.05,s=v*Math.sqrt(20),q=a/c.prix,lo=c.prix*Math.exp(-s),hi=c.prix*Math.exp(s);
-    lossT+=a*f;loT+=q*lo;hiT+=q*hi;
-    return `<tr><td><b>${esc(c.symbole)}</b></td><td>$${nf(a)}</td><td>${nf(q,q>=100?0:q>=1?2:4)}</td><td>${usd(c.prix*(1-f))}</td><td class="dn">−$${nf(a*f)}</td><td>${usd(lo)} – ${usd(hi)}</td></tr>`}).join('');
-  $('#out').innerHTML=`<div class="tw"><table><thead><tr><th>${t('coin')}</th><th>${t('amt')}</th><th>${t('qty')}</th><th>${t('sp')}</th><th>${t('ls')}</th><th>${t('rg')}</th></tr></thead><tbody>${rows}</tbody></table></div>
-   <div class="sum"><div class="k"><span>${t('k1')}</span><b class="dn">−$${nf(lossT)}</b></div>
-   <div class="k"><span>${t('k2')}</span><b>${nf(S.cap?lossT/S.cap*100:0,1)} %</b></div>
-   <div class="k"><span>${t('k3')}</span><b>$${nf(loT)} – $${nf(hiT)}</b></div></div>`;
+function full(){wallet();coins();head();upd(true);posList()}
+
+function wallet(){
+  const inv=W.pos.reduce((a,p)=>a+val(p),0),tot=W.cash+inv,pnl=tot-W.cap0,pp=pnl/W.cap0*100;
+  $('#wal').innerHTML=`<div class="wc"><span>${t('cash')}</span><b>${nf(W.cash,2)} <small class="mu">${W.st}</small></b></div>
+  <div class="wc"><span>${t('inv')}</span><b>${nf(inv,2)} <small class="mu">${W.st}</small></b></div>
+  <div class="wc"><span>${t('tot')}</span><b>${nf(tot,2)} <small class="mu">${W.st}</small></b></div>
+  <div class="wc"><span>${t('pnl')}</span><b class="${pnl>=0?'up':'dn'}">${sg(pnl,2)} <small>(${sg(pp)} %)</small></b></div>`;
 }
-go();
+function coins(){
+  $('#coins').innerHTML=top5().map(c=>{const x=lv(c);return `<button class="cc" data-sym="${esc(c.symbole)}" aria-pressed="${c.symbole===S.sym}"><b>${esc(c.symbole)}</b><small>${usd(price(c))} ${x?pc(x.var_24h):''}</small></button>`}).join('');
+}
+function head(){
+  const c=coin(S.sym),x=lv(c);
+  $('#head').innerHTML=`<div class="hd"><h1>${esc(c.symbole)}/${W.st}</h1><span class="pr ${x&&x.var_24h<0?'dn':'up'}">${usd(price(c))}</span>${x?`<span>${pc(x.var_24h)} <span class="mu s">${t('d1')}</span></span>`:''}</div>
+   <div class="badges"><span class="bg">${esc(c.nom)}</span><span class="bg">${t('score')} ${c.score}</span><span class="bg">${t('d7')} ${sg(c['ret7_%'])} %</span><span class="bg">${t('vol')} ${nf(vol(c.symbole)*100,1)} %</span></div>`;
+  document.querySelectorAll('[data-rg]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.rg===S.rg));
+  $('[data-proj]').setAttribute('aria-pressed',S.proj);
+}
+
+/* ——— Panneau d'ordre (calculs en direct) ——— */
+function upd(redraw){
+  document.querySelectorAll('.pf').forEach(b=>b.setAttribute('aria-pressed',b.dataset.p===S.prof&&!S.focus));
+  $('#st').textContent=W.st;$('#av').textContent=nf(W.cash,2)+' '+W.st;
+  const p=price(S.sym),Lv=levels(S.sym,S.prof,p),a=parseFloat(S.amt)||0;
+  const qty=a/p*(1-FEE),gSL=qty*Lv.sl*(1-FEE)-a,gTP=qty*Lv.tp*(1-FEE)-a;
+  $('#sm').innerHTML=`<div class="rw"><span>${t('entry')}</span><b>${usd(p)}</b></div>
+   <div class="rw"><span>${t('qty')}</span><b>${a>0?nf(qty,qty>=100?2:qty>=1?4:6):'–'} ${esc(S.sym)}</b></div>
+   <div class="rw"><span>${t('sl')}</span><b class="dn">${usd(Lv.sl)} · −${nf(Lv.slp*100,1)} %</b></div>
+   <div class="rw"><span>${t('tp')}</span><b class="up">${usd(Lv.tp)} · +${nf(Lv.tpp*100,1)} %</b></div>
+   <div class="rw"><span>${t('maxloss')}</span><b class="dn">${a>0?sg(gSL,2)+' '+W.st:'–'}</b></div>
+   <div class="rw"><span>${t('maxgain')}</span><b class="up">${a>0?sg(gTP,2)+' '+W.st:'–'}</b></div>
+   <div class="rw"><span>${t('rr')}</span><b>1 : ${nf(Lv.tpp/Lv.slp,1)}</b></div>
+   <div class="rw"><span>${t('fee')}</span><b>${a>0?nf(a*FEE,2)+' '+W.st:'–'}</b></div>`;
+  const o=odds(S.sym,Lv.slp,Lv.tpp);
+  $('#ob').innerHTML=`<i style="width:${o[0]*100}%;background:var(--up)"></i><i style="width:${o[2]*100}%;background:var(--bd)"></i><i style="width:${o[1]*100}%;background:var(--dn)"></i>`;
+  $('#ol').innerHTML=`<span class="up">${t('o_tp')} ${nf(o[0]*100,0)} %</span><span class="mu">${t('o_no')} ${nf(o[2]*100,0)} %</span><span class="dn">${t('o_sl')} ${nf(o[1]*100,0)} %</span>`;
+  let h='';if(a>0&&a<MIN)h=t('min');else if(a>W.cash+1e-9)h=t('many');
+  $('#hint').textContent=h;$('#buy').disabled=!(a>=MIN&&a<=W.cash+1e-9);
+  if(redraw)chart();
+}
+function buy(){
+  const a=parseFloat(S.amt)||0;if(a<MIN||a>W.cash+1e-9)return;
+  const p=price(S.sym),Lv=levels(S.sym,S.prof,p),id='p'+Date.now().toString(36);
+  W.cash-=a;W.pos.push({id,sym:S.sym,ts:Date.now(),entry:p,qty:a/p*(1-FEE),spent:a,sl:Lv.sl,tp:Lv.tp,prof:S.prof});
+  saveW();S.focus=id;S.amt='';$('#am').value='';S.tab='open';
+  toast(`${t('bought')} : ${nf(a,2)} ${W.st} → ${S.sym} ${PR[S.prof].ic}`);
+  full();
+}
+
+/* ——— Positions & historique ——— */
+const dt=ts=>new Date(ts).toLocaleDateString(L,{day:'numeric',month:'short'})+' '+new Date(ts).toLocaleTimeString(L,{hour:'2-digit',minute:'2-digit'});
+function posList(){
+  document.querySelectorAll('[data-tab]').forEach(b=>{b.textContent=t(b.dataset.tab)+' ('+(b.dataset.tab==='open'?W.pos.length:W.hist.length)+')';b.setAttribute('aria-pressed',b.dataset.tab===S.tab)});
+  if(S.tab==='open'){
+    $('#pl').innerHTML=W.pos.length?`<div class="pgrid">${W.pos.slice().reverse().map(p=>{
+      const x=price(p.sym),v=p.qty*x*(1-FEE),pnl=v-p.spent,pp=pnl/p.spent*100,rg=p.tp-p.sl,pos=cl((x-p.sl)/rg*100,0,100),en=cl((p.entry-p.sl)/rg*100,0,100);
+      return `<div class="pc" data-pid="${p.id}" aria-current="${S.focus===p.id}"><div class="ph"><b>${PR[p.prof].ic} ${esc(p.sym)}</b><span class="pnl ${pnl>=0?'up':'dn'}">${sg(pnl,2)} ${W.st} · ${sg(pp)} %</span></div>
+       <div class="pg"><div><span>${t('invd')}</span>${nf(p.spent,2)}</div><div><span>${t('entry')}</span>${usd(p.entry)}</div><div><span>${t('now')}</span>${usd(x)}</div></div>
+       <div class="rb"><u style="left:${en}%"></u><b style="left:${Math.max(3,Math.min(97,pos))}%"></b></div>
+       <div class="pf2"><span class="dn">SL ${usd(p.sl)}</span><button class="sell" data-sell="${p.id}">${t('sell')}</button><span class="up">TP ${usd(p.tp)}</span></div></div>`}).join('')}</div>`
+     :`<div class="empty">${t('none_o')}</div>`;
+  }else{
+    $('#pl').innerHTML=W.hist.length?`<div class="hl">${W.hist.slice(0,60).map(h=>`<div class="hr"><div><b>${PR[h.prof].ic} ${esc(h.sym)}</b><small>${dt(h.ts2)}</small></div><div><small>${t('entry')}</small>${usd(h.entry)} → ${usd(h.exit)}</div><div><b class="${h.pnl>=0?'up':'dn'}">${sg(h.pnl,2)} ${W.st}</b><small>${sg(h.pnl/h.spent*100)} %</small></div><span class="wh ${h.why}">${t('w_'+(h.why==='manual'?'m':h.why))}</span></div>`).join('')}</div>`:`<div class="empty">${t('none_h')}</div>`;
+  }
+}
+
+/* ═════════ Graphique ═════════ */
+function ticks(lo,hi,n){const raw=(hi-lo)/n,m=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/m,s=(f<1.5?1:f<3?2:f<7?5:10)*m,a=[];for(let x=Math.ceil(lo/s)*s;x<=hi;x+=s)a.push(x);return a}
+function chart(){
+  const box=$('#cbox');if(!box||!S.sym)return;
+  const d=S.det&&S.det.coins[S.sym];
+  if(!d){box.innerHTML=`<div class="empty">${t('nochart')}</div>`;return}
+  const Wd=Math.max(320,box.clientWidth||600),H=Math.round(cl(Wd*.62,300,480)),ml=6,mr=72,mt=14,mb=24,pw=Wd-ml-mr,ph=H-mt-mb;
+  const p=price(S.sym);let v=d.c.slice(-S.rg);v[v.length-1]=p;
+  const N=v.length,FZ=20,TT=N-1+FZ,X=i=>ml+i/TT*pw,sgm=vol(S.sym);
+  const fp=S.focus&&W.pos.find(x=>x.id===S.focus&&x.sym===S.sym);
+  let tool;
+  if(fp)tool={sl:fp.sl,tp:fp.tp,en:fp.entry,xi:Math.max(0,N-1-(Date.now()-fp.ts)/864e5),live:true};
+  else{const Lv=levels(S.sym,S.prof,p);tool={sl:Lv.sl,tp:Lv.tp,en:p,xi:N-1,live:false}}
+  $('#mode').innerHTML=`<span class="mode ${tool.live?'l':'p'}">${tool.live?t('livep')+' '+PR[fp.prof].ic:t('prev')+' '+PR[S.prof].ic}</span>`;
+  let lo=Math.min(...v,tool.sl),hi=Math.max(...v,tool.tp);
+  if(S.proj){lo=Math.min(lo,p*Math.exp(-sgm*Math.sqrt(FZ)));hi=Math.max(hi,p*Math.exp(sgm*Math.sqrt(FZ)))}
+  const pad=(hi-lo)*.05;lo=Math.max(0,lo-pad);hi+=pad;
+  const Y=y=>mt+ph-(y-lo)/(hi-lo)*ph,xr=X(TT),xn=X(N-1),ax=Wd-mr+4,aw=mr-6;
+  const dOf=i=>new Date(Date.now()+(i-(N-1))*864e5);
+  const tag=(y,txt,bg)=>`<rect x="${ax}" y="${(y-9).toFixed(1)}" width="${aw}" height="18" rx="4" fill="${bg}"/><text class="tg" x="${ax+aw/2}" y="${(y+4).toFixed(1)}" text-anchor="middle">${txt}</text>`;
+  const line=v.map((y,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(y).toFixed(1)).join('');
+  const up=v[N-1]>=v[0],lc=up?'var(--up)':'var(--dn)';
+  let s=`<svg id="ch" viewBox="0 0 ${Wd} ${H}" width="${Wd}" height="${H}"><defs><clipPath id="cp"><rect x="${ml}" y="${mt}" width="${pw}" height="${ph}"/></clipPath><linearGradient id="ar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${up?'#2ebd85':'#f6465d'}" stop-opacity=".30"/><stop offset="1" stop-color="${up?'#2ebd85':'#f6465d'}" stop-opacity="0"/></linearGradient></defs>`;
+  ticks(lo,hi,5).forEach(y=>{s+=`<line x1="${ml}" x2="${ml+pw}" y1="${Y(y).toFixed(1)}" y2="${Y(y).toFixed(1)}" stroke="var(--bd)" stroke-width="1" opacity=".7"/><text x="${Wd-mr+6}" y="${(Y(y)+4).toFixed(1)}">${usd(y)}</text>`});
+  for(let k=0;k<=4;k++){const i=k/4*(N-1);s+=`<text x="${X(i).toFixed(1)}" y="${H-6}" text-anchor="${k?'middle':'start'}">${dOf(i).toLocaleDateString(L,{day:'numeric',month:'short'})}</text>`}
+  s+=`<text x="${xr}" y="${H-6}" text-anchor="end">${dOf(TT).toLocaleDateString(L,{day:'numeric',month:'short'})}</text>`;
+  s+=`<g clip-path="url(#cp)"><rect x="${xn}" y="${mt}" width="${xr-xn}" height="${ph}" fill="var(--s2)" opacity=".55"/>`;
+  if(S.proj){
+    const up_=[],dn_=[];for(let k=0;k<=FZ;k++){const x=X(N-1+k).toFixed(1);up_.push(x+','+Y(p*Math.exp(sgm*Math.sqrt(k))).toFixed(1));dn_.unshift(x+','+Y(p*Math.exp(-sgm*Math.sqrt(k))).toFixed(1))}
+    s+=`<polygon points="${up_.concat(dn_).join(' ')}" fill="var(--ac)" opacity=".16"/><line x1="${xn}" x2="${xr}" y1="${Y(p).toFixed(1)}" y2="${Y(p).toFixed(1)}" stroke="var(--ac)" stroke-dasharray="4 4" opacity=".8"/>`;
+  }
+  const x0=X(tool.xi),yE=Y(tool.en),yT=Y(tool.tp),yS=Y(tool.sl);
+  s+=`<rect x="${x0.toFixed(1)}" y="${yT.toFixed(1)}" width="${(xr-x0).toFixed(1)}" height="${Math.max(0,yE-yT).toFixed(1)}" fill="var(--up)" opacity=".15"/>
+   <rect x="${x0.toFixed(1)}" y="${yE.toFixed(1)}" width="${(xr-x0).toFixed(1)}" height="${Math.max(0,yS-yE).toFixed(1)}" fill="var(--dn)" opacity=".15"/>
+   <line x1="${x0.toFixed(1)}" x2="${xr}" y1="${yT.toFixed(1)}" y2="${yT.toFixed(1)}" stroke="var(--up)" stroke-width="1.6"/>
+   <line x1="${x0.toFixed(1)}" x2="${xr}" y1="${yS.toFixed(1)}" y2="${yS.toFixed(1)}" stroke="var(--dn)" stroke-width="1.6"/>
+   <line x1="${x0.toFixed(1)}" x2="${xr}" y1="${yE.toFixed(1)}" y2="${yE.toFixed(1)}" stroke="var(--tx)" stroke-dasharray="5 4" opacity=".55"/>
+   <text class="lb" x="${(xn+8).toFixed(1)}" y="${(yT-5).toFixed(1)}" style="fill:var(--up)">TP +${nf((tool.tp/tool.en-1)*100,1)} %</text>
+   <text class="lb" x="${(xn+8).toFixed(1)}" y="${(yS+15).toFixed(1)}" style="fill:var(--dn)">SL ${nf((tool.sl/tool.en-1)*100,1)} %</text>`;
+  s+=`<path d="${line} L${xn.toFixed(1)} ${mt+ph} L${X(0).toFixed(1)} ${mt+ph}Z" fill="url(#ar)"/><path d="${line}" fill="none" stroke="${lc}" stroke-width="2" stroke-linejoin="round"/>`;
+  if(tool.live)s+=`<circle cx="${x0.toFixed(1)}" cy="${yE.toFixed(1)}" r="4.5" fill="var(--tx)" stroke="var(--s1)" stroke-width="2"/>`;
+  s+=`<line x1="${xn}" x2="${xn}" y1="${mt}" y2="${mt+ph}" stroke="var(--mu)" stroke-dasharray="3 4" opacity=".7"/><text x="${(xn+5).toFixed(1)}" y="${mt+11}">${t('today')}</text>`;
+  s+=`<line x1="${ml}" x2="${ml+pw}" y1="${Y(p).toFixed(1)}" y2="${Y(p).toFixed(1)}" stroke="var(--ac)" stroke-dasharray="2 3" opacity=".7"/><circle cx="${xn.toFixed(1)}" cy="${Y(p).toFixed(1)}" r="4" fill="var(--ac)"/>`;
+  s+=`<g id="cx" visibility="hidden"><line id="cxl" y1="${mt}" y2="${mt+ph}" stroke="var(--mu)" stroke-dasharray="3 3"/><circle id="cxc" r="4.5" fill="var(--s1)" stroke="${lc}" stroke-width="2.5"/></g></g>`;
+  s+=tag(Y(tool.tp),usd(tool.tp),'var(--up)')+tag(Y(tool.sl),usd(tool.sl),'var(--dn)');
+  if(tool.live)s+=tag(yE,usd(tool.en),'#5b6776');
+  s+=tag(Y(p),usd(p),'var(--ac)').replace('class="tg"','class="tg" style="fill:#04201d"')+`</svg>`;
+  box.innerHTML=s;
+  const tip=$('#tip'),svg=$('#ch'),rest=()=>{tip.innerHTML=`<b style="color:var(--tx)">${usd(p)}</b> · ${t('today')}`};rest();
+  const mv=e=>{
+    const b=svg.getBoundingClientRect(),x=cl((e.clientX-b.left)/b.width*Wd,ml,ml+pw),i=Math.round((x-ml)/pw*TT),xp=X(i);
+    $('#cx').setAttribute('visibility','visible');$('#cxl').setAttribute('x1',xp);$('#cxl').setAttribute('x2',xp);
+    if(i<=N-1){$('#cxc').setAttribute('cx',xp);$('#cxc').setAttribute('cy',Y(v[i]));tip.innerHTML=`<b style="color:var(--tx)">${usd(v[i])}</b> · ${dOf(i).toLocaleDateString(L,{day:'numeric',month:'short'})} · ${pc((v[i]/v[0]-1)*100)}`}
+    else{const k=i-(N-1);$('#cxc').setAttribute('cx',xp);$('#cxc').setAttribute('cy',Y(p));tip.innerHTML=`${t('proj_d')} ${dOf(i).toLocaleDateString(L,{day:'numeric',month:'short'})} (±1σ) : <b style="color:var(--tx)">${usd(p*Math.exp(-sgm*Math.sqrt(k)))} – ${usd(p*Math.exp(sgm*Math.sqrt(k)))}</b>`}
+  };
+  svg.addEventListener('pointermove',mv);svg.addEventListener('pointerdown',mv);
+  svg.addEventListener('pointerleave',()=>{$('#cx').setAttribute('visibility','hidden');rest()});
+}
+
+/* ═════════ Accueil (capital de départ) ═════════ */
+function welcome(){
+  const dg=$('#wd');let cap=1000,st='USDT';
+  dg.innerHTML=`<h2>${t('w_title')}</h2><p class="mu" style="margin:0">${t('w_txt')}</p>
+   <div class="lab"><span>${t('w_cap')}</span></div>
+   <div class="chips">${[500,1000,5000,10000,50000,100000].map(n=>`<button data-cap="${n}" aria-pressed="${n===cap}">${nf(n,0)}</button>`).join('')}</div>
+   <label class="inp" style="margin-top:8px"><input id="cap" type="number" inputmode="decimal" min="10" step="any" value="${cap}" aria-label="${t('w_cap')}"><span class="st">$</span></label>
+   <div class="lab"><span>${t('w_st')}</span></div>
+   <div class="chips" style="grid-template-columns:1fr 1fr">${['USDT','USDC'].map(u=>`<button data-st="${u}" aria-pressed="${u===st}">${u}</button>`).join('')}</div>
+   <button class="go" id="go">${t('w_go')}</button>`;
+  dg.oncancel=e=>e.preventDefault();
+  dg.onclick=e=>{
+    const c=e.target.closest('[data-cap]'),u=e.target.closest('[data-st]');
+    if(c){cap=+c.dataset.cap;$('#cap').value=cap;dg.querySelectorAll('[data-cap]').forEach(b=>b.setAttribute('aria-pressed',b===c))}
+    if(u){st=u.dataset.st;dg.querySelectorAll('[data-st]').forEach(b=>b.setAttribute('aria-pressed',b===u))}
+    if(e.target.id==='go'){
+      const v=parseFloat($('#cap').value);if(!(v>=MIN)){$('#cap').focus();return}
+      W={cap0:v,cash:v,st,pos:[],hist:[],t0:Date.now()};saveW();dg.close();start();
+    }
+  };
+  $('#cap').oninput=()=>dg.querySelectorAll('[data-cap]').forEach(b=>b.setAttribute('aria-pressed',false));
+  dg.showModal();
+}
+
+/* ═════════ Interactions ═════════ */
+document.addEventListener('click',e=>{
+  const g=k=>e.target.closest(`[${k}]`);let b;
+  if(b=g('data-sell')){e.stopPropagation();const p=W.pos.find(x=>x.id===b.dataset.sell);if(p){const h=closePos(p,price(p.sym),'manual');saveW();toast(t('okM').replace('{s}',p.sym).replace('{v}',money(h.pnl)));full()}return}
+  if(b=g('data-pid')){const p=W.pos.find(x=>x.id===b.dataset.pid);if(p){S.sym=p.sym;S.focus=p.id;coins();head();upd(true);posList();$('#cbox').scrollIntoView({behavior:'smooth',block:'center'})}return}
+  if(b=g('data-sym')){S.sym=b.dataset.sym;S.focus=null;coins();head();upd(true);posList();return}
+  if(b=g('data-p')){S.prof=b.dataset.p;S.focus=null;upd(true);posList();return}
+  if(b=g('data-pct')){const n=+b.dataset.pct;S.amt=n===100?String(Math.floor(W.cash*100)/100):String(Math.floor(W.cash*n)/100);$('#am').value=S.amt;S.focus=null;upd(true);return}
+  if(b=g('data-buy')){buy();return}
+  if(b=g('data-rg')){S.rg=+b.dataset.rg;head();chart();return}
+  if(b=g('data-proj')){S.proj=!S.proj;head();chart();return}
+  if(b=g('data-tab')){S.tab=b.dataset.tab;posList();return}
+  if(b=g('data-l')){L=b.dataset.l;store.set('lang',L);shell();return}
+  if(b=g('data-th')){const n=document.documentElement.dataset.theme==='light'?'dark':'light';document.documentElement.dataset.theme=n;store.set('theme',n);document.querySelector('meta[name=theme-color]').content=n==='light'?'#f3f5f4':'#0a0e13';chart();return}
+  if(b=g('data-reset')){if(confirm(t('reset_c'))){store.del(KEY);W=null;S.focus=null;S.amt='';welcome()}return}
+});
+
+/* ═════════ Démarrage ═════════ */
+async function refresh(){
+  await loadLive();
+  if(!W)return;
+  const hit=evalAll();
+  wallet();coins();head();posList();upd(true);
+  if(hit)full();
+}
+function start(){
+  if(!S.sym||!coin(S.sym))S.sym=S.sc.top5[0];
+  shell();
+  if(evalAll())full();                              // positions touchées pendant l'absence
+}
+async function init(){
+  try{S.sc=await j('data/model/latest_scores.json')}catch(e){$('#app').innerHTML=`<p class="dn" style="margin-top:30px;font-weight:600">${t('err')}</p>`;return}
+  try{S.det=await j('data/model/detail.json')}catch(e){}
+  await loadLive();loadW();
+  if(!W){S.sym=S.sc.top5[0];shell_empty();welcome();return}
+  start();
+}
+function shell_empty(){$('#app').innerHTML=`<div class="sk"></div><div class="sk" style="height:320px"></div>`}
+setInterval(refresh,60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+init();
 </script>
 </body>
 </html>

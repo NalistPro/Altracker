@@ -1,8 +1,8 @@
 // Altracker — service worker
 // Coquille de l'app : cache puis mise à jour en arrière-plan.
 // Données (JSON) : réseau d'abord, cache en secours (mode hors ligne).
-const V = 'altracker-v3';
-const SHELL = ['./', 'index.html', 'manifest.json', 'icon.svg', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
+const V = 'altracker-v4';
+const SHELL = ['./', 'index.html', 'simulateur.html', 'manifest.json', 'icon.svg', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(
