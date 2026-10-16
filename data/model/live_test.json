@@ -1,11 +1,11 @@
 {
  "7j": {
-  "dates_evaluees": 2,
+  "dates_evaluees": 3,
   "periodes_independantes": 1,
-  "rendement_top5_%": -5.28,
-  "rendement_univers_%": -5.51,
-  "rendement_btc_%": -2.38,
-  "top5_bat_univers_%": 50.0
+  "rendement_top5_%": -3.47,
+  "rendement_univers_%": -3.48,
+  "rendement_btc_%": -1.38,
+  "top5_bat_univers_%": 33.3
  },
  "15j": {
   "dates_evaluees": 0
