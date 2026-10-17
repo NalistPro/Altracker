@@ -34,6 +34,13 @@
    "QNT",
    "STX",
    "XMR"
+  ],
+  "2026-10-16": [
+   "JST",
+   "TRX",
+   "STX",
+   "XMR",
+   "QNT"
   ]
  },
  "positions": {},
