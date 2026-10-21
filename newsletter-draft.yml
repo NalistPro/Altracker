@@ -1,0 +1,42 @@
+name: Brouillon de newsletter
+
+# Chaque jour apres le suivi de fiabilite : prepare un BROUILLON si les conditions sont reunies
+# (ou tous les 15 jours). Rien n'est envoye : tu relis, tu corriges, puis tu lances l'envoi.
+on:
+  schedule:
+    - cron: "10 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+
+jobs:
+  brouillon:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Preparer le brouillon
+        id: b
+        run: python scripts/newsletter_draft.py data | tee out.txt
+      - name: Enregistrer et prevenir
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          F=$(grep '^NOUVEAU_BROUILLON=' out.txt | cut -d= -f2)
+          [ -z "$F" ] && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add newsletter data/newsletter
+          git commit -m "Brouillon de newsletter"
+          git pull --rebase
+          git push
+          gh issue create --title "Brouillon de newsletter à relire : $F" --body "Relis et corrige le fichier \`$F\`, puis lance l'action « Envoyer la newsletter » avec ce chemin. Les conditions vérifiées sont à la fin du fichier."

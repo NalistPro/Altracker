@@ -1,0 +1,28 @@
+name: Envoyer la newsletter
+
+# Manuel uniquement : c'est ta validation avant envoi.
+on:
+  workflow_dispatch:
+    inputs:
+      fichier:
+        description: "Chemin du brouillon relu (ex : newsletter/drafts/2026-10-21-opportunite.md)"
+        required: true
+      test:
+        description: "Test : envoyer seulement a toi-meme"
+        type: boolean
+        default: true
+
+jobs:
+  envoi:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Envoyer
+        env:
+          NEWSLETTER_URL: ${{ secrets.NEWSLETTER_URL }}
+          NEWSLETTER_SECRET: ${{ secrets.NEWSLETTER_SECRET }}
+        run: python scripts/newsletter_send.py "${{ inputs.fichier }}" ${{ inputs.test && '--test' || '' }}
