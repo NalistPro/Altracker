@@ -208,6 +208,27 @@ footer{margin-top:34px;font-size:12px;color:var(--mu);text-align:center}
  .tc b.sy{font-size:13px;margin-top:6px}.tc .pr{font-size:11px}.tc .s{font-size:10.5px}
  .hg{grid-template-columns:repeat(2,minmax(0,1fr))}.hw{grid-template-columns:1fr}
 }
+/* ═════ v3 : Fear & Greed, 4 bulles, fiabilité ═════ */
+.fng{display:flex;align-items:center;gap:12px;margin-top:10px;padding:10px 14px}
+.fng .fgl{flex:1;min-width:0}.fng .gauge{flex:none;width:44%;max-width:170px;margin:0}
+.fng .glab{text-align:left;margin:2px 0 0;font-size:16px}
+.quad{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
+.sq{display:flex;flex-direction:column;justify-content:space-between;gap:4px;aspect-ratio:1;min-width:0;padding:9px 9px 8px;text-align:left;background:var(--s1);border:1px solid var(--bd);border-radius:18px}
+.sq[aria-pressed=true]{border-color:var(--ac)}
+.sq .ct{font-size:11px;line-height:1.2;overflow-wrap:anywhere}
+.sq b{font:800 20px/1.1 system-ui;font-variant-numeric:tabular-nums}
+.sq small{font-size:11px;font-weight:600;line-height:1.2}
+.sq .bar{height:5px;border-radius:3px;background:var(--s2);overflow:hidden}.sq .bar i{display:block;height:100%;background:var(--ac)}
+.qi{margin:8px 2px 0;font-size:12.5px;color:var(--mu);line-height:1.45}
+.tk{margin-top:10px}
+.tk .top3{display:flex;align-items:center;gap:14px}
+.tk .big{flex:none}.tk .tx{min-width:0;font-size:13px}.tk .tx b{font-size:15px}
+.tk .st4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:12px}
+.tk .st4 div{background:var(--s2);border-radius:12px;padding:6px 8px;font:700 15px system-ui;font-variant-numeric:tabular-nums}
+.tk .st4 span{display:block;font:500 10.5px system-ui;color:var(--mu)}
+.lt{display:grid;grid-template-columns:1.1fr .9fr 1fr 1fr;gap:6px;font-size:12.5px;padding:5px 0;border-top:1px solid var(--bd);font-variant-numeric:tabular-nums}
+.lt.h{color:var(--mu);font-size:11px;border-top:0}
+@media(max-width:520px){.sq b{font-size:15px}.sq .ct{font-size:10px}.sq small{font-size:10px}.sq{padding:7px 7px 6px;border-radius:14px}.fng .gauge{width:46%}}
 </style>
 </head>
 <body>
@@ -563,13 +584,59 @@ function trioSection(){
   return `<div class="tri">${al}${mcCard()}${vo}</div>`;
 }
 
-/* Nouvel accueil : coin n°1, 3 cartes, top 5, variations, carte du marché, puis Humeur du marché */
+/* ═════ v3 : Fear & Greed, 4 bulles, fiabilité ═════ */
+const N3={
+fr:{mcs:"Market cap",trk:"Fiabilité de l'outil",trk_n:"Note sur 100 calculée sur les prévisions arrivées à échéance (20 j) : bat BTC (40 %), rendement positif (30 %), stop non touché (30 %). Les lots se chevauchent : tant que peu de lots sont terminés, la note est provisoire.",trk_w:"Mesure en cours. Première note le",trk_p:"provisoire",lots:"lots terminés",ref:"Référence (test sur le passé) : le modèle bat l'univers dans",bat:"Bat BTC",pos:"Positifs",prot:"Capital protégé",hit:"Objectif atteint",prof:"Profil",obj:"objectif",stp:"stop",lt_d:"Lot du",lt_s:"État",lt_r:"Top 5",lt_b:"BTC",done:"terminé",day:"jour",cur:"En cours"},
+es:{mcs:"Market cap",trk:"Fiabilidad de la herramienta",trk_n:"Nota sobre 100 calculada con las previsiones vencidas (20 d): supera a BTC (40 %), rendimiento positivo (30 %), stop no alcanzado (30 %). Los lotes se solapan: con pocos lotes terminados la nota es provisional.",trk_w:"Medición en curso. Primera nota el",trk_p:"provisional",lots:"lotes terminados",ref:"Referencia (prueba sobre el pasado): el modelo supera al universo en",bat:"Supera a BTC",pos:"Positivos",prot:"Capital protegido",hit:"Objetivo logrado",prof:"Perfil",obj:"objetivo",stp:"stop",lt_d:"Lote del",lt_s:"Estado",lt_r:"Top 5",lt_b:"BTC",done:"terminado",day:"día",cur:"En curso"},
+en:{mcs:"Market cap",trk:"Tool reliability",trk_n:"Score out of 100 based on forecasts that reached maturity (20 d): beats BTC (40%), positive return (30%), stop not hit (30%). Batches overlap: with few finished batches the score is provisional.",trk_w:"Measuring. First score on",trk_p:"provisional",lots:"finished batches",ref:"Reference (backtest): the model beats the universe in",bat:"Beats BTC",pos:"Positive",prot:"Capital protected",hit:"Target hit",prof:"Profile",obj:"target",stp:"stop",lt_d:"Batch of",lt_s:"Status",lt_r:"Top 5",lt_b:"BTC",done:"done",day:"day",cur:"Open"}};
+for(const l in N3)Object.assign(T[l],N3[l]);
+const dfmt=d=>new Date(d+'T00:00:00Z').toLocaleDateString(L,{day:'numeric',month:'short',timeZone:'UTC'});
+
+function fngSection(){
+  const m=S.mk;if(!m||!m.fng)return '';
+  const f=m.fng.valeur,fl=t(f<25?'f1':f<45?'f2':f<56?'f3':f<75?'f4':'f5');
+  return `<div class="card fng"><div class="fgl"><div class="ct">${t('fg')}</div><div class="glab">${fl}</div><p>${t('fg_n')}</p></div>${gauge(f)}</div>`;
+}
+function quadSection(){
+  const m=S.mk||{},a=m.alt,v=m.volbtc,e=m.ethbtc,mc=S.mc;
+  const sq=(k,lab,val,sub,bar)=>`<button class="sq" data-info="${k}" aria-pressed="${S.info===k}"><span class="ct">${lab}</span><b>${val}</b><small>${sub}</small><div class="bar"><i style="width:${Math.max(0,Math.min(100,bar))}%"></i></div></button>`;
+  const ath=mc?Math.max(mc.ath,mc.v):0,p=mc?mc.v/ath*100:0;
+  const q=[];
+  if(a)q.push(sq('alt',t('alt'),a.valeur+' %',t(a.valeur>=75?'a1':a.valeur<=25?'a2':'a3'),a.valeur));
+  q.push(sq('mc',t('mcs'),mc?tril(mc.v):'–',mc?nf(p,0)+' % '+t('ath'):'',p));
+  if(v)q.push(sq('vb',t('vb'),nf(v.valeur,0)+' %',t(v.valeur<35?'v1':v.valeur<60?'v2':'v3'),v.valeur));
+  if(e)q.push(sq('eb',t('eb'),nf(e.valeur,4),pc(e.var30)+' '+t('d30'),50+(e.var30||0)*2));
+  return `<div class="quad">${q.join('')}</div><p class="qi" id="qi">${infoText()}</p>`;
+}
+const infoText=()=>({alt:t('alt_n'),mc:t('mcn'),vb:t('vb_n'),eb:t('eb_n')}[S.info]||'');
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-info]');if(!b)return;
+  S.info=S.info===b.dataset.info?'':b.dataset.info;
+  document.querySelectorAll('[data-info]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.info===S.info));
+  const q=$('#qi');if(q)q.textContent=infoText();
+});
+
+function trackSection(){
+  const r=S.tr;if(!r)return '';
+  const s=r.score,c=r.composantes,pr=r.profil;
+  const big=s.valeur!=null?ring(s.valeur,64,6):`<svg class="ring" width="64" height="64" viewBox="0 0 64 64"><circle cx="32" cy="32" r="29" fill="none" stroke="var(--bd)" stroke-width="6"/><text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" class="rt" style="font-size:20px">–</text></svg>`;
+  const tx=s.valeur!=null?`<b>${s.lots} ${t('lots')}</b>${s.provisoire?` · <span style="color:var(--wa)">${t('trk_p')}</span>`:''}`:`${t('trk_w')} <b>${s.premiere_mesure?dfmt(s.premiere_mesure):'–'}</b>`;
+  const st=c?`<div class="st4"><div><span>${t('bat')}</span>${c.bat_btc} %</div><div><span>${t('pos')}</span>${c.positifs} %</div><div><span>${t('prot')}</span>${c.capital_protege} %</div><div><span>${t('hit')}</span>${c.objectif} %</div></div>`:'';
+  const ch=r.serie&&r.serie.length>1?spark(r.serie,0,100,[50]):'';
+  const rows=r.lots.slice(0,6).map(l=>`<div class="lt"><span>${dfmt(l.date)}</span><span class="mu">${l.statut==='termine'?t('done'):t('day')+' '+l.jour+'/'+pr.horizon}</span><span>${pc(l.ret)}</span><span class="mu">${pc(l.btc)}</span></div>`).join('');
+  return `<section><h2>${t('trk')}</h2><div class="card tk"><div class="top3"><div class="big">${big}</div><div class="tx">${tx}<br><span class="mu">${t('prof')} ${esc(pr.nom)} : ${t('obj')} +${pr.objectif} % · ${t('stp')} ${pr.stop} % · ${pr.horizon} j</span></div></div>${ch}${st}
+   <div class="lt h" style="margin-top:12px"><span>${t('lt_d')}</span><span>${t('lt_s')}</span><span>${t('lt_r')}</span><span>${t('lt_b')}</span></div>${rows}
+   <p>${t('trk_n')}${r.reference&&r.reference.bat_univers_pct?` ${t('ref')} ${r.reference.bat_univers_pct} %.`:''}</p></div></section>`;
+}
+
+/* Accueil : coin n°1, Fear & Greed, 4 bulles, Top 5, fiabilité, carte du marché */
 function home(){
   if(!S.mcT||Date.now()-S.mcT>6e4){S.mcT=Date.now();loadMcap().then(()=>{if(S.tab==='home'&&$('#view'))home()})}
+  if(S.tr===undefined){S.tr=null;j('data/track/track.json').then(x=>{S.tr=x;if(S.tab==='home'&&$('#view'))home()}).catch(()=>{})}
   $('#view').innerHTML=`${metaStrip()}<p class="mu s" style="margin:8px 0 0">${t('sub')}</p><p class="disc">${t('disc')}</p>
-   ${heroSection()}${trioSection()}
+   ${heroSection()}${fngSection()}${quadSection()}
    <section><h2>${t('top')}</h2><p class="mu s" style="margin:4px 0 0">${t('topn')}</p><div class="car">${topList().map(topCard).join('')}</div></section>
-   ${movers()}${heatSection()}${moodSection()}${iosHint()}`;
+   ${trackSection()}${heatSection()}${iosHint()}`;
 }
 </script>
 </body>
