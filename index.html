@@ -229,6 +229,14 @@ footer{margin-top:34px;font-size:12px;color:var(--mu);text-align:center}
 .lt{display:grid;grid-template-columns:1.1fr .9fr 1fr 1fr;gap:6px;font-size:12.5px;padding:5px 0;border-top:1px solid var(--bd);font-variant-numeric:tabular-nums}
 .lt.h{color:var(--mu);font-size:11px;border-top:0}
 @media(max-width:520px){.sq b{font-size:15px}.sq .ct{font-size:10px}.sq small{font-size:10px}.sq{padding:7px 7px 6px;border-radius:14px}.fng .gauge{width:46%}}
+/* ═════ v4 : grille 2x2 + newsletter ═════ */
+.nl{margin-top:10px}
+.nl .nlr{display:flex;gap:8px;margin-top:10px}
+.nl input[type=email]{flex:1;min-width:0;background:var(--s2);border:1px solid var(--bd);border-radius:12px;color:var(--tx);font:inherit;padding:10px 12px}
+.nl .nlb{background:var(--ac);color:#04201d;border-color:var(--ac);padding:8px 16px;font-size:14px;font-weight:700}
+.nl .nlc{margin-top:10px;white-space:normal;align-items:flex-start;font-size:12px;margin-left:0}
+.nl .nlc input{margin-top:2px;flex:none}
+.nl #nlm{margin-top:8px;font-size:13px;color:var(--tx)}
 </style>
 </head>
 <body>
@@ -592,30 +600,6 @@ en:{mcs:"Market cap",trk:"Tool reliability",trk_n:"Score out of 100 based on for
 for(const l in N3)Object.assign(T[l],N3[l]);
 const dfmt=d=>new Date(d+'T00:00:00Z').toLocaleDateString(L,{day:'numeric',month:'short',timeZone:'UTC'});
 
-function fngSection(){
-  const m=S.mk;if(!m||!m.fng)return '';
-  const f=m.fng.valeur,fl=t(f<25?'f1':f<45?'f2':f<56?'f3':f<75?'f4':'f5');
-  return `<div class="card fng"><div class="fgl"><div class="ct">${t('fg')}</div><div class="glab">${fl}</div><p>${t('fg_n')}</p></div>${gauge(f)}</div>`;
-}
-function quadSection(){
-  const m=S.mk||{},a=m.alt,v=m.volbtc,e=m.ethbtc,mc=S.mc;
-  const sq=(k,lab,val,sub,bar)=>`<button class="sq" data-info="${k}" aria-pressed="${S.info===k}"><span class="ct">${lab}</span><b>${val}</b><small>${sub}</small><div class="bar"><i style="width:${Math.max(0,Math.min(100,bar))}%"></i></div></button>`;
-  const ath=mc?Math.max(mc.ath,mc.v):0,p=mc?mc.v/ath*100:0;
-  const q=[];
-  if(a)q.push(sq('alt',t('alt'),a.valeur+' %',t(a.valeur>=75?'a1':a.valeur<=25?'a2':'a3'),a.valeur));
-  q.push(sq('mc',t('mcs'),mc?tril(mc.v):'–',mc?nf(p,0)+' % '+t('ath'):'',p));
-  if(v)q.push(sq('vb',t('vb'),nf(v.valeur,0)+' %',t(v.valeur<35?'v1':v.valeur<60?'v2':'v3'),v.valeur));
-  if(e)q.push(sq('eb',t('eb'),nf(e.valeur,4),pc(e.var30)+' '+t('d30'),50+(e.var30||0)*2));
-  return `<div class="quad">${q.join('')}</div><p class="qi" id="qi">${infoText()}</p>`;
-}
-const infoText=()=>({alt:t('alt_n'),mc:t('mcn'),vb:t('vb_n'),eb:t('eb_n')}[S.info]||'');
-document.addEventListener('click',e=>{
-  const b=e.target.closest('[data-info]');if(!b)return;
-  S.info=S.info===b.dataset.info?'':b.dataset.info;
-  document.querySelectorAll('[data-info]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.info===S.info));
-  const q=$('#qi');if(q)q.textContent=infoText();
-});
-
 function trackSection(){
   const r=S.tr;if(!r)return '';
   const s=r.score,c=r.composantes,pr=r.profil;
@@ -629,14 +613,46 @@ function trackSection(){
    <p>${t('trk_n')}${r.reference&&r.reference.bat_univers_pct?` ${t('ref')} ${r.reference.bat_univers_pct} %.`:''}</p></div></section>`;
 }
 
-/* Accueil : coin n°1, Fear & Greed, 4 bulles, Top 5, fiabilité, carte du marché */
+/* ═════ v4 : grille 2x2 + newsletter ═════ */
+const NEWSLETTER_URL=''; // <- coller ici l'adresse du script Google (guide newsletter)
+const N4={
+fr:{nl:"Newsletter",nl_n:"Environ 2 e-mails par mois, et un message de plus quand une opportunité réunit toutes les conditions : niveaux de référence d'entrée et de sortie, avec le bilan de fiabilité.",nl_e:"Ton adresse e-mail",nl_b:"S'inscrire",nl_c:"J'accepte de recevoir la newsletter d'Altracker. Mon adresse n'est utilisée que pour cela ; désinscription en un clic dans chaque e-mail. Contenu informatif, pas un conseil en investissement.",nl_ok:"Merci ! Un e-mail de confirmation vient de t'être envoyé (pense à vérifier les spams).",nl_bad:"Adresse e-mail invalide.",nl_cons:"Coche la case pour accepter.",nl_soon:"Inscription bientôt disponible.",nl_err:"Envoi impossible, réessaie plus tard."},
+es:{nl:"Newsletter",nl_n:"Unos 2 correos al mes, y uno más cuando una oportunidad reúne todas las condiciones: niveles de referencia de entrada y salida, con el balance de fiabilidad.",nl_e:"Tu correo electrónico",nl_b:"Suscribirme",nl_c:"Acepto recibir la newsletter de Altracker. Mi correo solo se usa para esto; baja con un clic en cada mensaje. Contenido informativo, no es asesoramiento de inversión.",nl_ok:"¡Gracias! Te hemos enviado un correo de confirmación (revisa el spam).",nl_bad:"Correo no válido.",nl_cons:"Marca la casilla para aceptar.",nl_soon:"Suscripción próximamente.",nl_err:"No se pudo enviar, inténtalo más tarde."},
+en:{nl:"Newsletter",nl_n:"About 2 emails a month, plus one more when an opportunity meets every condition: reference entry and exit levels, with the reliability report.",nl_e:"Your email address",nl_b:"Subscribe",nl_c:"I agree to receive the Altracker newsletter. My address is used only for this; one-click unsubscribe in every email. Informational content, not investment advice.",nl_ok:"Thanks! A confirmation email has been sent (check your spam folder).",nl_bad:"Invalid email address.",nl_cons:"Tick the box to agree.",nl_soon:"Sign-up coming soon.",nl_err:"Could not send, please try again later."}};
+for(const l in N4)Object.assign(T[l],N4[l]);
+
+function gridSection(){
+  const m=S.mk||{},f=m.fng,a=m.alt,v=m.volbtc;
+  const fg=f?`<div class="card"><div class="ct">${t('fg')}</div>${gauge(f.valeur)}<div class="glab">${t(f.valeur<25?'f1':f.valeur<45?'f2':f.valeur<56?'f3':f.valeur<75?'f4':'f5')}</div>${spark(f.serie,0,100,[25,75])}<p>${t('fg_n')}</p></div>`:'';
+  const al=a?`<div class="card"><div class="ct">${t('alt')}</div><div class="cb">${a.valeur} %<small class="mu">${t(a.valeur>=75?'a1':a.valeur<=25?'a2':'a3')}</small></div><div class="trk"><u style="left:25%"></u><u style="left:75%"></u><b style="left:${Math.max(2,Math.min(98,a.valeur))}%"></b></div>${spark(a.serie,0,100,[25,75])}<p>${t('alt_n')}</p></div>`:'';
+  const vo=v?`<div class="card"><div class="ct">${t('vb')}</div><div class="cb">${nf(v.valeur,0)} %<small class="mu">${t(v.valeur<35?'v1':v.valeur<60?'v2':'v3')}</small></div>${spark(v.serie,0,Math.max(100,...v.serie.map(y=>y[1])),[])}<p>${t('vb_n')}</p></div>`:'';
+  return `<div class="grid2">${fg}${mcCard()}${al}${vo}</div>`;
+}
+function nlSection(){
+  return `<section><h2>${t('nl')}</h2><div class="card nl"><p style="margin:0;font-size:13px">${t('nl_n')}</p>
+   <div class="nlr"><input type="email" id="nle" placeholder="${t('nl_e')}" autocomplete="email" aria-label="${t('nl_e')}"><input type="text" id="nlh" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px"><button class="pill nlb" data-nl>${t('nl_b')}</button></div>
+   <label class="sw nlc"><input type="checkbox" id="nlc"><span>${t('nl_c')}</span></label><p id="nlm" role="status"></p></div></section>`;
+}
+document.addEventListener('click',async e=>{
+  if(!e.target.closest('[data-nl]'))return;
+  const m=$('#nlm'),em=($('#nle').value||'').trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){m.textContent=t('nl_bad');return}
+  if(!$('#nlc').checked){m.textContent=t('nl_cons');return}
+  if(!NEWSLETTER_URL){m.textContent=t('nl_soon');return}
+  try{
+    await fetch(NEWSLETTER_URL,{method:'POST',mode:'no-cors',body:new URLSearchParams({action:'subscribe',email:em,lang:L,consent:'1',website:$('#nlh').value||''})});
+    m.textContent=t('nl_ok');$('#nle').value='';$('#nlc').checked=false;
+  }catch(err){m.textContent=t('nl_err')}
+});
+
+/* Accueil : coin n°1, grille 2x2, Top 5, fiabilité, carte du marché, newsletter */
 function home(){
-  if(!S.mcT||Date.now()-S.mcT>6e4){S.mcT=Date.now();loadMcap().then(()=>{if(S.tab==='home'&&$('#view'))home()})}
-  if(S.tr===undefined){S.tr=null;j('data/track/track.json').then(x=>{S.tr=x;if(S.tab==='home'&&$('#view'))home()}).catch(()=>{})}
+  if(!S.mcT||Date.now()-S.mcT>6e4){S.mcT=Date.now();loadMcap().then(()=>{if(S.tab==='home'&&$('#view')&&!($('#nle')&&$('#nle').value))home()})}
+  if(S.tr===undefined){S.tr=null;j('data/track/track.json').then(x=>{S.tr=x;if(S.tab==='home'&&$('#view')&&!($('#nle')&&$('#nle').value))home()}).catch(()=>{})}
   $('#view').innerHTML=`${metaStrip()}<p class="mu s" style="margin:8px 0 0">${t('sub')}</p><p class="disc">${t('disc')}</p>
-   ${heroSection()}${fngSection()}${quadSection()}
+   ${heroSection()}${gridSection()}
    <section><h2>${t('top')}</h2><p class="mu s" style="margin:4px 0 0">${t('topn')}</p><div class="car">${topList().map(topCard).join('')}</div></section>
-   ${trackSection()}${heatSection()}${iosHint()}`;
+   ${trackSection()}${heatSection()}${nlSection()}${iosHint()}`;
 }
 </script>
 </body>
