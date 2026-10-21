@@ -475,7 +475,7 @@ addEventListener('offline',()=>{S.sc&&view();toast(t('off'))});
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 
 load();
-</script>/* ═════ ALTRACKER : AJOUT (à coller à la toute fin du script) ═════ */
+═════ ALTRACKER : AJOUT (à coller à la toute fin du script) ═════ */
 (function(){var s=document.createElement('style');s.textContent=`
 /* ═════ AJOUT : reco n°1 + 3 indicateurs + top 5 égal ═════ */
 .hero{background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 14%,var(--s1)),var(--s1) 62%);border:1px solid color-mix(in srgb,var(--ac) 45%,var(--bd));border-radius:20px;padding:14px;cursor:pointer}
@@ -580,5 +580,6 @@ function home(){
    <section><h2>${t('top')}</h2><p class="mu s" style="margin:4px 0 0">${t('topn')}</p><div class="car">${topList().map(topCard).join('')}</div></section>
    ${movers()}${heatSection()}${moodSection()}${iosHint()}`;
 }
+</script>
 </body>
 </html>
