@@ -1,0 +1,157 @@
+{
+ "maj": "2026-10-20",
+ "profil": {
+  "nom": "Père de famille",
+  "objectif": 12.0,
+  "stop": -8.0,
+  "horizon": 20
+ },
+ "score": {
+  "valeur": null,
+  "lots": 0,
+  "picks": 0,
+  "provisoire": true,
+  "premiere_mesure": "2026-10-26",
+  "poids": [
+   0.4,
+   0.3,
+   0.3
+  ]
+ },
+ "composantes": null,
+ "serie": [],
+ "lots": [
+  {
+   "date": "2026-10-20",
+   "statut": "en_cours",
+   "jour": 0,
+   "ret": 0.0,
+   "btc": 0.0,
+   "objectif": 0,
+   "stop": 0,
+   "picks": [
+    "AKE",
+    "JST",
+    "TRX",
+    "QNT",
+    "XMR"
+   ]
+  },
+  {
+   "date": "2026-10-19",
+   "statut": "en_cours",
+   "jour": 1,
+   "ret": 1.18,
+   "btc": 1.33,
+   "objectif": 0,
+   "stop": 0,
+   "picks": [
+    "AKE",
+    "TRX",
+    "JST",
+    "XMR",
+    "QNT"
+   ]
+  },
+  {
+   "date": "2026-10-18",
+   "statut": "en_cours",
+   "jour": 2,
+   "ret": 2.11,
+   "btc": 1.11,
+   "objectif": 0,
+   "stop": 0,
+   "picks": [
+    "AKE",
+    "TRX",
+    "JST",
+    "QNT",
+    "XMR"
+   ]
+  },
+  {
+   "date": "2026-10-17",
+   "statut": "en_cours",
+   "jour": 3,
+   "ret": 1.98,
+   "btc": 1.89,
+   "objectif": 0,
+   "stop": 0,
+   "picks": [
+    "AKE",
+    "PRL",
+    "JST",
+    "TRX",
+    "QNT"
+   ]
+  },
+  {
+   "date": "2026-10-16",
+   "statut": "en_cours",
+   "jour": 4,
+   "ret": -0.51,
+   "btc": 1.73,
+   "objectif": 0,
+   "stop": 1,
+   "picks": [
+    "JST",
+    "TRX",
+    "STX",
+    "XMR",
+    "QNT"
+   ]
+  },
+  {
+   "date": "2026-10-15",
+   "statut": "en_cours",
+   "jour": 5,
+   "ret": -1.33,
+   "btc": 0.95,
+   "objectif": 0,
+   "stop": 1,
+   "picks": [
+    "TRX",
+    "JST",
+    "QNT",
+    "STX",
+    "XMR"
+   ]
+  },
+  {
+   "date": "2026-10-14",
+   "statut": "en_cours",
+   "jour": 6,
+   "ret": -2.7,
+   "btc": 1.65,
+   "objectif": 0,
+   "stop": 1,
+   "picks": [
+    "JST",
+    "TRX",
+    "XMR",
+    "QNT",
+    "STX"
+   ]
+  },
+  {
+   "date": "2026-10-13",
+   "statut": "en_cours",
+   "jour": 7,
+   "ret": -2.84,
+   "btc": -0.17,
+   "objectif": 0,
+   "stop": 2,
+   "picks": [
+    "QNT",
+    "STX",
+    "JST",
+    "ZRO",
+    "XMR"
+   ]
+  }
+ ],
+ "reference": {
+  "auc": 0.567,
+  "bat_univers_pct": 52.9
+ }
+}
