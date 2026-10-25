@@ -1,17 +1,16 @@
 {
- "date_utc": "2026-10-24T05:56:01.300618+00:00",
- "jour_traite": "2026-10-24",
+ "date_utc": "2026-10-25T06:08:30.751869+00:00",
+ "jour_traite": "2026-10-25",
  "coins": 66,
  "statuts": {
-  "ok": 64,
-  "ignore": 2
+  "ok": 66
  },
  "taux_echec_%": 0.0,
- "fear_greed": "ok (3184 jours, derniere 2026-10-24)",
+ "fear_greed": "ok (3185 jours, derniere 2026-10-25)",
  "archivage": {
-  "global": "ok",
-  "derives": "ok (63 coins)",
-  "tvl": "ok (30 coins)"
+  "global": "deja fait aujourd'hui",
+  "derives": "ok (62 coins)",
+  "tvl": "ok (28 coins)"
  },
  "problemes": {}
 }
