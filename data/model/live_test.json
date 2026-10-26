@@ -1,18 +1,18 @@
 {
  "7j": {
-  "dates_evaluees": 12,
+  "dates_evaluees": 13,
   "periodes_independantes": 1,
-  "rendement_top5_%": -3.77,
-  "rendement_univers_%": -3.67,
-  "rendement_btc_%": -0.71,
-  "top5_bat_univers_%": 58.3
+  "rendement_top5_%": -3.44,
+  "rendement_univers_%": -3.68,
+  "rendement_btc_%": -0.84,
+  "top5_bat_univers_%": 61.5
  },
  "15j": {
-  "dates_evaluees": 4,
+  "dates_evaluees": 5,
   "periodes_independantes": 1,
-  "rendement_top5_%": -5.7,
-  "rendement_univers_%": -7.26,
-  "rendement_btc_%": -1.7,
+  "rendement_top5_%": -5.91,
+  "rendement_univers_%": -7.92,
+  "rendement_btc_%": -2.04,
   "top5_bat_univers_%": 100.0
  },
  "20j": {
