@@ -181,6 +181,13 @@
    "XMR",
    "QNT",
    "STX"
+  ],
+  "2026-11-06": [
+   "TRX",
+   "JST",
+   "STX",
+   "QNT",
+   "XMR"
   ]
  },
  "positions": {},
