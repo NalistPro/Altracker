@@ -1,27 +1,27 @@
 {
  "7j": {
-  "dates_evaluees": 26,
+  "dates_evaluees": 27,
   "periodes_independantes": 3,
-  "rendement_top5_%": -2.72,
-  "rendement_univers_%": -4.42,
-  "rendement_btc_%": -1.93,
-  "top5_bat_univers_%": 50.0
+  "rendement_top5_%": -2.74,
+  "rendement_univers_%": -4.55,
+  "rendement_btc_%": -2.03,
+  "top5_bat_univers_%": 51.9
  },
  "15j": {
-  "dates_evaluees": 18,
+  "dates_evaluees": 19,
   "periodes_independantes": 1,
-  "rendement_top5_%": -4.81,
-  "rendement_univers_%": -9.2,
-  "rendement_btc_%": -4.17,
-  "top5_bat_univers_%": 77.8
+  "rendement_top5_%": -5.04,
+  "rendement_univers_%": -9.34,
+  "rendement_btc_%": -4.34,
+  "top5_bat_univers_%": 78.9
  },
  "20j": {
-  "dates_evaluees": 13,
+  "dates_evaluees": 14,
   "periodes_independantes": 1,
-  "rendement_top5_%": -6.89,
-  "rendement_univers_%": -11.8,
-  "rendement_btc_%": -5.39,
-  "top5_bat_univers_%": 76.9
+  "rendement_top5_%": -6.61,
+  "rendement_univers_%": -12.02,
+  "rendement_btc_%": -5.62,
+  "top5_bat_univers_%": 78.6
  },
  "note": "Test en conditions reelles : fiable seulement apres plusieurs periodes independantes (au moins 6 de 20 jours, soit environ 4 mois)."
 }
