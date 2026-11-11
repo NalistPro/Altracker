@@ -209,6 +209,13 @@
    "TRX",
    "QNT",
    "STX"
+  ],
+  "2026-11-10": [
+   "JST",
+   "TRX",
+   "XMR",
+   "STX",
+   "ETHFI"
   ]
  },
  "positions": {},
