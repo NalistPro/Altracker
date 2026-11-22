@@ -1,12 +1,5 @@
 {
  "top5": {
-  "2026-10-21": [
-   "AKE",
-   "QNT",
-   "TRX",
-   "JST",
-   "XMR"
-  ],
   "2026-10-22": [
    "AKE",
    "TRX",
@@ -216,6 +209,13 @@
    "PIEVERSE",
    "SKY",
    "QNT"
+  ],
+  "2026-11-21": [
+   "JST",
+   "TRX",
+   "PIEVERSE",
+   "VVV",
+   "SKY"
   ]
  },
  "positions": {},
