@@ -1,5 +1,5 @@
 {
- "date_utc": "2026-11-24T10:58:11.414030+00:00",
+ "date_utc": "2026-11-25T09:53:31.893192+00:00",
  "parametres": {
   "horizon_jours": 20,
   "etiquette": "top 30% de l'univers sur 20 j",
@@ -17,18 +17,18 @@
   "indicateurs": 38,
   "periodes_test": 47,
   "test_du": "2023-01-01",
-  "test_au": "2026-11-03"
+  "test_au": "2026-11-04"
  },
  "qualite_prediction": {
-  "auc": 0.563,
+  "auc": 0.564,
   "ic_rang_moyen": 0.054,
   "ic_t_stat_sans_chevauchement": 2.2,
   "ic_rang_momentum30_reference": 0.011
  },
  "strategies_top5": {
   "modele_top5": {
-   "rendement_moyen_20j_%": 4.69,
-   "rendement_median_20j_%": 1.68,
+   "rendement_moyen_20j_%": 4.67,
+   "rendement_median_20j_%": 1.64,
    "periodes_positives_%": 55.6,
    "multiple_cumule_median": 8.57,
    "multiple_cumule_min_max": [
@@ -37,18 +37,18 @@
    ]
   },
   "modele_top5_liquide": {
-   "rendement_moyen_20j_%": 3.13,
+   "rendement_moyen_20j_%": 3.12,
    "rendement_median_20j_%": 0.62,
    "periodes_positives_%": 52.3,
-   "multiple_cumule_median": 3.63,
+   "multiple_cumule_median": 3.55,
    "multiple_cumule_min_max": [
     1.7,
     10.77
    ]
   },
   "momentum30_top5": {
-   "rendement_moyen_20j_%": 5.25,
-   "rendement_median_20j_%": 2.14,
+   "rendement_moyen_20j_%": 5.23,
+   "rendement_median_20j_%": 2.13,
    "periodes_positives_%": 55.0,
    "multiple_cumule_median": 12.5,
    "multiple_cumule_min_max": [
@@ -57,8 +57,8 @@
    ]
   },
   "momentum90_top5": {
-   "rendement_moyen_20j_%": 4.84,
-   "rendement_median_20j_%": 2.5,
+   "rendement_moyen_20j_%": 4.82,
+   "rendement_median_20j_%": 2.46,
    "periodes_positives_%": 56.1,
    "multiple_cumule_median": 8.32,
    "multiple_cumule_min_max": [
@@ -67,27 +67,27 @@
    ]
   },
   "univers_equipondere": {
-   "rendement_moyen_20j_%": 2.38,
+   "rendement_moyen_20j_%": 2.36,
    "rendement_median_20j_%": -0.34,
-   "periodes_positives_%": 48.8,
-   "multiple_cumule_median": 2.26,
+   "periodes_positives_%": 48.7,
+   "multiple_cumule_median": 2.19,
    "multiple_cumule_min_max": [
     1.76,
-    2.72
+    2.55
    ]
   },
   "btc": {
-   "rendement_moyen_20j_%": 2.11,
-   "rendement_median_20j_%": 0.38,
+   "rendement_moyen_20j_%": 2.09,
+   "rendement_median_20j_%": 0.37,
    "periodes_positives_%": 52.1,
-   "multiple_cumule_median": 2.77,
+   "multiple_cumule_median": 2.75,
    "multiple_cumule_min_max": [
     1.97,
-    3.63
+    3.43
    ]
   }
  },
- "modele_liquide_bat_l_univers_%_des_periodes": 50.8,
+ "modele_liquide_bat_l_univers_%_des_periodes": 50.9,
  "rendement_moyen_20j_par_annee_%": {
   "2023": {
    "modele_top5": 2.06,
@@ -111,37 +111,33 @@
    "btc": -0.38
   },
   "2026": {
-   "modele_top5": 8.55,
-   "modele_top5_liquide": 0.23,
-   "momentum30_top5": 7.28,
-   "univers_equipondere": 0.83,
-   "btc": -1.67
+   "modele_top5": 8.47,
+   "modele_top5_liquide": 0.18,
+   "momentum30_top5": 7.18,
+   "univers_equipondere": 0.75,
+   "btc": -1.74
   }
  },
  "indicateurs_les_plus_utiles": [
   {
    "nom": "dd365",
-   "importance": 0.0449
+   "importance": 0.0398
+  },
+  {
+   "nom": "liq30",
+   "importance": 0.0173
   },
   {
    "nom": "rk_vol30",
-   "importance": 0.0195
+   "importance": 0.0162
   },
   {
    "nom": "vol30",
-   "importance": 0.0129
-  },
-  {
-   "nom": "btc_ret30",
-   "importance": 0.0118
+   "importance": 0.0136
   },
   {
    "nom": "btc_dist200",
    "importance": 0.0118
-  },
-  {
-   "nom": "liq30",
-   "importance": 0.0117
   },
   {
    "nom": "corr_btc60",
@@ -149,23 +145,27 @@
   },
   {
    "nom": "dd_ath",
-   "importance": 0.0105
+   "importance": 0.0109
   },
   {
    "nom": "rk_vol_rel",
-   "importance": 0.0099
+   "importance": 0.0095
   },
   {
-   "nom": "rk_dd90",
+   "nom": "btc_ret30",
    "importance": 0.0075
   },
   {
+   "nom": "rk_dd90",
+   "importance": 0.0063
+  },
+  {
    "nom": "atr14",
-   "importance": 0.007
+   "importance": 0.0054
   },
   {
    "nom": "ret60",
-   "importance": 0.0057
+   "importance": 0.0042
   }
  ],
  "avertissements": [
